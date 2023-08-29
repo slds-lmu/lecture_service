@@ -1,0 +1,138 @@
+#! /usr/bin/env -S Rscript --quiet
+# All-in-one slide checker
+
+if (!("docopt" %in% installed.packages())) install.packages("docopt")
+
+source(here::here("helpers.R"))
+
+version <- "SLDS Lecture Checker 0.1\n"
+
+'SLDS Lecture Checker.
+
+Usage:
+  lecheck [compile] [compare] [--lecture=<lc>] [--topic=<tc>] [--slide=<sn>] [--clean] [--tinytex] [--background] [--path=<path>]
+  lecheck everything [--lecture=<lc>] [--path=<path>]
+  lecheck list [--lecture=<lc>] [--topic=<tc>] [--path=<path>]
+  lecheck (-h | --help)
+  lecheck --version
+
+Example:
+  lecheck compile -l i2ml
+  lecheck compile -t cart
+  lecheck compare -s slides-basics-riskminimization
+  lecheck list
+  lecheck # same as lecheck list
+
+Options:
+  -h --help           Show this screen.
+  --version           Show version.
+  -l --lecture=<lc>   Lecture repository, can be abbreviated (dropping "lecture_" prefix) [default: NULL].
+  -t --topic=<tc>     Lecture topic, e.g. "cart". Assumed to be unique across lectures.
+                      Takes precedence over --lecture [default: NULL].
+  -s --slide=<sn>     Slide name, e.g. slides-boosting-cwb-basics. No need for file extension etc [default: NULL].
+                      Takes precedence over --lecture and --topic.
+  everything          Runs check_all_slides_parallel(), which saves results to a file rather than displaying them.
+  list                List all lectures and topics found at <path>.
+  --path=<path>       Set diretcory to look for lecture_* repos in. Defaults to `here::here()` [default: here].
+                      This is still experimental, unfortunately path flexibility is hard.
+  --clean             Cleans up using `latexmk -C` before compilation.
+  --tinytex           Use TinyTex latexmk emulation to auto-install missing packages.
+  --background        Do not wait for compilation for status checks. Not applicable if --tinytex is used.
+' -> doc
+
+# Wrap in tryCatch to make --help default behavior when there's an argument error
+arguments <- tryCatch(docopt::docopt(doc, version = version), error = function(e) cat(doc))
+if (is.null(arguments)) quit(save = "no", status = 1)
+
+if (interactive()) {
+  # For debugging
+  # arguments <- docopt::docopt(doc, version = version, args = c("compile", "--clean", "--slide=slides-boosting-cwb-basics"))
+  arguments <- docopt::docopt(doc, version = version, args = c("compile", "-t cart", "--path=../.."))
+  arguments <- tryCatch(docopt::docopt(doc, version = version, args = c("list", "compile")), error = function(e) cat(doc))
+
+  print(arguments)
+}
+
+# If supplied as e.g. -l i2ml rather than --lecture=i2ml, strip leading whitespace
+arguments$topic <- gsub("^\\s*", "", arguments$topic)
+arguments$lecture <- gsub("^\\s*", "", arguments$lecture)
+arguments$slide <- gsub("^\\s*", "", arguments$slide)
+
+# Subset to only currently relevant lecture
+if (arguments$path == "here") arguments$path <- here::here()
+
+lectures_tbl <- collect_lectures(lectures_path = arguments$path)
+
+# If slide is specified, takes highest precedence. Then topic, then lecture.
+# Ensures that if e.g. slide from advml is set but lecture is i2ml, slide "wins"
+if (!(arguments$slide == "NULL")) {
+  lectures_tbl <- find_slide_tex(slide_file = arguments$slide)
+
+} else if (!(arguments$topic == "NULL")) {
+    lectures_tbl <- lectures_tbl[which(lectures_tbl$topic == arguments$topic), ]
+
+} else if (!(arguments$lecture == "NULL")) {
+      if (!grepl(pattern = "^lecture", arguments$lecture)) {
+        arguments$lecture <- paste0("lecture_", arguments$lecture)
+      }
+
+      lectures_tbl <- lectures_tbl[which(lectures_tbl$lecture == arguments$lecture), ]
+}
+
+stopifnot("No matching slides found." = nrow(lectures_tbl) >= 1)
+
+if (arguments$everything) {
+  check_all_slides_parallel(lectures_tbl, pre_clean = arguments$clean)
+  quit(save = "no", status = 0)
+}
+
+# If we're here and neither compile nor compare, we fall back to listing lectures.
+if (!(arguments$compile | arguments$compare)) {
+  arguments$list <- TRUE
+}
+
+if (arguments$list) {
+  for (current_lecture in unique(lectures_tbl$lecture)) {
+    topic_idx <- which(lectures_tbl[["lecture"]] == current_lecture)
+
+    cli::cli_h1("{current_lecture}: {length(topic_idx)} slides")
+    current_lecture_tbl <- lectures_tbl[topic_idx, ]
+
+    for (current_topic in unique(current_lecture_tbl$topic)) {
+      nslides <- sum(current_lecture_tbl[["topic"]] == current_topic)
+
+      cli::cli_li("{current_topic}: {nslides} slides")
+    }
+  }
+
+  quit(save = "no", status = 0)
+}
+
+# Iterate over lectures if there are more than one in the current set
+# Iteratively creating subsets of the lectures_tbl for the respective scope (lecture / topic / slide)
+# is probably not the best solution here but it feels easy to understand and robust enough. Can still smartify this.
+for (current_lecture in unique(lectures_tbl$lecture)) {
+  cli::cli_h1("{current_lecture}")
+  current_lecture_tbl <- lectures_tbl[lectures_tbl[["lecture"]] == current_lecture, ]
+
+  for (current_topic in unique(current_lecture_tbl$topic)) {
+    cli::cli_h2("{current_topic}")
+    current_topic_tbl <- current_lecture_tbl[current_lecture_tbl[["topic"]] == current_topic, ]
+
+    for (current_slide in unique(current_topic_tbl$slide_name)) {
+      current_slide_tbl <- current_topic_tbl[current_topic_tbl[["slide_name"]] == current_slide, ]
+
+      if (arguments$compile) {
+        if (arguments$tinytex) {
+          compile_slide_tinytex(current_slide_tbl[["slide_name"]])
+        }
+        compile_slide(current_slide_tbl[["slide_name"]], check_status = !arguments$background, pre_clean = arguments$clean)
+      }
+
+      if (arguments$compare) {
+        compare_slide(current_slide_tbl[["slide_name"]], create_comparison_pdf = TRUE)
+      }
+    }
+  }
+}
+quit(save = "no", status = 0)

@@ -1,0 +1,253 @@
+---
+title: "Lecture Slide Status Overview"
+author: "`r Sys.info()[['user']]`"
+date: '`r format(Sys.time(), format = "%F %T", tz = "Europe/Berlin", usetz = TRUE)`'
+output: 
+  html_document: 
+    toc: yes
+    toc_depth: 5
+    toc_float:
+      collapsed: true
+    self_contained: no
+    mathjax: no
+editor_options: 
+  chunk_output_type: console
+---
+
+```{css, echo=FALSE}
+/* 
+Apply some custom CSS to add breathing room between sub-tables
+and we don't bother creating a separate .css file for just this bit
+*/
+h3 {
+  /*text-align: center;*/
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+}
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+source(here::here("helpers.R"))
+library(ggplot2)
+
+# Adjust this as needed for the large multi-lecture overview. 
+# If this is run within a single lecture's workflow it's ignored.
+included_lectures <- c(
+  "lecture_i2ml", 
+  "lecture_advml", 
+  "lecture_sl", 
+  "lecture_optimization",
+  # not yet included:
+  "lecture_iml"
+)
+
+if (!file.exists("slide_check_cache.rds")) {
+  stop(paste(
+    "slide_check_cache.rds does not exists.",
+    "Run `make` and get a coffee, or",
+    "Rscript -e 'source(here::here(\"helpers.R\")); check_all_slides_parallel()", sep = "\n "
+  ))
+}
+
+all_slide_check <- readRDS("slide_check_cache.rds")
+
+# Get lectures and reorder them
+# Ignores lectures that exist locally but are not listed in included_lectures
+lectures <- unique(all_slide_check$lecture)
+lectures <- lectures[match(included_lectures, lectures, nomatch = 0)]
+
+# Might as well subset table to only selected lectures
+all_slide_check <- all_slide_check[all_slide_check$lecture %in% included_lectures, ]
+```
+
+This document tabulates the state of the slides in `lecture*/slides/<topic>/` in terms of a) compilability and b) comparison with presumably "known good" versions of the slides located in `lecture_*/slides-pdf/`.
+
+# Latest Commits
+
+Displaying the latest commits of the lecture service repository and each of the currently included lectures (for debugging and race condition mitigation (kind of)).
+
+```{r slide-checker-repo-status}
+this_repo_status() |>
+  dplyr::mutate(
+    branch = sprintf("<a href='https://github.com/slds-lmu/lecture_service/tree/%s'>%s</a>", branch, branch)
+  ) |>
+  kableExtra::kbl(
+    col.names = c("Branch", "Last Commit", "By", "Message"),
+    escape = FALSE, caption = "Status of the slide checker repo (time in UTC)"
+  ) |>
+  kableExtra::kable_styling()
+```
+
+
+```{r lecture-repo-status}
+lecture_status_local(lectures) |>
+  dplyr::arrange(dplyr::desc(last_commit_time)) |>
+  dplyr::mutate(
+    lecture_link = sprintf("<a href='https://slds-lmu.github.io/%s'>%s</a>", lecture, lecture),
+    branch = sprintf("<a href='https://github.com/slds-lmu/%s/tree/%s'>%s</a>", lecture, branch, branch)
+  ) |>
+  dplyr::select(lecture_link, branch, last_commit_time, last_commit_by, last_commit_summary) |>
+  kableExtra::kbl(
+    col.names = c("Lecture", "Branch", "Last Commit", "By", "Message"),
+    escape = FALSE, caption = "Latest commits per lecture (times in UTC)"
+  ) |>
+  kableExtra::kable_styling() |>
+  # Increase width of message column as it contains the most text (potentially)
+  kableExtra::column_spec(5, width = "40%")
+```
+
+If you're missing a lecture here, you might have to add them to `included_lectures` in `slide_status.Rmd` (L21) and/or ensure they are downloaded correctly.
+
+# Slide status
+
+```{r slide-status-plot, eval = requireNamespace("ggplot2")}
+#| fig.width: 10
+#| fig.height: 6
+#| out.width: "100%"
+
+check_counts <- do.call(rbind, lapply(c("compile_check", "compare_check"), \(x) {
+  all_slide_check |>
+    dplyr::filter(lecture %in% .env$included_lectures) |>
+    dplyr::count(lecture, .data[[x]]) |>
+    dplyr::group_by(lecture) |>
+    dplyr::mutate(prop = n / sum(n), check = x) |>
+    dplyr::rename(result = dplyr::all_of(x)) |>
+    dplyr::mutate(
+      result = dplyr::case_when(
+        result ~ "Passed",
+        !result ~ "Failed", 
+        .default = "N/A"
+      )
+    )
+})) |>
+  dplyr::mutate(
+    lecture = stringr::str_remove(lecture, "^lecture_"),
+    lecture = factor(lecture, levels = stringr::str_remove(included_lectures, "^lecture_")),
+    check = stringr::str_remove(check, "_check$"),
+  )
+
+check_counts |>
+  ggplot(aes(x = check, y = prop, fill = result)) +
+  facet_wrap(vars(lecture)) +
+  coord_flip() +
+  geom_col(alpha = 2/3) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(
+    breaks = c("Passed", "Failed", "N/A"),
+    values = c(Passed = "#1B9E77", Failed = "#D95F02", "N/A" = "#7570B3")
+  ) +
+  labs(
+  #  title = "Lecture Check Overview",
+    y = "Proportion of Slides", x = NULL, fill = NULL
+  ) +
+  theme_minimal(base_size = 16) +
+  theme(
+    legend.position = "bottom", 
+    plot.title.position = "plot",
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank(),
+    axis.text.y = element_text(angle = 90, hjust = .5)
+  )
+```
+
+
+<details>
+<summary>Click to expand explanation of table columns</summary>
+
+```
+lecture_advml/slides/gaussian-processes/slides-gp-bayes-lm.tex
+\___________/        \________________/ \________________/
+   lecture                 topic            <slide-name>
+
+lecture_advml/slides-pdf/slides-gp-bayes-lm.pdf
+                        \___________________/
+                       pdf_static / "Reference PDF"
+```
+
+Tables are organized by lecture (first level) and lecture topics corresponding to folders in `slides/<topic>` (second level), with a table per topic. 
+Topics ignore certain folders like `attic` and `all`.
+
+- **Slide**: The `<slide-name>` with a link to the compiled .tex file (if it compiles).
+- **Compiles?**: Whether the .tex file compiles without error using `latexmk -pdf`.  
+  This can depend on the availability of specific LaTeX dependencies, but assuming they are not the issue, this usually indicates syntax issues or things like `\includegraphics` calls using relative paths that work on Overleaf but not locally.
+- **Comparison**: Checking the compiled `<slide-name>.tex` against `slides-pdf/<slide-name>.pdf` using `diff-pdf-visually`:
+  - &#x274c;: The check failed surely, either due to differing page counts or because there is no reference PDF.
+  - &#x2753;: The check indicates differences on at least one slide, but they may be minor and need manual checking.
+  - &#x2705;: The check seems to be fine, the PDF files match.
+- **Note**: A comment on the previous column listing the specific reason for a failing check.  
+  Also enumerates the slide pages where differences are found, and links to a PDF containing a diff of the two files generated with `diff-pdf` (at a lower resolution than the originals).
+
+</details>
+
+```{r data-prep, include=FALSE}
+check_table <- all_slide_check |>
+  # Transforms the logical columns, i.e. pdf_exists, pdf_static_exists, compile_check, ...
+  dplyr::mutate(dplyr::across(dplyr::where(is.logical), \(x) {
+    dplyr::case_when(
+      x ~ "\u2705",  # Green check symbol
+      !x ~ "\u274c", # Red X symbol
+      is.na(x) ~ ""
+    )
+  })) |>
+  dplyr::mutate(
+    # Insert red question mark emoji instead of red X for easier visual parsing maybe
+    compare_check = ifelse(grepl("Dissimilar pages", compare_check_note), "\u2753", compare_check),
+    compare_check = ifelse(grepl("No reference", compare_check_note), "", compare_check)
+  ) |>
+  # Make links out of a few columns
+  dplyr::mutate(
+    comparison_path = here::here("comparison", fs::path_file(pdf)),
+    compare_check_note = ifelse(
+      compare_check %in% c("\u274c", "\u2753"),
+      sprintf("<a href='%s'>%s</a>", fs::path_rel(comparison_path), compare_check_note),
+      compare_check_note
+    ),
+    slide_name = ifelse(
+      fs::file_exists(pdf),
+      sprintf("<a href='%s'>%s</a>", fs::path_rel(pdf), slide_name),
+      slide_name
+    )
+  )
+```
+
+
+```{r  slide-status-table, results='asis'}
+# This is a markdown "asis" chunk that can output raw markdown or HTML and is treated as such by knitr
+# Useful to manually assemble tables with sub-headings
+
+for (current_lecture in lectures) {
+  
+  tmp <-  check_table |>
+    dplyr::filter(lecture == current_lecture)
+  
+  cat(sprintf("\n## %s \n\n", current_lecture))
+  
+  cat(sprintf("%i topics with a total of %i slides\n", length(unique(tmp$topic)), nrow(tmp)))
+  
+  for (current_topic in sort(unique(tmp$topic))) {
+    tmp <-  check_table |>
+      dplyr::filter(lecture == current_lecture, topic == current_topic)
+    
+    cat(sprintf("\n### %s\n\n", current_topic))
+
+    tmp |>
+      dplyr::select(
+        slide_name, 
+        compile_check, compare_check, compare_check_note) |>
+      kableExtra::kbl(
+        format = "html", escape = FALSE, 
+        align = c("l", "c", "c", "l"),
+        col.names = c("Slide", "Compiles?", "Comparison", "Note")
+      ) |>
+      kableExtra::kable_styling(
+        full_width = TRUE,
+        fixed_thead = TRUE, 
+        bootstrap_options = c("hover", "condensed", "responsive")
+      ) |>
+      cat()
+  }
+}
+```
+

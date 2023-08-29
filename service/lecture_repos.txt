@@ -1,4 +1,0 @@
-https://github.com/slds-lmu/lecture_i2ml
-https://github.com/slds-lmu/lecture_advml
-https://github.com/slds-lmu/lecture_iml
-https://github.com/slds-lmu/lecture_sl

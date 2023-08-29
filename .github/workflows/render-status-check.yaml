@@ -1,0 +1,75 @@
+# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
+# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+    #paths: ['**.Rmd']
+
+name: render-status-check
+
+jobs:
+  render-status-check:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+    # Required to allow writing to gh-pages branch (as far as I can tell)
+      contents: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          # 0 indicates all history for all branches and tags, 1 is shallow (and default)
+          fetch-depth: 1
+
+      # Standard setup block
+      - uses: r-lib/actions/setup-pandoc@v2
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+      - uses: r-lib/actions/setup-tinytex@v2
+      - run: tlmgr --version
+
+      # This downloads rather than clones lectures to speed things up a little
+      - name: Download lecture repos
+        run: scripts/download_lectures.sh
+
+      - name: Get R library dir for caching
+        id: r-cache
+        run: |
+          echo "dir=$(Rscript --quiet -e 'cat(.libPaths()[[1]])')" >> $GITHUB_OUTPUT
+
+      - name: Restore R package cache
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.r-cache.outputs.dir }}
+          key: ${{ runner.os }}-r-${{inputs.cache-version }}-${{ hashFiles('scripts/install_r_deps.R') }}
+          restore-keys: ${{ runner.os }}-r-${{inputs.cache-version }}-
+
+      - name: Install R packages
+        run: scripts/install_r_deps.R
+
+      - name: Install additional LaTeX packages
+        run: |
+          scripts/install_tex_deps.R
+          tlmgr list --only-installed
+
+      - name: Install diff-pdf and diff-pdf-visually
+        run: scripts/install_tools_ubuntu.sh
+
+        # Uncomment for debugging (see https://github.com/mxschmitt/action-tmate)
+      # - name: Setup tmate session
+      #   uses: mxschmitt/action-tmate@v3
+
+      - name: Check slides and build HTML overview
+        run: make
+
+      # Deploy using this rather than JamesIves/github-pages-deploy-action, as this supports pushing
+      # orphan branches. Since we're adding a bunch of PDFs, we really want to avoid a bloated branch history
+      - name: Deploy to GitHub pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./_site
+          force_orphan: true
