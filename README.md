@@ -1,7 +1,8 @@
 # SLDS Lecture Service
 
 <!-- badges: start -->
-[![render-rmarkdown](https://github.com/slds-lmu/lecture_service/actions/workflows/render-status-check.yaml/badge.svg)](https://github.com/slds-lmu/lecture_service/actions/workflows/render-status-check.yaml)
+[![render-status-check](https://github.com/slds-lmu/lecture_service/actions/workflows/render-status-check.yaml/badge.svg)](https://github.com/slds-lmu/lecture_service/actions/workflows/render-status-check.yaml)
+[![Slide Check Overview](https://img.shields.io/badge/Slide_Check-E0911F)](https://slds-lmu.github.io/lecture_i2ml/)
 <!-- badges: end -->
 
 This project has two goals:
@@ -38,7 +39,7 @@ lecture_service
 You can either manually `git clone` lecture repos or use `scripts/clone_lectures.sh` or `scripts/download_lectures.sh`.
 Since the git repositories can be fairly large due to the included PDF files, I recommend to clone with `--depth 1 --single-branch` if done manually, which only fetches the most recent commit and the default branch.
 
-If all required software is installed (see next section), you can run 
+If all required software is installed (see next section), you can run
 
 ```sh
 make
@@ -48,7 +49,7 @@ which produces a site at `_site/index.html`.
 
 `_site/` also contains `lecture_*` folders which *do not* contain the entire lecture repositories, but only the rendered slide PDF files.
 These are used for visual comparison of PDFs produced from `<slide>.tex` files and the "known good" `slide-pdf/<slide>.pdf` file.
-It also contains a `comparison` folder, which contains PDF diffs produced by [`diff-pdf`](https://github.com/vslavik/diff-pdf).  
+It also contains a `comparison` folder, which contains PDF diffs produced by [`diff-pdf`](https://github.com/vslavik/diff-pdf).
 These notably only contain the pages that actually contain some (possibly very minor) differences.
 
 For manual use in R you can also use the helper functions in `helpers.R` directly.
@@ -98,7 +99,7 @@ These are installed via `scripts/install_tools_ubuntu.sh` or `make install-tools
 Min sig = 14.1795, significant?=True. The PDFs are different. The most different pages are: page 5 (sgf. 14.1795), page 2 (sgf. 14.6277), page 4 (sgf. 15.1376), page 7 (sgf. 16.1474), page 3 (sgf. 16.6224).
 ```
 
-This needs to be installed and in your `$PATH`, such that `processx::process()` can run it.  
+This needs to be installed and in your `$PATH`, such that `processx::process()` can run it.
 The output is used to automatically check if it is necessary to run `diff-pdf`.
 
 
