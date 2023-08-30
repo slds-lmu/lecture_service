@@ -9,9 +9,13 @@ then
   exit 1
 fi
 
+# Read list of included lectures from global file, ignore commented lines
+lectures=$(grep -v "^[#/]" LECTURES_INCLUDE)
+# make it a bash array
+lectures=(${lectures})
+
 if [[ -z $1 ]]
 then
-  lectures=(lecture_i2ml lecture_sl lecture_advml lecture_optimization)
   echo "No argument provided, getting default set of lectures: ${lectures[@]}"
 else
   lectures=($1)
