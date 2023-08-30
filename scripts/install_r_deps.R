@@ -17,9 +17,10 @@ pak::pak(c(
   "future.apply",
   "dplyr",
   "tinytex",
-  "ggplot2"
+  "ggplot2",
+  "kableExtra"
 ))
 
 # GH version required due to collapse_rows() bug in CRAN version
 # Check if installed manually because GitHub lookup is a lot slower
-if (!("kableExtra" %in% installed.packages())) pak::pak("haozhu233/kableExtra")
+# if (!("kableExtra" %in% installed.packages())) pak::pak("haozhu233/kableExtra")

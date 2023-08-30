@@ -33,7 +33,7 @@ jobs:
 
       # This downloads rather than clones lectures to speed things up a little
       - name: Download lecture repos
-        run: scripts/download_lectures.sh
+        run: make download
 
       - name: Get R library dir for caching
         id: r-cache
@@ -48,22 +48,24 @@ jobs:
           restore-keys: ${{ runner.os }}-r-${{inputs.cache-version }}-
 
       - name: Install R packages
-        run: scripts/install_r_deps.R
+        run: install-r
 
       - name: Install additional LaTeX packages
         run: |
-          scripts/install_tex_deps.R
+          make install-tex
           tlmgr list --only-installed
 
       - name: Install diff-pdf and diff-pdf-visually
-        run: scripts/install_tools_ubuntu.sh
+        run: make install-tools-ubuntu
 
         # Uncomment for debugging (see https://github.com/mxschmitt/action-tmate)
       # - name: Setup tmate session
       #   uses: mxschmitt/action-tmate@v3
 
-      - name: Check slides and build HTML overview
-        run: make
+      - name: Install package, check slides and build HTML overview
+        run: |
+          make install
+          make site
 
       # Deploy using this rather than JamesIves/github-pages-deploy-action, as this supports pushing
       # orphan branches. Since we're adding a bunch of PDFs, we really want to avoid a bloated branch history

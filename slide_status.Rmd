@@ -29,19 +29,22 @@ h3 {
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 
-source(here::here("helpers.R"))
+library(lese)
+# source(here::here("helpers.R"))
 library(ggplot2)
 
 # Adjust this as needed for the large multi-lecture overview.
 # If this is run within a single lecture's workflow it's ignored.
-included_lectures <- c(
-  "lecture_i2ml",
-  "lecture_advml",
-  "lecture_sl",
-  "lecture_optimization",
-  # not yet included:
-  "lecture_iml"
-)
+# included_lectures <- c(
+#   "lecture_i2ml",
+#   "lecture_advml",
+#   "lecture_sl",
+#   "lecture_optimization",
+#   # not yet included:
+#   "lecture_iml"
+# )
+
+included_lectures <- lectures()
 
 if (!file.exists("slide_check_cache.rds")) {
   stop(paste(
@@ -59,6 +62,7 @@ lectures <- unique(all_slide_check$lecture)
 lectures <- lectures[match(included_lectures, lectures, nomatch = 0)]
 
 # Might as well subset table to only selected lectures
+# This allows having a lecture locally for testing but not include them here yet.
 all_slide_check <- all_slide_check[all_slide_check$lecture %in% included_lectures, ]
 ```
 

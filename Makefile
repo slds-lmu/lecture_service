@@ -27,6 +27,7 @@ all: site
 help:
 	@echo "clone                : Clone selected lecture repositories."
 	@echo "download             : Download selected lecture repositories rather than using git."
+	@echo "install              : Installs this package via R CMD INSTALL."
 	@echo "install-r            : Install R package dependencies."
 	@echo "install-tex          : Install LaTeX package dependencies using TinyTex."
 	@echo "install-tools-ubuntu : Attempt to install diff-pdf and diff-pdf-visually on Ubuntu-based systems."
@@ -36,7 +37,8 @@ help:
 
 # This runs latexmk internally, but it's fast if there's nothing new to do for most slides (unless you clean up)
 ${CACHETBL}: $(TSLIDES) $(PREAMBLES)
-	Rscript --quiet -e 'source("helpers.R"); check_all_slides_parallel()'
+	@# Rscript --quiet -e 'source("helpers.R"); check_all_slides_parallel()'
+	Rscript --quiet -e 'lese::check_all_slides_parallel()'
 
 site: ${CACHETBL} ${STATUSRMD}
 	Rscript --quiet -e 'rmarkdown::render("${STATUSRMD}", quiet = TRUE)'
@@ -66,6 +68,10 @@ clean-site:
 	if [ -f "${STATUSHTML}" ]   ; then rm ${STATUSHTML}     ; fi ;\
 	if [ -d "${STATUSASSETS}" ] ; then rm -r ${STATUSASSETS}; fi ;\
 	if [ -d "${SITEDIR}" ]      ; then rm -r ${SITEDIR}     ; fi
+
+install:
+	@# Rscript --quiet -e 'devtools::install()'
+	R CMD INSTALL --preclean --no-multiarch --with-keep.source .
 
 install-r:
 	scripts/install_r_deps.R

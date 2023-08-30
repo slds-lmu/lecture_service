@@ -1,0 +1,14 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^service$
+^lecture_.*$
+^scripts$
+^attic$
+^comparison$
+^logs$
+^_site$
+\.Rmd$
+\.rds$
+^LECTURES_INCLUDE$
+\./code-workspace$
+^lecheck$
