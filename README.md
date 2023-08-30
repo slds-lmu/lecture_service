@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 [![render-status-check](https://github.com/slds-lmu/lecture_service/actions/workflows/render-status-check.yaml/badge.svg)](https://github.com/slds-lmu/lecture_service/actions/workflows/render-status-check.yaml)
-[![Slide Check Overview](https://img.shields.io/badge/Slide_Check-E0911F)](https://slds-lmu.github.io/lecture_i2ml/)
+[![Slide Check Overview](https://img.shields.io/badge/Slide_Check_Overview-E0911F)](https://slds-lmu.github.io/lecture_service/)
 <!-- badges: end -->
 
 This project has two goals:

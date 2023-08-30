@@ -2,20 +2,20 @@
 title: "Lecture Slide Status Overview"
 author: "`r Sys.info()[['user']]`"
 date: '`r format(Sys.time(), format = "%F %T", tz = "Europe/Berlin", usetz = TRUE)`'
-output: 
-  html_document: 
+output:
+  html_document:
     toc: yes
     toc_depth: 5
     toc_float:
       collapsed: true
     self_contained: no
-    mathjax: no
-editor_options: 
+    mathjax: null
+editor_options:
   chunk_output_type: console
 ---
 
 ```{css, echo=FALSE}
-/* 
+/*
 Apply some custom CSS to add breathing room between sub-tables
 and we don't bother creating a separate .css file for just this bit
 */
@@ -32,12 +32,12 @@ knitr::opts_chunk$set(echo = FALSE)
 source(here::here("helpers.R"))
 library(ggplot2)
 
-# Adjust this as needed for the large multi-lecture overview. 
+# Adjust this as needed for the large multi-lecture overview.
 # If this is run within a single lecture's workflow it's ignored.
 included_lectures <- c(
-  "lecture_i2ml", 
-  "lecture_advml", 
-  "lecture_sl", 
+  "lecture_i2ml",
+  "lecture_advml",
+  "lecture_sl",
   "lecture_optimization",
   # not yet included:
   "lecture_iml"
@@ -75,7 +75,7 @@ this_repo_status() |>
   ) |>
   kableExtra::kbl(
     col.names = c("Branch", "Last Commit", "By", "Message"),
-    escape = FALSE, caption = "Status of the slide checker repo (time in UTC)"
+    escape = FALSE, caption = "Status of the lecture_service repo (time in UTC)"
   ) |>
   kableExtra::kable_styling()
 ```
@@ -117,7 +117,7 @@ check_counts <- do.call(rbind, lapply(c("compile_check", "compare_check"), \(x) 
     dplyr::mutate(
       result = dplyr::case_when(
         result ~ "Passed",
-        !result ~ "Failed", 
+        !result ~ "Failed",
         .default = "N/A"
       )
     )
@@ -144,7 +144,7 @@ check_counts |>
   ) +
   theme_minimal(base_size = 16) +
   theme(
-    legend.position = "bottom", 
+    legend.position = "bottom",
     plot.title.position = "plot",
     panel.grid.minor = element_blank(),
     panel.grid.major.y = element_blank(),
@@ -166,17 +166,17 @@ lecture_advml/slides-pdf/slides-gp-bayes-lm.pdf
                        pdf_static / "Reference PDF"
 ```
 
-Tables are organized by lecture (first level) and lecture topics corresponding to folders in `slides/<topic>` (second level), with a table per topic. 
+Tables are organized by lecture (first level) and lecture topics corresponding to folders in `slides/<topic>` (second level), with a table per topic.
 Topics ignore certain folders like `attic` and `all`.
 
 - **Slide**: The `<slide-name>` with a link to the compiled .tex file (if it compiles).
-- **Compiles?**: Whether the .tex file compiles without error using `latexmk -pdf`.  
+- **Compiles?**: Whether the .tex file compiles without error using `latexmk -pdf`.
   This can depend on the availability of specific LaTeX dependencies, but assuming they are not the issue, this usually indicates syntax issues or things like `\includegraphics` calls using relative paths that work on Overleaf but not locally.
 - **Comparison**: Checking the compiled `<slide-name>.tex` against `slides-pdf/<slide-name>.pdf` using `diff-pdf-visually`:
   - &#x274c;: The check failed surely, either due to differing page counts or because there is no reference PDF.
   - &#x2753;: The check indicates differences on at least one slide, but they may be minor and need manual checking.
   - &#x2705;: The check seems to be fine, the PDF files match.
-- **Note**: A comment on the previous column listing the specific reason for a failing check.  
+- **Note**: A comment on the previous column listing the specific reason for a failing check.
   Also enumerates the slide pages where differences are found, and links to a PDF containing a diff of the two files generated with `diff-pdf` (at a lower resolution than the originals).
 
 </details>
@@ -218,32 +218,32 @@ check_table <- all_slide_check |>
 # Useful to manually assemble tables with sub-headings
 
 for (current_lecture in lectures) {
-  
+
   tmp <-  check_table |>
     dplyr::filter(lecture == current_lecture)
-  
+
   cat(sprintf("\n## %s \n\n", current_lecture))
-  
+
   cat(sprintf("%i topics with a total of %i slides\n", length(unique(tmp$topic)), nrow(tmp)))
-  
+
   for (current_topic in sort(unique(tmp$topic))) {
     tmp <-  check_table |>
       dplyr::filter(lecture == current_lecture, topic == current_topic)
-    
+
     cat(sprintf("\n### %s\n\n", current_topic))
 
     tmp |>
       dplyr::select(
-        slide_name, 
+        slide_name,
         compile_check, compare_check, compare_check_note) |>
       kableExtra::kbl(
-        format = "html", escape = FALSE, 
+        format = "html", escape = FALSE,
         align = c("l", "c", "c", "l"),
         col.names = c("Slide", "Compiles?", "Comparison", "Note")
       ) |>
       kableExtra::kable_styling(
         full_width = TRUE,
-        fixed_thead = TRUE, 
+        fixed_thead = TRUE,
         bootstrap_options = c("hover", "condensed", "responsive")
       ) |>
       cat()
