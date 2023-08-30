@@ -48,7 +48,7 @@ jobs:
           restore-keys: ${{ runner.os }}-r-${{inputs.cache-version }}-
 
       - name: Install R packages
-        run: install-r
+        run: make install-r
 
       - name: Install additional LaTeX packages
         run: |
