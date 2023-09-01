@@ -101,7 +101,9 @@ compile_slide <- function(slide_file, pre_clean = TRUE, check_status = TRUE, ver
   tmp <- find_slide_tex(slide_file = slide_file)
 
   if (pre_clean) {
-    pc <- processx::process$new(command = "latexmk", args = c("-C", tmp$slide_name), wd = tmp$slides_dir)
+    pc <- processx::process$new(
+      command = "latexmk", args = c("-C", tmp$slide_name),
+      wd = tmp$slides_dir, echo_cmd = FALSE)
     pc$wait()
     # I don't see how this should fail, so if it does you dun goof'd
     stopifnot("latexmk -C failed for some unholy reason" = pc$get_exit_status() == 0)
@@ -114,15 +116,25 @@ compile_slide <- function(slide_file, pre_clean = TRUE, check_status = TRUE, ver
     # Unfortunately stderr does not contain useful information, as the *actual* reasons why latexmk
     # fails are often buried in the extremely verbose stdout output in my experience.
     if (!fs::dir_exists(here::here("logs"))) fs::dir_create(here::here("logs"))
-    log_stderr <- here::here("logs", paste0(tmp$topic, "-", tmp$slide_name, "-stderr.log"))
-    log_stdout <- here::here("logs", paste0(tmp$topic, "-", tmp$slide_name, "-stdout.log"))
+    # log_stderr <- here::here("logs", paste0(tmp$lecture, "-", tmp$topic, "-", tmp$slide_name, "-stderr.log"))
+    # Combine both log streams, keeping them separate is not informative in latexmk's case anyway
+    log_stderr <- "2>&1"
+    log_stdout <- here::here("logs", paste0(tmp$lecture, "-", tmp$topic, "-", tmp$slide_name, "-stdout.log"))
+
+    # Using pipes doesn't work as it causes compilation to hang for some reason
+    # https://github.com/r-lib/processx/issues/373
+    # log_stderr <- "|"
+    # log_stdout <- "|"
   }
 
-  p <- processx::process$new(command = "latexmk", args = c("-pdf", tmp$slide_name),
-                             wd = tmp$slides_dir, stderr = log_stderr, stdout = log_stdout, supervise = TRUE)
-  # out_stdout <- p$read_all_output()
-  # out_stderr <- p$read_all_error()
-  # out_status <- p$get_exit_status()
+  p <- processx::process$new(
+    command = "latexmk", args = c("-pdf", tmp$slide_name),
+    wd = tmp$slides_dir,
+    stderr = log_stderr,
+    stdout = log_stdout,
+    echo_cmd = FALSE,
+    supervise = TRUE
+  )
 
   result <- list(passed = NA, log = log_stdout)
 
@@ -165,9 +177,9 @@ compile_slide_tinytex <- function(tex, ...) {
   tex <- find_slide_tex(slide_file = tex)[["tex"]]
 
   oldwd <- setwd(dir = fs::path_dir(tex))
-  on.exit(setwd(olwd))
+  on.exit(setwd(oldwd))
 
-  res <- try(tinytex::latexmk(file = tex, emulation = TRUE, install_packages = TRUE))
+  res <- try(tinytex::latexmk(file = tex, emulation = TRUE, install_packages = TRUE, ...))
 
   file.exists(res)
 }
