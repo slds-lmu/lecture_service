@@ -66,6 +66,9 @@ collect_lectures <- function(lectures_path = here::here(),
   lectures_tbl$pdf_exists <- fs::file_exists(lectures_tbl$pdf)
   lectures_tbl$pdf_static_exists <- fs::file_exists(lectures_tbl$pdf_static)
 
+  # Rownames where absolute paths to tex files, not helpful
+  rownames(lectures_tbl) <- NULL
+
   lectures_tbl[, c("lecture", "topic", "slide_name", "tex", "slides_dir", "pdf", "pdf_exists", "pdf_static", "pdf_static_exists")]
 }
 
