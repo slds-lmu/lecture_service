@@ -30,7 +30,8 @@ manually_selected_deps <- c(
   "wrapfig",
   "subfig",
   "caption",
-  "bbm-macros"
+  "bbm-macros",
+  "transparent" # lecture_sl/slides/boosting/slides-boosting-cwb-basics2.tex
   )
 
 cli::cli_alert_info("Attemtping to install manually selected LaTeX dependencies via {.fun tinytex::tlmgr_install}")
