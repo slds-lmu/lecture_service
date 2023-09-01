@@ -2,8 +2,11 @@
 # All-in-one slide checker
 
 if (!("docopt" %in% installed.packages())) install.packages("docopt")
+if (!("lese" %in% installed.packages())) {
+  stop("Run make install first to install the service package")
+}
 
-source(here::here("helpers.R"))
+library(lese)
 
 version <- "SLDS Lecture Checker 0.1\n"
 
