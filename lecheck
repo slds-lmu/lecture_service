@@ -95,17 +95,29 @@ if (!(arguments$compile | arguments$compare)) {
 }
 
 if (arguments$list) {
+  cli::cli_inform("Found:")
+  cli::cli_ul(.close = FALSE)
+  cli::cli_li("{length(unique(lectures_tbl$lecture))} lectures")
+  cli::cli_li("{length(unique(lectures_tbl$topic))} topics")
+  cli::cli_li("{length(unique(lectures_tbl$tex))} slide sets")
+  cli::cli_end()
+
   for (current_lecture in unique(lectures_tbl$lecture)) {
     topic_idx <- which(lectures_tbl[["lecture"]] == current_lecture)
-
-    cli::cli_h1("{current_lecture}: {length(topic_idx)} slides")
     current_lecture_tbl <- lectures_tbl[topic_idx, ]
 
+    n_topics <- length(unique(current_lecture_tbl$topic))
+    n_slidesets <- nrow(current_lecture_tbl)
+
+    cli::cli_h1("{current_lecture}: {n_topics} topic{?s}, {n_slidesets} slide set{?s}")
+
+    cli::cli_ul(.close = FALSE)
     for (current_topic in unique(current_lecture_tbl$topic)) {
       nslides <- sum(current_lecture_tbl[["topic"]] == current_topic)
 
-      cli::cli_li("{current_topic}: {nslides} slides")
+      cli::cli_li("{current_topic}: {nslides} slide sets")
     }
+    cli::cli_end()
   }
 
   quit(save = "no", status = 0)
