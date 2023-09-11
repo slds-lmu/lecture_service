@@ -51,6 +51,7 @@ if (interactive()) {
   # For debugging
   # arguments <- docopt::docopt(doc, version = version, args = c("compile", "--clean", "--slide=slides-boosting-cwb-basics"))
   arguments <- docopt::docopt(doc, version = version, args = c("compile", "-t cart", "--path=../.."))
+  arguments <- docopt::docopt(doc, version = version, args = c("compile", "-t cart"))
   arguments <- tryCatch(docopt::docopt(doc, version = version, args = c("list", "compile")), error = function(e) cat(doc))
 
   print(arguments)
@@ -141,7 +142,13 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
         if (arguments$tinytex) {
           compile_slide_tinytex(current_slide_tbl[["slide_name"]])
         }
-        compile_slide(current_slide_tbl[["slide_name"]], check_status = !arguments$background, pre_clean = arguments$clean)
+        res <- compile_slide(current_slide_tbl[["slide_name"]], check_status = !arguments$background, pre_clean = arguments$clean)
+
+        if (!res$passed) {
+          cli::cli_alert("Checking log for common errors:")
+          cli::cli_ul(check_log(current_slide_tbl[["slide_name"]]))
+        }
+
       }
 
       if (arguments$compare) {
