@@ -146,7 +146,9 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
 
         if (!res$passed) {
           cli::cli_alert("Checking log for common errors:")
-          cli::cli_ul(check_log(current_slide_tbl[["slide_name"]]))
+          found_errors <- check_log(current_slide_tbl[["slide_name"]], after = 2)
+
+          cli::cli_ul('{found_errors}')
         }
 
       }
