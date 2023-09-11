@@ -12,13 +12,15 @@ pak::pak(c(
   "processx",
   "checkmate",
   "tictoc",
-  "git2r",
   "future",
   "future.apply",
-  "dplyr",
   "tinytex",
+  # For the site / Rmd
+  "git2r",
+  "dplyr",
   "ggplot2",
-  "kableExtra"
+  "kableExtra",
+  "rmarkdown"
 ))
 
 # GH version required due to collapse_rows() bug in CRAN version
