@@ -3,9 +3,8 @@
 #' @param slide_file Name of a slide file, e.g. `"slides-gp-basic-3"`, with optional file extension.
 #' @param before,after `[integer(1)]` Number of log lines to display before and after the line found via regex.
 #'   Defaults to 0 lines before, 1 line after.
-
 #'
-#' @return
+#' @return A `character` with one element per match, with individual lines separated by `\\n` within each element.
 #' @export
 #'
 #' @examples

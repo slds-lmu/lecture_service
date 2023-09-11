@@ -12,6 +12,9 @@ check_log(slide_file, before = 0, after = 1)
 \item{before, after}{\verb{[integer(1)]} Number of log lines to display before and after the line found via regex.
 Defaults to 0 lines before, 1 line after.}
 }
+\value{
+A \code{character} with one element per match, with individual lines separated by \verb{\\\\n} within each element.
+}
 \description{
 Check latexmk logs for common errors
 }
