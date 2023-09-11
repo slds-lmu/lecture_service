@@ -24,7 +24,7 @@ lecture_status_local <- function(lectures = unique(collect_lectures()[["lecture"
 
       data.frame(
         lecture = lecture,
-        branch = git2r::branches(lecture)[[1]][["name"]],
+        branch = git2r::repository_head(lecture)[["name"]],
         last_commit_time = as.POSIXct(lastcommit$author$when, tz = "UTC"),
         last_commit_by = lastcommit$author$name,
         last_commit_summary = lastcommit$summary
