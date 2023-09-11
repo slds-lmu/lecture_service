@@ -53,12 +53,12 @@ this_repo_status <- function() {
 
 
 # Required in my case to find diff-pdf-visually and its dependencies if installed via homebrew on macOS
-if (Sys.info()[["sysname"]] == "Darwin") {
-  if (file.exists("/opt/homebrew/bin/brew")) {
-    brew_dir <- "/opt/homebrew/bin/"
-  }
-  if (check_system_tool("brew", warn = FALSE)) {
-    brew_dir <- fs::path_dir(Sys.which("brew"))
-    Sys.setenv(PATH = paste(Sys.getenv("PATH"), brew_dir, sep = ":"))
-  }
-}
+# if (Sys.info()[["sysname"]] == "Darwin") {
+#   if (file.exists("/opt/homebrew/bin/brew")) {
+#     brew_dir <- "/opt/homebrew/bin/"
+#   }
+#   if (check_system_tool("brew", warn = FALSE)) {
+#     brew_dir <- fs::path_dir(Sys.which("brew"))
+#     Sys.setenv(PATH = paste(Sys.getenv("PATH"), brew_dir, sep = ":"))
+#   }
+# }
