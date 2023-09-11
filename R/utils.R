@@ -1,12 +1,12 @@
 #' @export
-check_system_tool <- function(x, strict = FALSE) {
+check_system_tool <- function(x, strict = FALSE, warn = TRUE) {
   checkmate::assert_character(x, len = 1)
   which <- Sys.which(x)
 
   if (which == "") {
     msg <- "Could not find {x} in $PATH"
     if (strict) cli::cli_abort(msg)
-    cli::cli_alert_warning(msg)
+    if (warn) cli::cli_alert_warning(msg)
     return(FALSE)
   }
 
@@ -57,7 +57,7 @@ if (Sys.info()[["sysname"]] == "Darwin") {
   if (file.exists("/opt/homebrew/bin/brew")) {
     brew_dir <- "/opt/homebrew/bin/"
   }
-  if (check_system_tool("brew")) {
+  if (check_system_tool("brew", warn = FALSE)) {
     brew_dir <- fs::path_dir(Sys.which("brew"))
     Sys.setenv(PATH = paste(Sys.getenv("PATH"), brew_dir, sep = ":"))
   }

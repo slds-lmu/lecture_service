@@ -120,11 +120,6 @@ compile_slide <- function(slide_file, pre_clean = TRUE, check_status = TRUE, ver
     # Combine both log streams, keeping them separate is not informative in latexmk's case anyway
     log_stderr <- "2>&1"
     log_stdout <- here::here("logs", paste0(tmp$lecture, "-", tmp$topic, "-", tmp$slide_name, "-stdout.log"))
-
-    # Using pipes doesn't work as it causes compilation to hang for some reason
-    # https://github.com/r-lib/processx/issues/373
-    # log_stderr <- "|"
-    # log_stdout <- "|"
   }
 
   p <- processx::process$new(

@@ -2,7 +2,7 @@
 #'
 #' @param lectures_path Path containing lecture_* directories. Defaulting to `here::here()`.
 #' @param filter_lectures `[NULL]`: Vector of lecture repo names to filter table by, e.g. `"lecture_i2ml"`.
-#'   Defaults to reading `LECTURES_INCLUDE` file via [`lectures()`].
+#'   Can be set to [`lectures()`] to respect `LECTURES_INCLUDE`.
 #' @param exclude_slide_subdirs Exclude slides/ subfolders, e.g. `c("attic", "rsrc", "all")`.
 #' @param exclude_slide_names Exclude slides matching these names exactly, e.g. `"chapter-order"` (default).
 #'
@@ -44,6 +44,8 @@ collect_lectures <- function(lectures_path = here::here(),
     data.frame(
       lecture = fs::path_file(lecture_dir),
       tex = tex_files,
+      # latexmk-generated log file for later grep'ing for common errors. Might not exist but path is known.
+      tex_log = fs::path_ext_set(tex_files, ext = "log"),
       slides_dir = slides_dir,
       topic = fs::path_file(slides_dir),
       slide_name = fs::path_file(fs::path_ext_remove(tex_files)),
@@ -69,7 +71,7 @@ collect_lectures <- function(lectures_path = here::here(),
   # Rownames where absolute paths to tex files, not helpful
   rownames(lectures_tbl) <- NULL
 
-  lectures_tbl[, c("lecture", "topic", "slide_name", "tex", "slides_dir", "pdf", "pdf_exists", "pdf_static", "pdf_static_exists")]
+  lectures_tbl[, c("lecture", "topic", "slide_name", "tex", "tex_log", "slides_dir", "pdf", "pdf_exists", "pdf_static", "pdf_static_exists")]
 }
 
 #' Read included lectures from one central file, ignoring commented out lines
