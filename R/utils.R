@@ -36,13 +36,13 @@ lecture_status_local <- function(lectures = unique(collect_lectures()[["lecture"
         last_commit_summary = lastcommit$summary
       )
     } else {
-
       # This is for downloaded (not cloned) repos, e.g. on CI. We don't know the upstream repo so we assume defaults.
       repo <- jsonlite::fromJSON(sprintf("https://api.github.com/repos/slds-lmu/%s", lecture))
       lastcommit <- jsonlite::fromJSON(sprintf("https://api.github.com/repos/slds-lmu/%s/commits/%s", lecture, repo$default_branch))
 
       data.frame(
         lecture = fs::path_file(lecture),
+        org = "slds-lmu",
         branch = repo$default_branch,
         last_commit_time = as.POSIXct(lastcommit$commit$author$date, tz = "UTC", format = "%FT%T"),
         last_commit_by = lastcommit$commit$author$name,
