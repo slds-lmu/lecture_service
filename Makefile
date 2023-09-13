@@ -27,7 +27,8 @@ all: site
 help:
 	@echo "clone                : Clone selected lecture repositories."
 	@echo "download             : Download selected lecture repositories rather than using git."
-	@echo "install              : Installs this package via R CMD INSTALL."
+	@echo "install              : Installs everything below. Assumes an Ubuntu OS!"
+	@echo "install-service      : Installs this package via R CMD INSTALL."
 	@echo "install-r            : Install R package dependencies."
 	@echo "install-tex          : Install LaTeX package dependencies using TinyTex."
 	@echo "install-tools-ubuntu : Attempt to install diff-pdf and diff-pdf-visually on Ubuntu-based systems."
