@@ -69,10 +69,6 @@ clean-site:
 	if [ -d "${STATUSASSETS}" ] ; then rm -r ${STATUSASSETS}; fi ;\
 	if [ -d "${SITEDIR}" ]      ; then rm -r ${SITEDIR}     ; fi
 
-install:
-	@# Rscript --quiet -e 'devtools::install()'
-	R CMD INSTALL --preclean --no-multiarch --with-keep.source .
-
 install-r:
 	scripts/install_r_deps.R
 
@@ -81,6 +77,12 @@ install-tex:
 
 install-tools-ubuntu:
 	scripts/install_tools_ubuntu.sh
+
+install-service:
+	@# Rscript --quiet -e 'devtools::install()'
+	R CMD INSTALL --preclean --no-multiarch --with-keep.source .
+
+install: install-r install-tex install-tools-ubuntu install-service
 
 clone:
 	scripts/clone_lectures.sh
