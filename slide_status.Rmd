@@ -30,19 +30,7 @@ h3 {
 knitr::opts_chunk$set(echo = FALSE)
 
 library(lese)
-# source(here::here("helpers.R"))
 library(ggplot2)
-
-# Adjust this as needed for the large multi-lecture overview.
-# If this is run within a single lecture's workflow it's ignored.
-# included_lectures <- c(
-#   "lecture_i2ml",
-#   "lecture_advml",
-#   "lecture_sl",
-#   "lecture_optimization",
-#   # not yet included:
-#   "lecture_iml"
-# )
 
 included_lectures <- lectures()
 
@@ -77,6 +65,7 @@ this_repo_status() |>
   dplyr::mutate(
     branch = sprintf("<a href='https://github.com/slds-lmu/lecture_service/tree/%s'>%s</a>", branch, branch)
   ) |>
+  dplyr::select(branch, last_commit_time, last_commit_by, last_commit_summary) |>
   kableExtra::kbl(
     col.names = c("Branch", "Last Commit", "By", "Message"),
     escape = FALSE, caption = "Status of the lecture_service repo (time in UTC)"
@@ -89,8 +78,8 @@ this_repo_status() |>
 lecture_status_local(lectures) |>
   dplyr::arrange(dplyr::desc(last_commit_time)) |>
   dplyr::mutate(
-    lecture_link = sprintf("<a href='https://slds-lmu.github.io/%s'>%s</a>", lecture, lecture),
-    branch = sprintf("<a href='https://github.com/slds-lmu/%s/tree/%s'>%s</a>", lecture, branch, branch)
+    lecture_link = sprintf("<a href='https://%s.github.io/%s'>%s</a>", org, lecture, lecture),
+    branch = sprintf("<a href='https://github.com/%s/%s/tree/%s'>%s</a>", org, lecture, branch, branch)
   ) |>
   dplyr::select(lecture_link, branch, last_commit_time, last_commit_by, last_commit_summary) |>
   kableExtra::kbl(
