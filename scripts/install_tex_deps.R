@@ -31,7 +31,7 @@ manually_selected_deps <- c(
   "subfig",
   "caption",
   "bbm-macros",
-  "transparent" # lecture_sl/slides/boosting/slides-boosting-cwb-basics2.tex
+  "transparent", # lecture_sl/slides/boosting/slides-boosting-cwb-basics2.tex
   "adjustbox"   # lecture_optimization/slides/01-mathematical-concepts/slides-concepts-3-convexity.tex and cheatsheets
 )
 
