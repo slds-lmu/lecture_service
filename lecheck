@@ -29,14 +29,17 @@ Example:
 Options:
   -h --help           Show this screen.
   --version           Show version.
-  -l --lecture=<lc>   Lecture repository, can be abbreviated (dropping "lecture_" prefix) [default: NULL].
-  -t --topic=<tc>     Lecture topic, e.g. "cart". Assumed to be unique across lectures.
+  -l --lecture=<lc>   Lecture repository, e.g. "lecture_i2ml".
+                      Can be abbreviated (dropping "lecture_" prefix) [default: NULL].
+  -t --topic=<tc>     Lecture topic, e.g. "cart".
+                      Assumed to be unique across lectures.
                       Takes precedence over --lecture [default: NULL].
-  -s --slide=<sn>     Slide name, e.g. slides-boosting-cwb-basics. No need for file extension etc [default: NULL].
+  -s --slide=<sn>     Slide name, e.g. slides-boosting-cwb-basics.
+                      No need for file extension etc. [default: NULL].
                       Takes precedence over --lecture and --topic.
   everything          Runs check_all_slides_parallel(), which saves results to a file rather than displaying them.
   list                List all lectures and topics found at <path>.
-  --path=<path>       Set diretcory to look for lecture_* repos in. Defaults to `here::here()` [default: here].
+  --path=<path>       Set directory to look for lecture_* repos in. Defaults to `here::here()` [default: here].
                       This is still experimental, unfortunately path flexibility is hard.
   --clean             Cleans up using `latexmk -C` before compilation.
   --tinytex           Use TinyTex latexmk emulation to auto-install missing packages.
@@ -71,16 +74,14 @@ lectures_tbl <- collect_lectures(lectures_path = arguments$path)
 # Ensures that if e.g. slide from advml is set but lecture is i2ml, slide "wins"
 if (!(arguments$slide == "NULL")) {
   lectures_tbl <- find_slide_tex(slide_file = arguments$slide)
-
 } else if (!(arguments$topic == "NULL")) {
-    lectures_tbl <- lectures_tbl[which(lectures_tbl$topic == arguments$topic), ]
-
+  lectures_tbl <- lectures_tbl[which(lectures_tbl$topic == arguments$topic), ]
 } else if (!(arguments$lecture == "NULL")) {
-      if (!grepl(pattern = "^lecture", arguments$lecture)) {
-        arguments$lecture <- paste0("lecture_", arguments$lecture)
-      }
+  if (!grepl(pattern = "^lecture", arguments$lecture)) {
+    arguments$lecture <- paste0("lecture_", arguments$lecture)
+  }
 
-      lectures_tbl <- lectures_tbl[which(lectures_tbl$lecture == arguments$lecture), ]
+  lectures_tbl <- lectures_tbl[which(lectures_tbl$lecture == arguments$lecture), ]
 }
 
 stopifnot("No matching slides found." = nrow(lectures_tbl) >= 1)
@@ -148,9 +149,8 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
           cli::cli_alert("Checking log for common errors:")
           found_errors <- check_log(current_slide_tbl[["slide_name"]], after = 2)
 
-          cli::cli_ul('{found_errors}')
+          cli::cli_ul("{found_errors}")
         }
-
       }
 
       if (arguments$compare) {
