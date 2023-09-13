@@ -18,8 +18,8 @@ then
   echo "Installing diff-pdf-visually via pip3..."
   pip3 install --user diff-pdf-visually
   echo "Done!"
-elif
-  echo "Found diff-pdf-visually at ${command -v diff-pdf-visually}"
+else
+  echo "Found diff-pdf-visually at $(command -v diff-pdf-visually)"
 fi
 
 # Installing diff-pdf
@@ -44,6 +44,6 @@ then
   sudo make install
   echo "Done!"
   cd -
-elif
-  echo "Found diff-pdf at ${command -v diff-pdf}"
+else
+  echo "Found diff-pdf at $(command -v diff-pdf)"
 fi
