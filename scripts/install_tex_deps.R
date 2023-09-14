@@ -32,7 +32,8 @@ manually_selected_deps <- c(
   "caption",
   "bbm-macros",
   "transparent", # lecture_sl/slides/boosting/slides-boosting-cwb-basics2.tex
-  "adjustbox"   # lecture_optimization/slides/01-mathematical-concepts/slides-concepts-3-convexity.tex and cheatsheets
+  "adjustbox",   # lecture_optimization/slides/01-mathematical-concepts/slides-concepts-3-convexity.tex and cheatsheets
+  "verbatimbox", # lecture_optimization/07-derivative-free/slides-optim-derivative-free-4-multistart-optimization
 )
 
 cli::cli_alert_info("Attemtping to install manually selected LaTeX dependencies via {.fun tinytex::tlmgr_install}")
