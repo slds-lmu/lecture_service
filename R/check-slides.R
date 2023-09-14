@@ -30,6 +30,7 @@ check_all_slides_parallel <- function(
     compile_status <- compile_slide(tex, pre_clean = pre_clean, verbose = FALSE)
 
     result$compile_check <- compile_status$passed
+    result$compile_note <- paste0(compile_status$note, collapse = "\n")
 
     if (compile_status$passed) {
       compare_status <- compare_slide(

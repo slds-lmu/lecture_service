@@ -131,7 +131,7 @@ compile_slide <- function(slide_file, pre_clean = TRUE, check_status = TRUE, ver
     supervise = TRUE
   )
 
-  result <- list(passed = NA, log = log_stdout)
+  result <- list(passed = NA, log = log_stdout, note = "")
 
   if (check_status) {
     p$wait()
@@ -147,6 +147,7 @@ compile_slide <- function(slide_file, pre_clean = TRUE, check_status = TRUE, ver
     } else {
       if (verbose) cli::cli_alert_danger("{tmp$slide_name} exited with status {p$get_exit_status()}")
       result$passed <- FALSE
+      result$note <- check_log(slide_file, before = 0, after = 2)
     }
   }
 

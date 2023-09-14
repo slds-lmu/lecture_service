@@ -192,11 +192,14 @@ check_table <- all_slide_check |>
   # Make links out of a few columns
   dplyr::mutate(
     comparison_path = here::here("comparison", fs::path_file(pdf)),
-    compare_check_note = ifelse(
+    check_note = ifelse(
       compare_check %in% c("\u274c", "\u2753"),
       sprintf("<a href='%s'>%s</a>", fs::path_rel(comparison_path), compare_check_note),
       compare_check_note
     ),
+    compile_note = stringr::str_replace_all(compile_note, "`", "'") |>
+      stringr::str_replace_all(r"(\\)", r"(\\\\)"),
+    check_note = ifelse(compile_check == "\u274c", compile_note, check_note),
     slide_name = ifelse(
       fs::file_exists(pdf),
       sprintf("<a href='%s'>%s</a>", fs::path_rel(pdf), slide_name),
@@ -228,7 +231,7 @@ for (current_lecture in lectures) {
     tmp |>
       dplyr::select(
         slide_name,
-        compile_check, compare_check, compare_check_note) |>
+        compile_check, compare_check, check_note) |>
       kableExtra::kbl(
         format = "html", escape = FALSE,
         align = c("l", "c", "c", "l"),
@@ -239,6 +242,10 @@ for (current_lecture in lectures) {
         fixed_thead = TRUE,
         bootstrap_options = c("hover", "condensed", "responsive")
       ) |>
+      kableExtra::column_spec(1, width = "40%") |>
+      kableExtra::column_spec(2, width = "10%") |>
+      kableExtra::column_spec(3, width = "10%") |>
+      kableExtra::column_spec(4, width = "40%") |>
       cat()
   }
 }
