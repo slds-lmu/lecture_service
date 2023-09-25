@@ -13,5 +13,5 @@ find "$(pwd)/slides" -name "rsrc" -type d | while read -r folder; do
     find . -iname "*.R"  -exec Rscript {} \;
 done
 
-# GO back to where we started
+# Go back to where we started
 cd $ROOT
