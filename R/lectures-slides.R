@@ -15,7 +15,7 @@ collect_lectures <- function(lectures_path = here::here(),
                              filter_lectures = NULL,
                              exclude_slide_subdirs = c("attic", "rsrc", "all", "figure_man", "figures_tikz",
                                                        "figure", "tex", "backup"),
-                             exclude_slide_names = "chapter-order") {
+                             exclude_slide_names = c("chapter-order", "chapter-order-nutshell")) {
 
   lecture_dirs <- fs::dir_ls(lectures_path, regexp = "/lecture_")
   # Kick out spurious "lecture_service" match just in case it happens (shouldn't matter though)
@@ -71,7 +71,8 @@ collect_lectures <- function(lectures_path = here::here(),
   # Rownames where absolute paths to tex files, not helpful
   rownames(lectures_tbl) <- NULL
 
-  lectures_tbl[, c("lecture", "topic", "slide_name", "tex", "tex_log", "slides_dir", "pdf", "pdf_exists", "pdf_static", "pdf_static_exists")]
+  lectures_tbl[, c("lecture", "topic", "slide_name", "tex", "tex_log", "slides_dir", "pdf", "pdf_exists",
+                   "pdf_static", "pdf_static_exists")]
 }
 
 #' Read included lectures from one central file, ignoring commented out lines
