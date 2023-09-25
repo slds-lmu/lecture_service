@@ -1,4 +1,3 @@
-
 #' Run `make` in a slide directory
 #'
 #' @param topic `character(1)`> Topic sub-directory to run `make` in, e.g. `slides-cart-predictions`
@@ -16,13 +15,16 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' # Default: Run make and output status
 #' make_slides("cart")
 #' make_slides("regularization", check_status = TRUE)
 #'
 #' # Runs in background, but doesn't capture exit code
 #' make_slides("cart", check_status = FALSE)
-make_slides <- function(topic, lectures_tbl = collect_lectures(), make_arg = "most", pre_clean = TRUE, check_status = TRUE, verbose = TRUE, log = FALSE) {
+#' }
+make_slides <- function(topic, lectures_tbl = collect_lectures(), make_arg = "most",
+                        pre_clean = TRUE, check_status = TRUE, verbose = TRUE, log = FALSE) {
   tmp <- lectures_tbl[lectures_tbl$topic == topic, ]
 
   make_arg <- match.arg(make_arg, c("most", "all"))
@@ -88,6 +90,7 @@ make_slides <- function(topic, lectures_tbl = collect_lectures(), make_arg = "mo
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' # The "normal" way: A .tex file name
 #' compile_slide("slides-cart-computationalaspects.tex")
 #'
@@ -96,7 +99,9 @@ make_slides <- function(topic, lectures_tbl = collect_lectures(), make_arg = "mo
 #'
 #' # Lazy way: No extension, just a name
 #' compile_slide("slides-cart-predictions")
-compile_slide <- function(slide_file, pre_clean = TRUE, check_status = TRUE, verbose = TRUE, log = FALSE) {
+#' }
+compile_slide <- function(slide_file, pre_clean = TRUE,
+                          check_status = TRUE, verbose = TRUE, log = FALSE) {
 
   tmp <- find_slide_tex(slide_file = slide_file)
 
@@ -119,7 +124,8 @@ compile_slide <- function(slide_file, pre_clean = TRUE, check_status = TRUE, ver
     # log_stderr <- here::here("logs", paste0(tmp$lecture, "-", tmp$topic, "-", tmp$slide_name, "-stderr.log"))
     # Combine both log streams, keeping them separate is not informative in latexmk's case anyway
     log_stderr <- "2>&1"
-    log_stdout <- here::here("logs", paste0(tmp$lecture, "-", tmp$topic, "-", tmp$slide_name, "-stdout.log"))
+    log_stdout <- here::here("logs", paste0(tmp$lecture, "-", tmp$topic, "-",
+                                            tmp$slide_name, "-stdout.log"))
   }
 
   p <- processx::process$new(
@@ -167,7 +173,9 @@ compile_slide <- function(slide_file, pre_clean = TRUE, check_status = TRUE, ver
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' compile_slide_tinytex("lecture_advml/slides/gaussian-processes/slides-gp-basic-3.tex")
+#' }
 compile_slide_tinytex <- function(tex, ...) {
 
   tex <- find_slide_tex(slide_file = tex)[["tex"]]

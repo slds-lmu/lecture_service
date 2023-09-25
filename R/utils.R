@@ -1,3 +1,13 @@
+#' Simple check for availibility of systemtool
+#'
+#' Can be used to verify if a tool (e.g. `convert`) is in `$PATH` and findable from within R.
+#' Sometimes a tool is in `$PATH` in regular shell sessions but not within R.
+#'
+#' @param x Name of a binary, e.g. `convert` for ImageMagick or `brew` for Homebrew on macOS.
+#' @param strict `[FALSE]` Whether to `stop()` if the tool is not found or return `FALSE` with a warning.
+#' @param warn `[TRUE]` Whether to show a warning if the tool is no found. Only has an effect if `!strict`.
+#'
+#' @return `TRUE` if the tool is find, `FALSE` otherwise, and an error if `strict == TRUE` and the tool is not found.
 #' @export
 check_system_tool <- function(x, strict = FALSE, warn = TRUE) {
   checkmate::assert_character(x, len = 1)
@@ -13,7 +23,17 @@ check_system_tool <- function(x, strict = FALSE, warn = TRUE) {
   TRUE
 }
 
+#' Collect the git status of lectures
+#'
+#' @param lectures Character vector of lecture repo names, defaults to `unique(collect_lectures()[["lecture"]])`.
+#'    E.g. `c("lecture_advml", "lecture_i2ml")`.
+#'
+#' @return A `data.frame` suitable for display via `kable` in RMarkdown.
 #' @export
+#' @examples
+#' \dontrun{
+#' lecture_status_local()
+#' }
 lecture_status_local <- function(lectures = unique(collect_lectures()[["lecture"]])) {
   do.call(rbind, lapply(lectures, \(lecture) {
 
@@ -24,7 +44,7 @@ lecture_status_local <- function(lectures = unique(collect_lectures()[["lecture"
       # Get name of GitHub org, take remot url, select for github (rather than overleaf), and extract
       org <- git2r::remote_url(lecture) |>
         stringr::str_subset("github") |>
-        stringr::str_extract(":(.*)/", group = 1)
+        stringr::str_extract("(https://github.com/|git@github.com:)(.*)/", group = 2)
 
       data.frame(
         # Using path_file like `basename`, to enable using other paths
@@ -53,9 +73,15 @@ lecture_status_local <- function(lectures = unique(collect_lectures()[["lecture"
   }))
 }
 
+#' lecture_status_local() but for this service repo
+#'
+#' @return A `data.frame` similar to `lecture_status_local()`.
 #' @export
 this_repo_status <- function() {
-  lecture_status_local(".")[, -1]
+  ret <- lecture_status_local(".")
+  ret[["lecture"]] <- "lecture_service"
+
+  ret
 }
 
 

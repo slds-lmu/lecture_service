@@ -64,6 +64,7 @@ That way you can safely re-run this function repeatedly without worrying about c
 Uses \code{diff-pdf-visually} and \code{diff-pdf} under the hood, you may need to adjust your $PATH.
 }
 \examples{
+\dontrun{
 # The "normal" way: A .tex file name
 compare_slide("slides-cart-computationalaspects.tex")
 
@@ -77,4 +78,5 @@ compare_slide("slides-cart-predictions")
 compare_slide("slides-forests-proximities.pdf")
 
 compare_slide("slides-boosting-cwb-basics")
+}
 }

@@ -10,7 +10,9 @@
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' collect_lectures()
+#' }
 collect_lectures <- function(lectures_path = here::here(),
                              filter_lectures = NULL,
                              exclude_slide_subdirs = c("attic", "rsrc", "all", "figure_man", "figures_tikz",
@@ -81,8 +83,9 @@ collect_lectures <- function(lectures_path = here::here(),
 #' @export
 #' @return A character vector, e.g. `c("lecture_i2ml", "lecture_advml")`, depending on `./LECTURES_INCLUDE`
 #' @examples
+#' \dontrun{
 #' lectures()
-#'
+#' }
 lectures <- function() {
   lectures <- Sys.getenv("LECTURES_INCLUDE", unset = NA)
 
@@ -94,7 +97,26 @@ lectures <- function() {
   lectures
 }
 
+#' Find a slide set across all lectures
+#'
+#' Lectures need to be stored locally in the current directory with regular names like  `lecture_i2ml`.
+#' It is strongly assumed that slide names such as `slides-cart-predictions.tex` are unique across all lectures.
+#'
+#' @param lectures_tbl Must contain `tex` column. Defaults to `collect_lectures()`.
+#' @param slide_file  Name of a (single) slide, with or without `.tex` extension. See examples.
+#'
 #' @export
+#' @examples
+#' \dontrun{
+#' # The "normal" way: A .tex file name
+#' find_slide_tex("slides-cart-computationalaspects.tex")
+#'
+#' # Also acceptable: A full path (absolute or relative), convenient for scripts
+#' find_slide_tex("lecture_advml/slides/gaussian-processes/slides-gp-bayes-lm.tex")
+#'
+#' # Lazy way: No extension, just a name
+#' find_slide_tex("slides-cart-predictions")
+#' }
 find_slide_tex <- function(lectures_tbl = collect_lectures(), slide_file) {
   # Allow both "slides-cart-predictions.tex" and lazy "slides-cart-predictions"
   # and "slides-cart-predictions.pdf" because why not.

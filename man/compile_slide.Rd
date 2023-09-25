@@ -34,6 +34,7 @@ Invisibly: A list with entries
 Compile a single .tex file
 }
 \examples{
+\dontrun{
 # The "normal" way: A .tex file name
 compile_slide("slides-cart-computationalaspects.tex")
 
@@ -42,4 +43,5 @@ compile_slide("lecture_advml/slides/gaussian-processes/slides-gp-bayes-lm.tex")
 
 # Lazy way: No extension, just a name
 compile_slide("slides-cart-predictions")
+}
 }

@@ -13,6 +13,7 @@ A character vector, e.g. \code{c("lecture_i2ml", "lecture_advml")}, depending on
 Can be overridden with environment variable \verb{$LECTURES_INCLUDE}.
 }
 \examples{
+\dontrun{
 lectures()
-
+}
 }

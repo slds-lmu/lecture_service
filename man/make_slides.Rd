@@ -41,10 +41,12 @@ Invisibly: A list with entries
 Run \code{make} in a slide directory
 }
 \examples{
+\dontrun{
 # Default: Run make and output status
 make_slides("cart")
 make_slides("regularization", check_status = TRUE)
 
 # Runs in background, but doesn't capture exit code
 make_slides("cart", check_status = FALSE)
+}
 }

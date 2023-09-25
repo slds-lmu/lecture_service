@@ -20,5 +20,7 @@ This is just a thin wrapper run the command with
 a changed working directory, as relative paths used in \code{preamble.tex} etc. require.
 }
 \examples{
+\dontrun{
 compile_slide_tinytex("lecture_advml/slides/gaussian-processes/slides-gp-basic-3.tex")
+}
 }

@@ -29,5 +29,7 @@ A data.frame with one row per slide .tex file.
 Assemble table of lecture slides
 }
 \examples{
+\dontrun{
 collect_lectures()
+}
 }

@@ -33,6 +33,7 @@
 #' @note Uses `diff-pdf-visually` and `diff-pdf` under the hood, you may need to adjust your $PATH.
 #'
 #' @examples
+#' \dontrun{
 #' # The "normal" way: A .tex file name
 #' compare_slide("slides-cart-computationalaspects.tex")
 #'
@@ -46,6 +47,7 @@
 #' compare_slide("slides-forests-proximities.pdf")
 #'
 #' compare_slide("slides-boosting-cwb-basics")
+#' }
 compare_slide <- function(slide_file, verbose = TRUE, create_comparison_pdf = FALSE,
                           thresh_psnr = 40, dpi_check = 50, dpi_out = 100,
                           pixel_tol = 20, view = FALSE, overwrite = FALSE) {

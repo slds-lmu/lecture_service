@@ -12,3 +12,11 @@
 ^LECTURES_INCLUDE$
 \./code-workspace$
 ^lecheck$
+^Makefile$
+^Dockerfile$
+^\.dockerignore$
+^\.editorconfig$
+^\.github$
+^slide_status_files$
+^slide_status\.html$
+^LICENSE\.md$
