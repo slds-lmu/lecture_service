@@ -2,22 +2,21 @@
 #'
 #' @param lectures_tbl Must contain `tex` column. Defaults to `collect_lectures()`.
 #' @param pre_clean `[FALSE]`: Passed to `[compile_slide()]`.
+#' @param parallel `[TRUE]` Whether to parallelize.
+#'   Uses `future.apply::future_lapply` with `future::plan("multisession")`.
 #' @param create_comparison_pdf,thresh_psnr,dpi_check,dpi_out,pixel_tol,overwrite Passed to `[compare_slide()]`.
 #' @return Invisibly: An expanded `lectures_tbl` with check results
 #' Also saves output at `slide_check_cache.rds`.
 #'
 #' @export
-check_all_slides_parallel <- function(
+check_all_slides <- function(
     lectures_tbl = collect_lectures(), pre_clean = FALSE,
-    create_comparison_pdf = TRUE,
+    create_comparison_pdf = TRUE, parallel = TRUE,
     thresh_psnr = 40, dpi_check = 50, dpi_out = 100,
     pixel_tol = 20, overwrite = FALSE
 ) {
 
-  future::plan("multisession")
-
-  tictoc::tic()
-  check_out <- future.apply::future_lapply(lectures_tbl$tex, \(tex) {
+  check_tex <- function(tex) {
 
     result <- data.frame(
       tex = tex,
@@ -51,7 +50,16 @@ check_all_slides_parallel <- function(
       }
     }
     result
-  }, future.seed = NULL) # Silence future warning about RNG stuff not relevant in this context
+  }
+
+  tictoc::tic()
+  if (parallel) {
+    future::plan("multisession")
+    check_out <- future.apply::future_lapply(lectures_tbl$tex, check_tex, future.seed = NULL)
+    # future.seed silences future warning about RNG stuff not relevant in this context
+  } else {
+    check_out <- lapply(lectures_tbl$tex, check_tex)
+  }
 
   check_out <- do.call(rbind, check_out)
 

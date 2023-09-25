@@ -37,7 +37,7 @@ Options:
   -s --slide=<sn>     Slide name, e.g. slides-boosting-cwb-basics.
                       No need for file extension etc. [default: NULL].
                       Takes precedence over --lecture and --topic.
-  everything          Runs check_all_slides_parallel(), which saves results to a file rather than displaying them.
+  everything          Runs check_all_slides(), which saves results to a file rather than displaying them.
   list                List all lectures and topics found at <path>.
   --path=<path>       Set directory to look for lecture_* repos in. Defaults to `here::here()` [default: here].
                       This is still experimental, unfortunately path flexibility is hard.
@@ -87,7 +87,7 @@ if (!(arguments$slide == "NULL")) {
 stopifnot("No matching slides found." = nrow(lectures_tbl) >= 1)
 
 if (arguments$everything) {
-  check_all_slides_parallel(lectures_tbl, pre_clean = arguments$clean)
+  check_all_slides(lectures_tbl, pre_clean = arguments$clean)
   quit(save = "no", status = 0)
 }
 
