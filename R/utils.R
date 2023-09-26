@@ -1,4 +1,4 @@
-#' Simple check for availibility of systemtool
+#' Simple check for availability of system tools
 #'
 #' Can be used to verify if a tool (e.g. `convert`) is in `$PATH` and findable from within R.
 #' Sometimes a tool is in `$PATH` in regular shell sessions but not within R.
@@ -25,7 +25,7 @@ check_system_tool <- function(x, strict = FALSE, warn = TRUE) {
 
 #' Collect the git status of lectures
 #'
-#' @param lectures Character vector of lecture repo names, defaults to `unique(collect_lectures()[["lecture"]])`.
+#' @param lectures Character vector of lecture repo names, defaults to `lectures()`.
 #'    E.g. `c("lecture_advml", "lecture_i2ml")`.
 #'
 #' @return A `data.frame` suitable for display via `kable` in RMarkdown.
@@ -34,7 +34,7 @@ check_system_tool <- function(x, strict = FALSE, warn = TRUE) {
 #' \dontrun{
 #' lecture_status_local()
 #' }
-lecture_status_local <- function(lectures = unique(collect_lectures()[["lecture"]])) {
+lecture_status_local <- function(lectures = lectures()) {
   do.call(rbind, lapply(lectures, \(lecture) {
 
     if (fs::dir_exists(fs::path(lecture, ".git"))) {
@@ -44,6 +44,7 @@ lecture_status_local <- function(lectures = unique(collect_lectures()[["lecture"
       # Get name of GitHub org, take remot url, select for github (rather than overleaf), and extract
       org <- git2r::remote_url(lecture) |>
         stringr::str_subset("github") |>
+        # SSH vs HTTP clone URLs differ but basic idea is the same
         stringr::str_extract("(https://github.com/|git@github.com:)(.*)/", group = 2)
 
       data.frame(
@@ -56,7 +57,8 @@ lecture_status_local <- function(lectures = unique(collect_lectures()[["lecture"
         last_commit_summary = lastcommit$summary
       )
     } else {
-      # This is for downloaded (not cloned) repos, e.g. on CI. We don't know the upstream repo so we assume defaults.
+      # This is for downloaded (not cloned) repos, e.g. on CI.
+      # We don't know the upstream repo so we assume defaults.
       repo <- jsonlite::fromJSON(sprintf("https://api.github.com/repos/slds-lmu/%s", lecture))
       lastcommit <- jsonlite::fromJSON(sprintf("https://api.github.com/repos/slds-lmu/%s/commits/%s", lecture, repo$default_branch))
 

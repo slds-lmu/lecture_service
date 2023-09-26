@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{check_system_tool}
 \alias{check_system_tool}
-\title{Simple check for availibility of systemtool}
+\title{Simple check for availability of system tools}
 \usage{
 check_system_tool(x, strict = FALSE, warn = TRUE)
 }

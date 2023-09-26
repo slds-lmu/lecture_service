@@ -23,3 +23,4 @@ do
   echo "${lecture} / ${BRANCH}:"
   git -C "${lecture}" status --short
 done
+

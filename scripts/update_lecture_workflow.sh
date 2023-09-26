@@ -44,6 +44,6 @@ do
   # -r for recursive
   rsync -r "service/.github/" "${lecture}/.github/"
   git -C "${lecture}" add .github
-  git -C "${lecture}" commit -m "Update workflow"
+  git -C "${lecture}" commit -m "Update workflows"
   git -C "${lecture}" push
 done
