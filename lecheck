@@ -10,10 +10,10 @@ library(lese)
 
 version <- "SLDS Lecture Checker 0.1\n"
 
-'SLDS Lecture Checker.
+doc <- 'SLDS Lecture Checker.
 
 Usage:
-  lecheck [compile] [compare] [--lecture=<lc>] [--topic=<tc>] [--slide=<sn>] [--clean] [--tinytex] [--background] [--path=<path>]
+  lecheck [compile] [compare] [--lecture=<lc>] [--topic=<tc>] [--slide=<sn>] [--clean] [--pdf-copy] [--tinytex] [--background] [--path=<path>]
   lecheck everything [--lecture=<lc>] [--path=<path>]
   lecheck list [--lecture=<lc>] [--topic=<tc>] [--path=<path>]
   lecheck (-h | --help)
@@ -37,6 +37,7 @@ Options:
   -s --slide=<sn>     Slide name, e.g. slides-boosting-cwb-basics.
                       No need for file extension etc. [default: NULL].
                       Takes precedence over --lecture and --topic.
+  --pdf-copy          Copy rendered slides to slides-pdf/.
   everything          Runs check_all_slides(), which saves results to a file rather than displaying them.
   list                List all lectures and topics found at <path>.
   --path=<path>       Set directory to look for lecture_* repos in. Defaults to `here::here()` [default: here].
@@ -44,7 +45,7 @@ Options:
   --clean             Cleans up using `latexmk -C` before compilation.
   --tinytex           Use TinyTex latexmk emulation to auto-install missing packages.
   --background        Do not wait for compilation for status checks. Not applicable if --tinytex is used.
-' -> doc
+'
 
 # Wrap in tryCatch to make --help default behavior when there's an argument error
 arguments <- tryCatch(docopt::docopt(doc, version = version), error = function(e) cat(doc))
@@ -54,7 +55,7 @@ if (interactive()) {
   # For debugging
   # arguments <- docopt::docopt(doc, version = version, args = c("compile", "--clean", "--slide=slides-boosting-cwb-basics"))
   arguments <- docopt::docopt(doc, version = version, args = c("compile", "-t cart", "--path=../.."))
-  arguments <- docopt::docopt(doc, version = version, args = c("compile", "-t cart"))
+  arguments <- docopt::docopt(doc, version = version, args = c("compile", "-t cart", "--pdf-copy"))
   arguments <- tryCatch(docopt::docopt(doc, version = version, args = c("list", "compile")), error = function(e) cat(doc))
 
   print(arguments)
@@ -143,7 +144,11 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
         if (arguments$tinytex) {
           compile_slide_tinytex(current_slide_tbl[["slide_name"]])
         }
-        res <- compile_slide(current_slide_tbl[["slide_name"]], check_status = !arguments$background, pre_clean = arguments$clean)
+        res <- compile_slide(
+          current_slide_tbl[["slide_name"]],
+          check_status = !arguments$background,
+          pre_clean = arguments$clean
+        )
 
         if (!res$passed) {
           cli::cli_alert("Checking log for common errors:")
@@ -151,6 +156,19 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
 
           cli::cli_ul("{found_errors}")
         }
+      }
+
+      if (arguments$pdf_copy) {
+        if (fs::file_exists(current_slide_tbl[["pdf"]])) {
+          fs::file_copy(
+            current_slide_tbl[["pdf"]],
+            current_slide_tbl[["pdf_static"]],
+            overwrite = TRUE
+          )
+        } else {
+          cli::cli_alert_warning("Can't copy {fs::path_file(current_slide_tbl[[\"pdf\"]])} to slides-pdf/: Does not exist.")
+        }
+
       }
 
       if (arguments$compare) {
