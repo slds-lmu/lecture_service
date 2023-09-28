@@ -35,7 +35,23 @@ manually_selected_deps <- c(
   "adjustbox",   # optim and iml, lecture_optimization/slides/01-mathematical-concepts/slides-concepts-3-convexity.tex and cheatsheets
   "verbatimbox", # optim, 07-derivative-free/slides-optim-derivative-free-4-multistart-optimization
   "tcolorbox",   # iml, 01_intro/slides05-intro-interaction.tex
-  "siunitx"      # iml, 04_shapley/slides04-shap.tex, but used in latex-math anyway
+  "siunitx",      # iml, 04_shapley/slides04-shap.tex, but used in latex-math anyway
+  "pdfpages",   # iml, but why? 
+  # All of the following were iml-specific dependencies
+  "xifthen",
+  "footmisc",
+  "tikzmark",
+  "ifmtarg",
+  "textcase",
+  "pdflscape",
+  "makecell",
+  "environ", 
+  "trimspaces",
+  "tikzfill",
+  "pdfcol",
+  "listings",
+  "listingsutf8", 
+  NULL
 )
 
 cli::cli_alert_info("Attempting to install manually selected LaTeX dependencies via {.fun tinytex::tlmgr_install}")
