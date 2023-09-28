@@ -37,7 +37,9 @@ manually_selected_deps <- c(
   "tcolorbox",   # iml, 01_intro/slides05-intro-interaction.tex
   "siunitx",      # iml, 04_shapley/slides04-shap.tex, but used in latex-math anyway
   "pdfpages",   # iml, but why? 
-  # All of the following were iml-specific dependencies
+  # All of the following were iml-specific dependencies I have not investigated specifically
+  # Ideally we'd be able to identify which dependency is included for which purposes/feature
+  # to avoid having to install a bag of mystery packages just to keep the latex demon happy.
   "xifthen",
   "footmisc",
   "tikzmark",
@@ -51,7 +53,7 @@ manually_selected_deps <- c(
   "pdfcol",
   "listings",
   "listingsutf8", 
-  NULL
+  "readarray"
 )
 
 cli::cli_alert_info("Attempting to install manually selected LaTeX dependencies via {.fun tinytex::tlmgr_install}")
