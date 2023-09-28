@@ -32,11 +32,13 @@ manually_selected_deps <- c(
   "caption",
   "bbm-macros",
   "transparent", # lecture_sl/slides/boosting/slides-boosting-cwb-basics2.tex
-  "adjustbox",   # lecture_optimization/slides/01-mathematical-concepts/slides-concepts-3-convexity.tex and cheatsheets
-  "verbatimbox"  # lecture_optimization/07-derivative-free/slides-optim-derivative-free-4-multistart-optimization
+  "adjustbox",   # optim and iml, lecture_optimization/slides/01-mathematical-concepts/slides-concepts-3-convexity.tex and cheatsheets
+  "verbatimbox", # optim, 07-derivative-free/slides-optim-derivative-free-4-multistart-optimization
+  "tcolorbox",   # iml, 01_intro/slides05-intro-interaction.tex
+  "siunitx"      # iml, 04_shapley/slides04-shap.tex, but used in latex-math anyway
 )
 
-cli::cli_alert_info("Attemtping to install manually selected LaTeX dependencies via {.fun tinytex::tlmgr_install}")
+cli::cli_alert_info("Attempting to install manually selected LaTeX dependencies via {.fun tinytex::tlmgr_install}")
 tinytex::tlmgr_install(manually_selected_deps)
 
 
