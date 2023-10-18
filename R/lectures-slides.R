@@ -13,16 +13,18 @@
 #' \dontrun{
 #' collect_lectures()
 #' }
-collect_lectures <- function(lectures_path = here::here(),
-                             filter_lectures = NULL,
-                             exclude_slide_subdirs = c("attic", "rsrc", "all", "figure_man", "figures_tikz",
-                                                       "figure", "tex", "backup"),
-                             exclude_slide_names = c("chapter-order", "chapter-order-nutshell")) {
+collect_lectures <- function(
+    lectures_path = here::here(),
+    filter_lectures = NULL,
+    exclude_slide_subdirs = c("attic", "rsrc", "all", "figure_man", "figures_tikz",
+                              "figure", "tex", "backup"),
+    exclude_slide_names = c("chapter-order", "chapter-order-nutshell")
+) {
 
   # Take ls with absolute file paths, directories only, and those matching lecture_asdf format
   # Must not use just "lecture_*" because regex or glob will match "lecture_service" as part of
   # absolute file path
-  lecture_dirs <- fs::dir_ls(lectures_path, regexp = "/lecture_[a-z]*$", type = "directory")
+  lecture_dirs <- fs::dir_ls(lectures_path, regexp = "/lecture_[a-z0-9]*$", type = "directory")
   # Kick out spurious "lecture_service" match just in case it happens (shouldn't matter though)
   lecture_dirs <- lecture_dirs[which(!fs::path_file(lecture_dirs) == "lecture_service")]
 
