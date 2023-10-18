@@ -4,10 +4,13 @@
 \alias{compile_slide_tinytex}
 \title{Compile a .tex file using TinyTex's latexmk emulation}
 \usage{
-compile_slide_tinytex(tex, ...)
+compile_slide_tinytex(tex, margin, ...)
 }
 \arguments{
 \item{tex}{\code{character(1)} Full path to a \code{.tex} file to render.}
+
+\item{margin}{\verb{[TRUE]} By default renders slides with margin. Otherwise a 4:3 slide is
+rendered.}
 
 \item{...}{Arguments passed to \code{\link[tinytex:latexmk]{tinytex::latexmk()}}.}
 }

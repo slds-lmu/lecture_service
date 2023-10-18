@@ -8,12 +8,12 @@ if (!("lese" %in% installed.packages())) {
 
 library(lese)
 
-version <- "SLDS Lecture Checker 0.1\n"
+version <- "SLDS Lecture Checker 0.2\n"
 
 doc <- 'SLDS Lecture Checker.
 
 Usage:
-  lecheck [compile] [compare] [--lecture=<lc>] [--topic=<tc>] [--slide=<sn>] [--clean] [--pdf-copy] [--tinytex] [--background] [--path=<path>]
+  lecheck [compile] [compare] [--lecture=<lc>] [--topic=<tc>] [--slide=<sn>] [--clean] [--no-margin] [--pdf-copy] [--tinytex] [--background] [--path=<path>]
   lecheck everything [--lecture=<lc>] [--path=<path>]
   lecheck list [--lecture=<lc>] [--topic=<tc>] [--path=<path>]
   lecheck (-h | --help)
@@ -37,6 +37,7 @@ Options:
   -s --slide=<sn>     Slide name, e.g. slides-boosting-cwb-basics.
                       No need for file extension etc. [default: NULL].
                       Takes precedence over --lecture and --topic.
+  --no-margin         If set, compiles slides without speaker margin, i.e. 4:3 layout.
   --pdf-copy          Copy rendered slides to slides-pdf/.
   everything          Runs check_all_slides(), which saves results to a file rather than displaying them.
   list                List all lectures and topics found at <path>.
@@ -54,7 +55,7 @@ if (is.null(arguments)) quit(save = "no", status = 1)
 if (interactive()) {
   # For debugging
   # arguments <- docopt::docopt(doc, version = version, args = c("compile", "--clean", "--slide=slides-boosting-cwb-basics"))
-  arguments <- docopt::docopt(doc, version = version, args = c("compile", "-t cart", "--path=../.."))
+  arguments <- docopt::docopt(doc, version = version, args = c("compile", "-t cart", "--no-margin"))
   arguments <- docopt::docopt(doc, version = version, args = c("compile", "-t cart", "--pdf-copy"))
   arguments <- tryCatch(docopt::docopt(doc, version = version, args = c("list", "compile")), error = function(e) cat(doc))
 
@@ -142,10 +143,11 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
 
       if (arguments$compile) {
         if (arguments$tinytex) {
-          compile_slide_tinytex(current_slide_tbl[["slide_name"]])
+          compile_slide_tinytex(current_slide_tbl[["slide_name"]], margin = !arguments$no_margin)
         }
         res <- compile_slide(
           current_slide_tbl[["slide_name"]],
+          margin = !arguments$no_margin,
           check_status = !arguments$background,
           pre_clean = arguments$clean
         )

@@ -27,7 +27,7 @@ make_slides <- function(topic, lectures_tbl = collect_lectures(), make_arg = "mo
                         pre_clean = TRUE, check_status = TRUE, verbose = TRUE, log = FALSE) {
   tmp <- lectures_tbl[lectures_tbl$topic == topic, ]
 
-  make_arg <- match.arg(make_arg, c("most", "all"))
+  make_arg <- match.arg(make_arg, c("most", "all", "most-normargin", "all-nomargin"))
 
   stopifnot("No matching topic" = nrow(tmp) != 0)
   stopifnot("Multiple lectures matching topic" = length(unique(tmp$lecture)) == 1)
@@ -80,6 +80,8 @@ make_slides <- function(topic, lectures_tbl = collect_lectures(), make_arg = "mo
 #'
 #' @param slide_file `character(1)`: A single slide .tex file (see examples).
 #' @param pre_clean `[TRUE]`: Run `make clean` beforehand, ensuring a clean slate.
+#' @param margin `[TRUE]` By default renders slides with margin. Otherwise a 4:3 slide is
+#'   rendered.
 #' @param check_status `[TRUE]`: Wait for `make` to finish and return the exit status.
 #' @param verbose `[TRUE]`: Print additional output to the console.
 #' @param log `[FALSE]`: Write stdout and stderr logs to `./logs/`.
@@ -100,7 +102,7 @@ make_slides <- function(topic, lectures_tbl = collect_lectures(), make_arg = "mo
 #' # Lazy way: No extension, just a name
 #' compile_slide("slides-cart-predictions")
 #' }
-compile_slide <- function(slide_file, pre_clean = TRUE,
+compile_slide <- function(slide_file, pre_clean = TRUE, margin = TRUE,
                           check_status = TRUE, verbose = TRUE, log = FALSE) {
 
   tmp <- find_slide_tex(slide_file = slide_file)
@@ -127,6 +129,8 @@ compile_slide <- function(slide_file, pre_clean = TRUE,
     log_stdout <- here::here("logs", paste0(tmp$lecture, "-", tmp$topic, "-",
                                             tmp$slide_name, "-stdout.log"))
   }
+
+  set_margin_token_file(tmp$slides_dir, margin = margin)
 
   p <- processx::process$new(
     command = "latexmk", args = c("-pdf", tmp$slide_name),
@@ -167,6 +171,7 @@ compile_slide <- function(slide_file, pre_clean = TRUE,
 #' a changed working directory, as relative paths used in `preamble.tex` etc. require.
 #'
 #' @param tex `character(1)` Full path to a `.tex` file to render.
+#' @inheritParams compile_slide
 #' @param ... Arguments passed to [`tinytex::latexmk()`].
 #'
 #' @return `TRUE` if an output PDF file exists, `FALSE` otherwise.
@@ -176,12 +181,15 @@ compile_slide <- function(slide_file, pre_clean = TRUE,
 #' \dontrun{
 #' compile_slide_tinytex("lecture_advml/slides/gaussian-processes/slides-gp-basic-3.tex")
 #' }
-compile_slide_tinytex <- function(tex, ...) {
+compile_slide_tinytex <- function(tex, margin, ...) {
 
   tex <- find_slide_tex(slide_file = tex)[["tex"]]
 
-  oldwd <- setwd(dir = fs::path_dir(tex))
+  newwd <- fs::path_dir(tex)
+  oldwd <- setwd(dir = newwd)
   on.exit(setwd(oldwd))
+
+  set_margin_token_file(newwd, margin = margin)
 
   res <- try(tinytex::latexmk(file = tex, emulation = TRUE, install_packages = TRUE, ...))
 

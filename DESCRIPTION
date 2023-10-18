@@ -1,6 +1,6 @@
 Package: lese
 Title: SLDS Lecture Service Companion
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: 
     person("Lukas", "Burk", , "github@quantenbrot.de", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-7528-3795"))

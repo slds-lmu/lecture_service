@@ -19,7 +19,10 @@ collect_lectures <- function(lectures_path = here::here(),
                                                        "figure", "tex", "backup"),
                              exclude_slide_names = c("chapter-order", "chapter-order-nutshell")) {
 
-  lecture_dirs <- fs::dir_ls(lectures_path, regexp = "/lecture_")
+  # Take ls with absolute file paths, directories only, and those matching lecture_asdf format
+  # Must not use just "lecture_*" because regex or glob will match "lecture_service" as part of
+  # absolute file path
+  lecture_dirs <- fs::dir_ls(lectures_path, regexp = "/lecture_[a-z]*$", type = "directory")
   # Kick out spurious "lecture_service" match just in case it happens (shouldn't matter though)
   lecture_dirs <- lecture_dirs[which(!fs::path_file(lecture_dirs) == "lecture_service")]
 

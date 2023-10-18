@@ -7,6 +7,7 @@
 compile_slide(
   slide_file,
   pre_clean = TRUE,
+  margin = TRUE,
   check_status = TRUE,
   verbose = TRUE,
   log = FALSE
@@ -16,6 +17,9 @@ compile_slide(
 \item{slide_file}{\code{character(1)}: A single slide .tex file (see examples).}
 
 \item{pre_clean}{\verb{[TRUE]}: Run \verb{make clean} beforehand, ensuring a clean slate.}
+
+\item{margin}{\verb{[TRUE]} By default renders slides with margin. Otherwise a 4:3 slide is
+rendered.}
 
 \item{check_status}{\verb{[TRUE]}: Wait for \code{make} to finish and return the exit status.}
 
