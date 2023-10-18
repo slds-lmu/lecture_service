@@ -80,8 +80,11 @@ install-tools-ubuntu:
 	scripts/install_tools_ubuntu.sh
 
 install-service:
-	@# Rscript --quiet -e 'devtools::install()'
-	R CMD INSTALL --preclean --no-multiarch --with-keep.source .
+	@# R CMD INSTALL --preclean --no-multiarch --with-keep.source .
+	# Install local dev dependencies (DESCRIPTION Imports and Suggests)
+	Rscript -e 'pak::local_install_dev_deps()'
+	# Install the service package
+	Rscript -e 'pak::local_install()'
 
 install: install-r install-tex install-tools-ubuntu install-service
 
