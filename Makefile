@@ -2,10 +2,10 @@
 
 # Find all the slide tex files in the lecture repos, assuming strict naming convention
 # Any changes in those should then be enough for the next make target.
-TSLIDES=$(shell find lecture_*/slides/* -maxdepth 1 -iname "slides-*.tex")
+TSLIDES=$(shell find lecture_*/slides/* -maxdepth 1 -iname "*.tex")
 
 # We search again rather than do path substitution because not all pdf files might exist
-TPDFS=$(shell find lecture_*/slides/* -maxdepth 1 -iname "slides-*.pdf")
+TPDFS=$(shell find lecture_*/slides/* -maxdepth 1 -iname "*.pdf")
 
 # Keep track of preamble dependencies so we can recompile slides if any of them change
 # This unfortunately means that e.g. lecture_i2ml/ slides will recompile if preamble changes in lecture_sl/
