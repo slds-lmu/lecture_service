@@ -7,16 +7,27 @@ if ! [ -x "$(command -v diff-pdf-visually)" ]
 then
   echo "Attempting to install diff-pdf-visually..."
   # Also needs pip(3)
-  if ! [ -x "$(command -v pip3)" ]; then
-    # Also needs pip(3)
-    echo "Need to install python3-pip first..."
-    sudo apt-get install -y python3-pip
-  fi
+  if [ ${INSIDE_SERVICE_DOCKER} != 1 ]
+  # Don't run this inside the docker container
+  then
+    if ! [ -x "$(command -v pip3)" ]; then
+      # Also needs pip(3)
+      echo "Need to install python3-pip first..."
+      sudo apt-get install -y python3-pip
+    fi
 
-  echo "Installing dependencies..."
-  sudo apt-get install -y imagemagick poppler-utils
+    echo "Installing dependencies..."
+    sudo apt-get install -y imagemagick poppler-utils
+  fi
   echo "Installing diff-pdf-visually via pip3..."
-  pip3 install --user diff-pdf-visually
+  if [ $(id -u) = 0 ]
+  then
+    echo "Root detected, installing globally"
+    pip3 install diff-pdf-visually
+  else
+    echo "User not root, installing for user $(id -un)"
+    pip3 install --user diff-pdf-visually
+  fi
   echo "Done!"
 else
   echo "Found diff-pdf-visually at $(command -v diff-pdf-visually)"
@@ -28,8 +39,12 @@ fi
 if ! [ -x "$(command -v diff-pdf)" ]
 then
   echo "Attempting to install diff-pdf..."
-  echo "Installing dependencies..."
-  sudo apt-get install -y libpoppler-glib-dev poppler-utils libwxgtk3.0-gtk3-dev
+  if [ ${INSIDE_SERVICE_DOCKER} != 1 ]
+  # Don't run this inside the docker container
+  then
+    echo "Installing dependencies..."
+    sudo apt-get install -y libpoppler-glib-dev poppler-utils libwxgtk3.0-gtk3-dev
+  fi
 
   TEMPDIR=$(mktemp -d)
   cd $TEMPDIR
@@ -41,7 +56,13 @@ then
   ./configure
   make
   echo "Installing..."
-  sudo make install
+  if [ $(id -u) = 0 ]
+  then
+    make install
+  else
+    echo "Not root - trying to use sudo to install..."
+    sudo make install 
+   fi
   echo "Done!"
   cd -
 else
