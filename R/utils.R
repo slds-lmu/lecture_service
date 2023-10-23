@@ -120,6 +120,47 @@ set_margin_token_file <- function(wd, margin = TRUE, token_name = "nospeakermarg
   }
 }
 
+
+#' Install the lecheck cli tool
+#'
+#' `path` should be in the user's `$PATH` to make the tool usable in shell sessions.
+#'
+#' @param path `["~/bin"]` Path to symlink the tool to. Must exist and be writable.
+#' @param overwrite `[TRUE]` Overwrite any existing symlink.
+#'
+#' @return `FALSE` if a symlink already exists and is not overwritten.
+#'   Otherwise: The path to the symlink is returned.
+#' @export
+#'
+#' @examples
+#' if (FALSE) {
+#' install_lecheck("~/bin")
+#'
+#' # Would only work if the R session is started under a user that can write to /usr/local/bin
+#' install_lecheck("/usr/local/bin")
+#' }
+install_lecheck <- function(path = "~/bin", overwrite = TRUE) {
+  lecheck_script <- system.file("lecheck", package = "lese")
+  checkmate::assert_file_exists(lecheck_script)
+
+  path <- fs::path_expand(path)
+  checkmate::assert_directory_exists(path, access = "w")
+
+  lecheck_bin_path <- fs::path(path, "lecheck")
+
+  if (fs::link_exists(lecheck_bin_path)) {
+    if (overwrite) {
+      cli::cli_alert_info("{lecheck_bin_path} already exists, overwriting...")
+      fs::link_delete(lecheck_bin_path)
+    } else {
+      cli::cli_alert_warning("{lecheck_bin_path} already exists, doing nothing.")
+      return(FALSE)
+    }
+  }
+
+  fs::link_create(lecheck_script, lecheck_bin_path)
+}
+
 # Required in my case to find diff-pdf-visually and its dependencies if installed via homebrew on macOS
 # if (Sys.info()[["sysname"]] == "Darwin") {
 #   if (file.exists("/opt/homebrew/bin/brew")) {
