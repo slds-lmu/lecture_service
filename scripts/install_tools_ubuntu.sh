@@ -65,6 +65,7 @@ then
     sudo make install
    fi
   echo "Done!"
+  echo "Installed diff-pdf to $(command -v diff-pdf)"
   cd -
 else
   echo "Found diff-pdf at $(command -v diff-pdf)"
