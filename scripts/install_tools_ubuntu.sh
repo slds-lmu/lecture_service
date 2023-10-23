@@ -7,7 +7,7 @@ if ! [ -x "$(command -v diff-pdf-visually)" ]
 then
   echo "Attempting to install diff-pdf-visually..."
   # Also needs pip(3)
-  if [ ${INSIDE_SERVICE_DOCKER} != 1 ]
+  if [ -z ${INSIDE_SERVICE_DOCKER} ]
   # Don't run this inside the docker container
   then
     if ! [ -x "$(command -v pip3)" ]; then
@@ -29,6 +29,7 @@ then
     pip3 install --user diff-pdf-visually
   fi
   echo "Done!"
+  echo "Installed diff-pdf-visually to $(command -v diff-pdf-visually)"
 else
   echo "Found diff-pdf-visually at $(command -v diff-pdf-visually)"
 fi
@@ -39,8 +40,8 @@ fi
 if ! [ -x "$(command -v diff-pdf)" ]
 then
   echo "Attempting to install diff-pdf..."
-  if [ ${INSIDE_SERVICE_DOCKER} != 1 ]
   # Don't run this inside the docker container
+  if [ -z ${INSIDE_SERVICE_DOCKER} ]
   then
     echo "Installing dependencies..."
     sudo apt-get install -y libpoppler-glib-dev poppler-utils libwxgtk3.0-gtk3-dev
@@ -61,7 +62,7 @@ then
     make install
   else
     echo "Not root - trying to use sudo to install..."
-    sudo make install 
+    sudo make install
    fi
   echo "Done!"
   cd -
