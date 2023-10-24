@@ -1,5 +1,3 @@
-.PHONY: all site clone clean clean-site install-r install-tex install-tools-ubuntu
-
 # Find all the slide tex files in the lecture repos, assuming strict naming convention
 # Any changes in those should then be enough for the next make target.
 TSLIDES=$(shell find lecture_*/slides/* -maxdepth 1 -iname "*.tex")
@@ -26,8 +24,10 @@ SITEDIR=_site
 STATUSRMD_PR=slide_status_pr.Rmd
 STATUSMD=${STATUSRMD_PR:%.Rmd=%.md}
 
+.PHONY: all
 all: site
 
+.PHONY: help
 help:
 	@echo "clone                : Clone selected lecture repositories."
 	@echo "download             : Download selected lecture repositories rather than using git."
@@ -37,6 +37,7 @@ help:
 	@echo "install-tex          : Install LaTeX package dependencies using TinyTex."
 	@echo "install-tools-ubuntu : Attempt to install diff-pdf and diff-pdf-visually on Ubuntu-based systems."
 	@echo "site                 : Generate HTML overview, re-running slide checking if necessary."
+	@echo "table                : Generate markdown table rather than site. Used to append to PRs."
 	@echo "clean                : Remove ${CACHETBL}, ${STATUSHTML}, ${STATUSASSETS}, and ${SITEDIR}."
 	@echo "clean-site           : Remove ${STATUSHTML}, ${STATUSASSETS}, and ${SITEDIR}."
 
@@ -45,11 +46,16 @@ ${CACHETBL}: $(TSLIDES) $(PREAMBLES)
 	@# Rscript --quiet -e 'source("helpers.R"); check_all_slides()'
 	Rscript --quiet -e 'lese::check_all_slides()'
 
+.PHONY: check_results
+check_results: ${CACHETBL}
+
+.PHONY: table
 table: ${CACHETBL} ${STATUSRMD_PR}
 	Rscript --quiet -e 'rmarkdown::render("${STATUSRMD_PR}", quiet = TRUE, output_format = "github_document", output_file = "${STATUSMD}")'
 	@# Don't know why the HTML version is always created but it's not needed
 	rm ${STATUSRMD_PR:%.Rmd=%.html}
 
+.PHONY: site
 site: ${CACHETBL} ${STATUSRMD}
 	Rscript --quiet -e 'rmarkdown::render("${STATUSRMD}", quiet = TRUE)'
 	@# Create a self-contained folder with the HTML and assets for easier / more efficient deployment on GitHub actions
@@ -70,15 +76,18 @@ site: ${CACHETBL} ${STATUSRMD}
 
 # Delete files and directories only if they exist to avoid spurious make errors
 # Multi-line command needs ; to terminate bash commands and \ to recognize linebreaks
+.PHONY: clean
 clean: clean-site
 	if [ -f "${CACHETBL}" ]     ; then rm ${CACHETBL}       ; fi ;\
 	find comparison -name "*pdf" -delete
 
+.PHONY: clean-site
 clean-site:
 	if [ -f "${STATUSHTML}" ]   ; then rm ${STATUSHTML}     ; fi ;\
 	if [ -d "${STATUSASSETS}" ] ; then rm -r ${STATUSASSETS}; fi ;\
 	if [ -d "${SITEDIR}" ]      ; then rm -r ${SITEDIR}     ; fi
 
+.PHONY: install-r install-tex install-tools-ubuntu install-service install
 install-r:
 	scripts/install_r_deps.R
 
@@ -97,6 +106,7 @@ install-service:
 
 install: install-r install-tex install-tools-ubuntu install-service
 
+.PHONY: clone download
 clone:
 	scripts/clone_lectures.sh
 
