@@ -1,12 +1,15 @@
 ---
 title: "Lecture Slide Status Overview"
-author: "`r Sys.info()[['user']]`"
 date: '`r format(Sys.time(), format = "%F %T", tz = "Europe/Berlin", usetz = TRUE)`'
 output: github_document
 always_allow_html: true
 editor_options:
   chunk_output_type: console
 ---
+
+This is a reduced version of the full status check rendered for each lecture repository.  
+It does not link to rendered PDF files and only produces markdown tables, which allows it to be appended to a pull request.
+It serves as a rough check to ensure that the PR does not cause major breakage.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
@@ -41,7 +44,7 @@ this_repo_status() |>
     branch = sprintf("<a href='https://github.com/slds-lmu/lecture_service/tree/%s'>%s</a>", branch, branch)
   ) |>
   dplyr::select(branch, last_commit_time, last_commit_by, last_commit_summary) |>
-  kableExtra::kbl(
+  knitr::kable(
     col.names = c("Branch", "Last Commit", "By", "Message"),
     escape = FALSE, caption = "Status of the lecture_service repo (time in UTC)"
   )
@@ -56,7 +59,7 @@ lecture_status_local(lectures) |>
     branch = sprintf("<a href='https://github.com/%s/%s/tree/%s'>%s</a>", org, lecture, branch, branch)
   ) |>
   dplyr::select(lecture_link, branch, last_commit_time, last_commit_by, last_commit_summary) |>
-  kableExtra::kbl(
+  knitr::kable(
     col.names = c("Lecture", "Branch", "Last Commit", "By", "Message"),
     escape = FALSE, caption = "Latest commits per lecture (times in UTC)"
   )
@@ -81,19 +84,10 @@ check_table <- all_slide_check |>
   # Make links out of a few columns
   dplyr::mutate(
     comparison_path = here::here("comparison", fs::path_file(pdf)),
-    check_note = ifelse(
-      compare_check %in% c("\u274c", "\u2753"),
-      sprintf("<a href='%s'>%s</a>", fs::path_rel(comparison_path), compare_check_note),
-      compare_check_note
-    ),
+    check_note = compare_check_note,
     compile_note = stringr::str_replace_all(compile_note, "`", "'") |>
       stringr::str_replace_all(r"(\\)", r"(\\\\)"),
-    check_note = ifelse(compile_check == "\u274c", compile_note, check_note),
-    slide_name = ifelse(
-      fs::file_exists(pdf),
-      sprintf("<a href='%s'>%s</a>", fs::path_rel(pdf), slide_name),
-      slide_name
-    )
+    check_note = ifelse(compile_check == "\u274c", compile_note, check_note)
   )
 ```
 
@@ -112,17 +106,18 @@ for (current_lecture in lectures) {
   cat(sprintf("%i topics with a total of %i slides\n", length(unique(tmp$topic)), nrow(tmp)))
 
   for (current_topic in sort(unique(tmp$topic))) {
-    tmp <-  check_table |>
+    tmp <- check_table |>
       dplyr::filter(lecture == current_lecture, topic == current_topic)
 
     cat(sprintf("\n### %s\n\n", current_topic))
-
+    
     tmp |>
       dplyr::select(
-        slide_name,
-        compile_check, compare_check, check_note) |>
-      kableExtra::kbl(
-        format = "html", escape = FALSE,
+        slide_name, compile_check, compare_check, check_note
+      ) |>
+      knitr::kable(
+        # Needs to be HTML even for markdown output, tables don't render properly otherwise
+        format = "html", 
         align = c("l", "c", "c", "l"),
         col.names = c("Slide", "Compiles?", "Comparison", "Note")
       ) |>
