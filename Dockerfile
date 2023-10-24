@@ -1,5 +1,10 @@
 FROM rocker/verse
 
+LABEL org.label-schema.license="GPL-2.0" \
+      org.label-schema.vcs-url="https://github.com/slds-lmu/lecture_service" \
+      org.label-schema.vendor="SLDS LMU" \
+      maintainer="Lukas Burk <Lukas.Burk@stat.uni-muenchen.de>"
+
 WORKDIR /home/rstudio
 
 ENV INSIDE_SERVICE_DOCKER=1
@@ -11,7 +16,7 @@ RUN apt-get update && apt-get install -y imagemagick \
   python3-pip
 
 RUN install2.r --error --skipmissing --deps TRUE --skipinstalled \
-  pak \
+  pak docopt \
   rmarkdown kableExtra tinytex \
   dplyr ggplot2 \
   fs cli here processx checkmate future future.apply tictoc git2r
