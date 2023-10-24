@@ -54,7 +54,7 @@ lecture_status_local <- function(lectures = lectures()) {
         # Using path_file like `basename`, to enable using other paths
         lecture = fs::path_file(lecture),
         org = org,
-        branch = git2r::repository_head(lecture)[["name"]],
+        branch = branch,
         last_commit_time = as.POSIXct(lastcommit$author$when, tz = "UTC"),
         last_commit_by = lastcommit$author$name,
         last_commit_summary = lastcommit$summary
