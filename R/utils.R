@@ -47,8 +47,7 @@ lecture_status_local <- function(lectures = lectures()) {
         # SSH vs HTTP clone URLs differ but basic idea is the same
         stringr::str_extract("(https://github.com/|git@github.com:)(.*)/", group = 2)
 
-      branch <- git2r::repository_head(lecture)[["name"]]
-      branch <- if (is.null(branch)) "(?)"
+      branch <- git2r::repository_head(lecture)[["name"]] %||% "?"
 
       data.frame(
         # Using path_file like `basename`, to enable using other paths
@@ -162,6 +161,30 @@ install_lecheck <- function(path = "~/bin", overwrite = TRUE) {
   }
 
   fs::link_create(lecheck_script, lecheck_bin_path)
+}
+
+#' Default value for `NULL`
+#'
+#' This infix function makes it easy to replace `NULL`s with a default
+#' value. It's inspired by the way that Ruby's or operation (`||`)
+#' works.
+#'
+#' @param x,y If `x` is NULL or length 0, will return `y`; otherwise returns `x`.
+#' @export
+#' @name op-null-default
+#' @examples
+#' 1 %||% 2
+#' NULL %||% 2
+#' character(0) %|0|% ""
+#' list() %|0|% ""
+`%||%` <- function(x, y) {
+  if (is.null(x)) y else x
+}
+
+#' @rdname op-null-default
+#' @export
+`%|0|%` <- function(x, y) {
+  if (!length(x)) y else x
 }
 
 # Required in my case to find diff-pdf-visually and its dependencies if installed via homebrew on macOS
