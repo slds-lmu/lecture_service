@@ -6,6 +6,8 @@ lecture_*
 # Cached check data and output
 slide_check_cache.rds
 slide_status.html
+slide_status*.md
+slide_status*.html
 
 attic
 logs

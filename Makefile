@@ -22,6 +22,10 @@ STATUSHTML=${STATUSRMD:%.Rmd=%.html}
 STATUSASSETS=${STATUSRMD:%.Rmd=%_files}
 SITEDIR=_site
 
+# Similar idea with the smaller Rmd file to render to markdown for pull requests
+STATUSRMD_PR=slide_status_pr.Rmd
+STATUSMD=${STATUSRMD_PR:%.Rmd=%.md}
+
 all: site
 
 help:
@@ -40,6 +44,11 @@ help:
 ${CACHETBL}: $(TSLIDES) $(PREAMBLES)
 	@# Rscript --quiet -e 'source("helpers.R"); check_all_slides()'
 	Rscript --quiet -e 'lese::check_all_slides()'
+
+table: ${CACHETBL} ${STATUSRMD_PR}
+	Rscript --quiet -e 'rmarkdown::render("${STATUSRMD_PR}", quiet = TRUE, output_format = "github_document", output_file = "${STATUSMD}")'
+	@# Don't know why the HTML version is always created but it's not needed
+	rm ${STATUSRMD_PR:%.Rmd=%.html}
 
 site: ${CACHETBL} ${STATUSRMD}
 	Rscript --quiet -e 'rmarkdown::render("${STATUSRMD}", quiet = TRUE)'
