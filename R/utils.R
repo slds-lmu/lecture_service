@@ -47,6 +47,9 @@ lecture_status_local <- function(lectures = lectures()) {
         # SSH vs HTTP clone URLs differ but basic idea is the same
         stringr::str_extract("(https://github.com/|git@github.com:)(.*)/", group = 2)
 
+      branch <- git2r::repository_head(lecture)[["name"]]
+      branch <- if (is.null(branch)) "(?)"
+
       data.frame(
         # Using path_file like `basename`, to enable using other paths
         lecture = fs::path_file(lecture),
