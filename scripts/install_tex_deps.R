@@ -8,6 +8,7 @@ if (!tinytex::is_tinytex()) {
 # interactively via tmate and just.. wrote down the pkg it installed.
 # ...if it works it works. I guess.
 manually_selected_deps <- c(
+  # The first batch are packages generally used throughout all lectures
   "beamer",
   "fp",
   "ms",
@@ -15,14 +16,14 @@ manually_selected_deps <- c(
   "translator",
   "colortbl",
   "babel-english",
-  "doublestroke",
+  "doublestroke", # package is named doublestroke for installing, but \usepackage{dsfont} for loading!
   "csquotes",
   "multirow",
   "textpos",
   "psfrag",
   "algorithms",
   "algorithmicx",
-  "eqnarray",
+  "eqnarray", # should be substituted with amsmath's align env, see https://texfaq.org/FAQ-eqnarray
   "arydshln",
   "placeins",
   "setspace",
@@ -31,12 +32,13 @@ manually_selected_deps <- c(
   "subfig",
   "caption",
   "bbm-macros",
+  # Below are packages specifically added in iml or optim
   "transparent", # lecture_sl/slides/boosting/slides-boosting-cwb-basics2.tex
   "adjustbox",   # optim and iml, lecture_optimization/slides/01-mathematical-concepts/slides-concepts-3-convexity.tex and cheatsheets
   "verbatimbox", # optim, 07-derivative-free/slides-optim-derivative-free-4-multistart-optimization
   "tcolorbox",   # iml, 01_intro/slides05-intro-interaction.tex
-  "siunitx",      # iml, 04_shapley/slides04-shap.tex, but used in latex-math anyway
-  "pdfpages",   # iml, but why? 
+  "siunitx",     # iml, 04_shapley/slides04-shap.tex, but used in latex-math anyway
+  "pdfpages",    # iml, but why?
   # All of the following were iml-specific dependencies I have not investigated specifically
   # Ideally we'd be able to identify which dependency is included for which purposes/feature
   # to avoid having to install a bag of mystery packages just to keep the latex demon happy.
@@ -47,12 +49,12 @@ manually_selected_deps <- c(
   "textcase",
   "pdflscape",
   "makecell",
-  "environ", 
+  "environ",
   "trimspaces",
   "tikzfill",
   "pdfcol",
   "listings",
-  "listingsutf8", 
+  "listingsutf8",
   "readarray"
 )
 
@@ -63,7 +65,7 @@ tinytex::tlmgr_install(manually_selected_deps)
 # Unused but maybe useful in the future ---------------------------------------------------------------------------
 
 if (FALSE) {
-  # List of installed packages in a fresh TinyTex installation on GitHub actions using default settings:
+  # List of installed packages in a fresh TinyTeX installation on GitHub actions using default settings:
   default_installed <- "amscls
 amsfonts
 amsmath
