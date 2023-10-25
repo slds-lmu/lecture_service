@@ -84,8 +84,8 @@ compare_slide <- function(slide_file, verbose = TRUE, create_comparison_pdf = FA
   # Might require $PATH adjustments to work
   p <- processx::process$new(
     command = "diff-pdf-visually", args = args,
-    stdout = "|", stderr = "|",
-    echo_cmd = verbose
+    stdout = "|", stderr = "|"#,
+    #echo_cmd = verbose
   )
   # This is the command that's actually executed in quick "print for debugging" format
   # paste0(c("diff-pdf-visually", args), collapse = " ")
@@ -196,8 +196,8 @@ compare_slide <- function(slide_file, verbose = TRUE, create_comparison_pdf = FA
       }
 
       p <- processx::process$new(
-        command = "diff-pdf", args = args, stdout = "|", stderr = "|",
-        echo_cmd = verbose
+        command = "diff-pdf", args = args, stdout = "|", stderr = "|"#,
+        #echo_cmd = verbose
       )
 
       p$get_exit_status()
