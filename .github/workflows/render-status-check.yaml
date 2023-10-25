@@ -28,6 +28,8 @@ jobs:
         with:
           # 0 indicates all history for all branches and tags, 1 is shallow (and default)
           fetch-depth: 1
+          # Don't show progress bar, very verbose for large repos
+          show-progress: false
 
       # Standard setup block
       - uses: r-lib/actions/setup-pandoc@v2

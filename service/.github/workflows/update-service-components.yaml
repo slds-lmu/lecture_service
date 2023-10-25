@@ -13,18 +13,16 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-    #permissions: write-all
     permissions:
       contents: write
-      #actions: write
-      
-      #checks: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
         with:
           # 0 indicates all history for all branches and tags, 1 is shallow (and default)
           fetch-depth: 1
+          # Don't show progress bar, very verbose for large repos
+          show-progress: false
 
       # Uncomment / move to get a tmux ssh session for interactive debugging
       #- name: Setup tmate session
@@ -43,7 +41,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-      # Note: This workflow might update workflow files in .github/workflows, which is not "allowed" by default
+      # Note: This workflow might update workflow files in .github/workflows, which is not allowed by default
       # and as such we need to manually create a PAT with the workflow permission and repo scope and add it
       # via the GitHub settings for each lecture repository. These tokens expire after a maximum of 1 year
       # so this is unfortunate.
