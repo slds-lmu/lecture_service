@@ -10,7 +10,7 @@ then
 fi
 
 # Read list of included lectures from global file, ignore commented lines
-lectures=$(grep -v "^[#/]" LECTURES_INCLUDE)
+lectures=$(grep -v "^[#/]" include_lectures)
 # make it a bash array
 lectures=(${lectures})
 

@@ -2,7 +2,7 @@
 #'
 #' @param lectures_path Path containing lecture_* directories. Defaulting to `here::here()`.
 #' @param filter_lectures `[NULL]`: Vector of lecture repo names to filter table by, e.g. `"lecture_i2ml"`.
-#'   Can be set to [`lectures()`] to respect `LECTURES_INCLUDE`.
+#'   Can be set to [`lectures()`] to respect `include_lectures`.
 #' @param exclude_slide_subdirs Exclude slides/ subfolders, e.g. `c("attic", "rsrc", "all")`.
 #' @param exclude_slide_names Exclude slides matching these names exactly, e.g. `"chapter-order"` (default).
 #'
@@ -84,19 +84,19 @@ collect_lectures <- function(
 
 #' Read included lectures from one central file, ignoring commented out lines
 #'
-#' Can be overridden with environment variable `$LECTURES_INCLUDE`.
+#' Can be overridden with environment variable `$include_lectures`.
 #' @export
-#' @return A character vector, e.g. `c("lecture_i2ml", "lecture_advml")`, depending on `./LECTURES_INCLUDE`
+#' @return A character vector, e.g. `c("lecture_i2ml", "lecture_advml")`, depending on `./include_lectures`
 #' @examples
 #' \dontrun{
 #' lectures()
 #' }
 lectures <- function() {
-  lectures <- Sys.getenv("LECTURES_INCLUDE", unset = NA)
+  lectures <- Sys.getenv("include_lectures", unset = NA)
 
   if (is.na(lectures)) {
-    checkmate::assert_file_exists("LECTURES_INCLUDE")
-    lectures <- grep(pattern = "^#", readLines("LECTURES_INCLUDE"), value = TRUE, invert = TRUE)
+    checkmate::assert_file_exists("include_lectures")
+    lectures <- grep(pattern = "^#", readLines("include_lectures"), value = TRUE, invert = TRUE)
   }
 
   lectures

@@ -7,10 +7,10 @@
 lectures()
 }
 \value{
-A character vector, e.g. \code{c("lecture_i2ml", "lecture_advml")}, depending on \code{./LECTURES_INCLUDE}
+A character vector, e.g. \code{c("lecture_i2ml", "lecture_advml")}, depending on \code{./include_lectures}
 }
 \description{
-Can be overridden with environment variable \verb{$LECTURES_INCLUDE}.
+Can be overridden with environment variable \verb{$include_lectures}.
 }
 \examples{
 \dontrun{

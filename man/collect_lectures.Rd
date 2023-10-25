@@ -16,7 +16,7 @@ collect_lectures(
 \item{lectures_path}{Path containing lecture_* directories. Defaulting to \code{here::here()}.}
 
 \item{filter_lectures}{\verb{[NULL]}: Vector of lecture repo names to filter table by, e.g. \code{"lecture_i2ml"}.
-Can be set to \code{\link[=lectures]{lectures()}} to respect \code{LECTURES_INCLUDE}.}
+Can be set to \code{\link[=lectures]{lectures()}} to respect \code{include_lectures}.}
 
 \item{exclude_slide_subdirs}{Exclude slides/ subfolders, e.g. \code{c("attic", "rsrc", "all")}.}
 

@@ -70,7 +70,7 @@ arguments$slide <- gsub("^\\s*", "", arguments$slide)
 # Subset to only currently relevant lecture
 if (arguments$path == "here") arguments$path <- here::here()
 
-lectures_tbl <- collect_lectures(lectures_path = arguments$path)
+lectures_tbl <- collect_lectures(lectures_path = arguments$path, filter_lectures = lectures())
 
 # If slide is specified, takes highest precedence. Then topic, then lecture.
 # Ensures that if e.g. slide from advml is set but lecture is i2ml, slide "wins"
