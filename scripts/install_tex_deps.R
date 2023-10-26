@@ -55,7 +55,10 @@ manually_selected_deps <- c(
   "pdfcol",
   "listings",
   "listingsutf8",
-  "readarray"
+  "readarray",
+  # pdfannotextractor, useful to restore clickability of links in includepdf'd document
+  # Also used in iml in Makefile rule
+  "pax"
 )
 
 cli::cli_alert_info("Attempting to install manually selected LaTeX dependencies via {.fun tinytex::tlmgr_install}")
