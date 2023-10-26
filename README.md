@@ -10,13 +10,16 @@ This project has two goals:
 1. Provide common assets needed for all lectures, once, to keep them in sync.
 2. Check slides in lecture repositories (do they compile, are the PDFs up to date?).
 
+(It also happens to be an R package `lese` you can install with many convenience functions)
+
 For 1), all required files should live in `./service/` with the **correct folder structure** such that one can simply copy the files from this directory "on top" of an existing lecture, e.g.:
 
 ```sh
-rsync -R lecture_service/service/ lecture_i2ml/
+rsync -r lecture_service/service/ lecture_i2ml/
 ```
 
 Afterwards, `git status` can be used to check changes.
+Note that as of 2023-10-26 the state of the `service` folder is not quite ready for action yet.
 
 The remainder of this document describes the steps needed for goal 2) slide checking.
 
@@ -52,7 +55,7 @@ These are used for visual comparison of PDFs produced from `<slide>.tex` files a
 It also contains a `comparison` folder, which contains PDF diffs produced by [`diff-pdf`](https://github.com/vslavik/diff-pdf).
 These notably only contain the pages that actually contain some (possibly very minor) differences.
 
-For manual use in R you can also use the helper functions in `helpers.R` directly.
+For manual use in R you can also use the helper functions in `R/` directly.
 
 Or, if you prefer to work from the terminal, I experimentally wrapped most functionality in a command-line tool, see `./lecheck --help`:
 
@@ -83,6 +86,9 @@ make install-tex
 
 # Attempt to install diff-pdf (from source) and diff-pdf-visually (via pip)
 make install-tools-ubuntu
+
+# Since this is also an R package, install it with e.g.
+make install-service
 ```
 
 ### Tools
@@ -114,9 +120,9 @@ This is used to produce PDFs of only the differences at `comparison` and for the
 
 ### LaTeX Dependencies
 
-LaTeX dependencies are installed via `scripts/install_tex_deps.R` or `make install-tex` via TinyTex.
+LaTeX dependencies are installed via `scripts/install_tex_deps.R` or `make install-tex` via TinyTeX.
 
-Install [TinyTex](https://yihui.org/tinytex/):
+Install [TinyTeX](https://yihui.org/tinytex/):
 
 ```r
 install.packages("tinytex")
@@ -126,12 +132,8 @@ tinytex::install_tinytex()
 To make sure you can compile slides locally:
 
 ```r
-oldwd <- getwd()
-setwd("lecture_i2ml/slides/cart/")
-
 # tinytex emulates latexmk and installs missing latex packages automatically.
-tinytex::latexmk("slides-cart-splitcriteria-classification.tex")
-
-setwd(oldwd)
+# Wrapper fun in service repo just sets working directories automatically
+lese::compile_slide_tinytex("lecture_i2ml/slides/cart/slides-cart-splitcriteria-classification.tex")
 ```
 
