@@ -62,7 +62,7 @@ collect_lectures <- function(
   }))
 
   if (!is.null(filter_lectures)) {
-    sapply(filter_lectures, checkmate::assert_directory_exists)
+    #sapply(filter_lectures, checkmate::assert_directory_exists)
     lectures_tbl <- subset(lectures_tbl, lecture %in% filter_lectures)
   }
 
@@ -85,6 +85,8 @@ collect_lectures <- function(
 #' Read included lectures from one central file, ignoring commented out lines
 #'
 #' Can be overridden with environment variable `$include_lectures`.
+#' If neither the environment variable nor the file exists, it defaults to listing
+#' all lectures.
 #' @export
 #' @return A character vector, e.g. `c("lecture_i2ml", "lecture_advml")`, depending on `./include_lectures`
 #' @examples
@@ -94,9 +96,13 @@ collect_lectures <- function(
 lectures <- function() {
   lectures <- Sys.getenv("include_lectures", unset = NA)
 
-  if (is.na(lectures)) {
-    checkmate::assert_file_exists("include_lectures")
+  if (is.na(lectures) & file.exists("include_lectures")) {
     lectures <- grep(pattern = "^#", readLines("include_lectures"), value = TRUE, invert = TRUE)
+  } else {
+    lectures <- c(
+        "lecture_i2ml", "lecture_advml", "lecture_sl",
+        "lecture_iml", "lecture_optimization"
+    )
   }
 
   lectures
