@@ -31,7 +31,9 @@ check_log <- function(slide_file, before = 0, after = 1) {
     # The latter happens via overleaf autocompletion, should be checked in .tex files via regex explicitly.
     "not found",
     # Missing $ delimiter for math
-    "^! Missing \\$ inserted"
+    "^! Missing \\$ inserted",
+    # Generic error
+    "! LaTeX Error:"
   )
 
   # Not sure how to output this yet. A single string with \n can be useful, but for cli and HTML contexts
