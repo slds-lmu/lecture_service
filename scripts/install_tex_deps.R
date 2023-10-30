@@ -1,15 +1,23 @@
 #! /usr/bin/env Rscript
 
-if (!("tinytex" %in% installed.packages())) install.packages("tinytex")
-if (!tinytex::is_tinytex()) {
-  warning("Please install tinytex: tinytex::install_tinytex()")
+# if (!("tinytex" %in% installed.packages())) install.packages("tinytex")
+# if (!tinytex::is_tinytex()) {
+#   warning("Please install tinytex: tinytex::install_tinytex()")
+# }
+
+has_tinytex <- "tinytex" %in% installed.packages()
+tinytex_installed <- FALSE
+if (has_tinytex) {
+  tinytex_installed <- tinytex::is_tinytex()
 }
+
 # Script to extract packages didn't work on GH so I ran tinytex::latexmk()
 # interactively via tmate and just.. wrote down the pkg it installed.
 # ...if it works it works. I guess.
 manually_selected_deps <- c(
   # The first batch are packages generally used throughout all lectures
   "beamer",
+  "framed",
   "fp",
   "ms",
   "pgf",
@@ -58,12 +66,19 @@ manually_selected_deps <- c(
   "readarray",
   # pdfannotextractor, useful to restore clickability of links in includepdf'd document
   # Also used in iml in Makefile rule
-  "pax"
+  "pax",
+  # Only needed for Docker container?
+  "booktabs",
+  "float"
 )
 
-cli::cli_alert_info("Attempting to install manually selected LaTeX dependencies via {.fun tinytex::tlmgr_install}")
-tinytex::tlmgr_install(manually_selected_deps)
-
+if (tinytex_installed) {
+  cli::cli_alert_info("Attempting to install manually selected LaTeX dependencies via {.fun tinytex::tlmgr_install}")
+  tinytex::tlmgr_install(manually_selected_deps)
+} else {
+  cli::cli_alert_info("Attempting to install manually selected LaTeX dependencies via system tlmgr")
+  processx::run("tlmgr", args = c("install", manually_selected_deps))
+}
 
 # Unused but maybe useful in the future ---------------------------------------------------------------------------
 
