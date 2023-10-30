@@ -42,11 +42,12 @@ jobs:
         uses: peter-evans/create-pull-request@v5
         with:
       # Note: This workflow might update workflow files in .github/workflows, which is not allowed by default
-      # and as such we need to manually create a PAT with the workflow permission and repo scope and add it
-      # via the GitHub settings for each lecture repository. These tokens expire after a maximum of 1 year
-      # so this is unfortunate.
-      # https://github.com/settings/tokens?type=beta
+      #   and as such we need to manually create a PAT with the workflow permission and repo scope and add it
+      #   via the GitHub settings for each lecture repository.
+      # These tokens expire after a maximum of 1 year so this is unfortunate.
+      # See https://github.com/settings/tokens?type=beta
           token: ${{ secrets.CUSTOM_PAT }}
+          # token: ${{ secrets.GITHUB_TOKEN }}
           title: "[Automated] Update service components"
           commit-message: "Update service components"
           body: |
