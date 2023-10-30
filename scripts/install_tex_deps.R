@@ -44,6 +44,7 @@ manually_selected_deps <- c(
   "transparent", # lecture_sl/slides/boosting/slides-boosting-cwb-basics2.tex
   "adjustbox",   # optim and iml, lecture_optimization/slides/01-mathematical-concepts/slides-concepts-3-convexity.tex and cheatsheets
   "verbatimbox", # optim, 07-derivative-free/slides-optim-derivative-free-4-multistart-optimization
+  "forloop",     # same loc
   "tcolorbox",   # iml, 01_intro/slides05-intro-interaction.tex
   "siunitx",     # iml, 04_shapley/slides04-shap.tex, but used in latex-math anyway
   "pdfpages",    # iml, but why?
