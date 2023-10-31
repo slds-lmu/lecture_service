@@ -40,10 +40,20 @@ echo ""
 
 for lecture in ${lectures[@]}
 do
-  echo "Copying service/.github/ to ${lecture}/.github/"
-  # -r for recursive
-  rsync -r "service/.github/" "${lecture}/.github/"
-  git -C "${lecture}" add .github
-  git -C "${lecture}" commit -m "Update workflows"
-  git -C "${lecture}" push
+  for workflow in update-latex-math.yaml render-lecture-slide-status.yaml fix-figure-paths.yaml pr-slide-check.yaml
+  do
+    read -p "Do you sure you want to copy workflow ${workflow} for ${lecture}? (y/n) " -n 1 -r
+    echo    # (optional) move to a new line
+    if [[ $REPLY =~ ^[Yy]$ ]]
+    then
+        echo "Copying service/.github/workflows/${workflow} to ${lecture}/.github/workflows/${workflow}"
+        # -r for recursive
+        cp "service/.github/workflows/${workflow}" "${lecture}/.github/workflows/${workflow}"
+    fi
+  done
 done
+
+        # rsync -r "service/.github/" "${lecture}/.github/"
+        # git -C "${lecture}" add .github
+        # git -C "${lecture}" commit -m "Update workflows"
+        # git -C "${lecture}" push
