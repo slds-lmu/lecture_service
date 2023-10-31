@@ -9,7 +9,6 @@ if (!("lese" %in% installed.packages())) {
 library(lese)
 
 version <- "SLDS Lecture Checker 0.3\n"
-
 doc <- 'SLDS Lecture Checker.
 
 Usage:
