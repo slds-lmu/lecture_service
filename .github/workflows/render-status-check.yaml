@@ -1,16 +1,21 @@
-# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
-# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 # This is the "parent" workflow in lecture_service:
 # - attempts slide compilation
 # - compares compiled slides against slides-pdf/
 # - render HTML site and published to GitHub pages
 # ... for all lecture repos listed in LECTURES_INCLUDE
 on:
-  # workflow_dispatch allows the workflow to be triggered manually via website or API (gh)
+  # Allow manually trigegring the workflow via GitHub website, gh CLI tool etc.
+  # Also adds parameter to enable tmate (inetractive tmux session for debugging)
   workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Run the build with tmate debugging enabled (https://github.com/marketplace/actions/debugging-with-tmate)'
+        required: false
+        default: false
   push:
-    branches: [main, master]
-    #paths: ['**.Rmd']
+    # Activate on pushes to main branch only
+    branches: main
 
 name: render-status-check
 
@@ -20,7 +25,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     permissions:
-    # Required to allow writing to gh-pages branch (as far as I can tell)
+    # Required permission to allow writing to gh-pages branch
       contents: write
     steps:
       - name: Checkout repo
@@ -66,9 +71,12 @@ jobs:
       - name: Install diff-pdf and diff-pdf-visually
         run: make install-tools-ubuntu
 
-        # Uncomment for debugging (see https://github.com/mxschmitt/action-tmate)
-      # - name: Setup tmate session
-      #   uses: mxschmitt/action-tmate@v3
+      # Get a tmux ssh session for interactive debugging
+      # Controlled via inputs from GitHub webinterface
+      # See https://github.com/mxschmitt/action-tmate
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
 
       - name: Install package, check slides and build HTML overview
         run: |
