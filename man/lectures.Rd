@@ -11,6 +11,8 @@ A character vector, e.g. \code{c("lecture_i2ml", "lecture_advml")}, depending on
 }
 \description{
 Can be overridden with environment variable \verb{$include_lectures}.
+If neither the environment variable nor the file exists, it defaults to listing
+all lectures.
 }
 \examples{
 \dontrun{

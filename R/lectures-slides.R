@@ -96,8 +96,8 @@ collect_lectures <- function(
 lectures <- function() {
   lectures <- Sys.getenv("include_lectures", unset = NA)
 
-  if (is.na(lectures) & file.exists("include_lectures")) {
-    lectures <- grep(pattern = "^#", readLines("include_lectures"), value = TRUE, invert = TRUE)
+  if (is.na(lectures) & file.exists(here::here("include_lectures"))) {
+    lectures <- grep(pattern = "^#", readLines(here::here("include_lectures")), value = TRUE, invert = TRUE)
   } else {
     lectures <- c(
         "lecture_i2ml", "lecture_advml", "lecture_sl",
