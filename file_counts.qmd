@@ -6,6 +6,9 @@ format:
   html:
     code-fold: true
     toc: true
+project:
+  execute-dir: "project"
+  output-dir: reports
 editor_options: 
   chunk_output_type: console
 ---

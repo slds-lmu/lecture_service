@@ -13,8 +13,8 @@ attic
 logs
 comparison
 _site
-reports/*html
-reports/*_files
+*html
+*_files
 
 # Created by https://www.toptal.com/developers/gitignore/api/r,latex
 # Edit at https://www.toptal.com/developers/gitignore?templates=r,latex
