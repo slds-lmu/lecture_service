@@ -38,10 +38,10 @@ check_all_slides <- function(
         pixel_tol = pixel_tol, overwrite = overwrite
       )
 
-      result$compare_check <- isTRUE(compare_status$passed)
+      result$compare_check <- compare_status$passed
       result$compare_check_raw <- compare_status$output
 
-      if (!compare_status$passed) {
+      if (isFALSE(compare_status$passed)) {
         if (compare_status$pages == "") {
           result$compare_check_note <- compare_status$reason
         } else {
