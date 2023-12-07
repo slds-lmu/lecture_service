@@ -1,0 +1,179 @@
+---
+title: "File Enumerator"
+author: Lukas
+date: now
+format: 
+  html:
+    code-fold: true
+    toc: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(lese)
+library(data.table)
+library(ggplot2)
+library(dplyr)
+library(kableExtra)
+
+knitr::opts_chunk$set(warning = FALSE, message = FALSE)
+
+lecture_files <- rbindlist(lapply(lectures(), \(lecture) {
+  files <- fs::dir_ls(lecture, all = TRUE, recurse = TRUE, type = "file")
+  # Remove first element (lecture name) from path
+  files <- fs::path_rel(files, start = lecture)
+
+  # Filter out .git
+  files <- fs::path_filter(files, glob = ".git/*", invert = TRUE)
+  fs::path_split(files[5:10])
+
+  
+  data.table(
+    lecture = lecture,
+    file = fs::path_file(files),
+    parent_dir = fs::path_dir(files),
+    extension = tolower(fs::path_ext(files))
+  )
+}))
+
+
+enumerate_files <- function(lecture) {
+  dir <- fs::dir_ls(lecture, recurse = TRUE, type = "dir")
+  # Remove first element (lecture name) from path
+  
+  file_list <- lapply(dir, \(d) {
+    dt <- data.table(
+      dir = fs::path_rel(d, start = lecture),
+      file = fs::dir_ls(path = d, recurse = TRUE, type = "file") |>
+        fs::path_file()
+    )
+    if (nrow(dt) == 0) return(data.table())
+    dt
+  })
+  file_dt <- as.data.table(dplyr::bind_rows(file_list))
+  
+  file_dt[, depth := lengths(fs::path_split(dir))]
+  file_dt[, extension := tolower(fs::path_ext(file))][]
+}
+
+count_files_per_dir <- function(lecture) {
+  file_tbl <- enumerate_files(lecture)
+
+  file_tbl |>
+    count(dir, depth, sort = TRUE) |>
+    arrange(desc(n)) |>
+    reactable::reactable(sortable = TRUE, filterable = TRUE, defaultPageSize = 20)
+}
+
+count_extensions_per_dir <- function(lecture) {
+  file_tbl <- enumerate_files(lecture)
+
+  file_tbl |>
+    count(dir, depth, extension, sort = TRUE) |>
+    arrange(desc(n)) |>
+    filter(n > 30) |>
+    reactable::reactable(sortable = TRUE, filterable = TRUE, defaultPageSize = 20)
+}
+
+total_counts <- function(lecture) {
+  lecture_files |>
+    filter(.data$lecture == .env$lecture) |>
+    count(lecture, sort = TRUE)
+}
+
+total_counts_ext <- function(lecture) {
+  lecture_files |>
+    filter(.data$lecture == .env$lecture) |>
+    count(extension, sort = TRUE) |>
+    filter(n >= 30)
+}
+```
+
+## lecture_i2ml
+
+```{r}
+total_counts("lecture_i2ml")
+total_counts_ext("lecture_i2ml")
+```
+
+
+```{r}
+count_files_per_dir("lecture_i2ml")
+```
+
+Counting file extension counts, only showing those with counts > 30
+
+```{r}
+count_extensions_per_dir("lecture_i2ml")
+```
+
+## lecture_sl
+
+```{r}
+total_counts("lecture_sl")
+total_counts_ext("lecture_sl")
+```
+
+```{r}
+count_files_per_dir("lecture_sl")
+```
+
+Counting file extension counts, only showing those with counts > 30
+
+```{r}
+count_extensions_per_dir("lecture_sl")
+```
+
+## lecture_advml
+
+```{r}
+total_counts("lecture_advml")
+total_counts_ext("lecture_advml")
+```
+
+```{r}
+count_files_per_dir("lecture_advml")
+```
+
+Counting file extension counts, only showing those with counts > 30
+
+```{r}
+count_extensions_per_dir("lecture_advml")
+```
+
+## lecture_optimization
+
+```{r}
+total_counts("lecture_optimization")
+total_counts_ext("lecture_optimization")
+```
+
+
+```{r}
+count_files_per_dir("lecture_optimization")
+```
+
+Counting file extension counts, only showing those with counts > 30
+
+```{r}
+count_extensions_per_dir("lecture_optimization")
+```
+
+
+## lecture_iml
+
+```{r}
+total_counts("lecture_iml")
+total_counts_ext("lecture_iml")
+```
+
+```{r}
+count_files_per_dir("lecture_iml")
+```
+
+Counting file extension counts, only showing those with counts > 30
+
+```{r}
+count_extensions_per_dir("lecture_iml")
+```
