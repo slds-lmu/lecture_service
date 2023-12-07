@@ -23,18 +23,10 @@ then
   if [ $(id -u) = 0 ]
   then
     echo "Root detected, installing globally"
-    pip3 install diff-pdf-visually
+    pip3 install diff-pdf-visually==1.7.0
   else
     echo "User not root, installing for user $(id -un)"
-    pip3 install --user diff-pdf-visually
-
-    # As of 2023-12-07, apparently pip3 installs to
-    # $HOME/.local/lib/python3.10/site-packages/diff_pdf_visually, which is not in path
-    # and the binary name is different for some reason. Trying this band-aid.
-    if [ $(whoami) = "runner" ]
-    then
-     ln -s $HOME/.local/lib/python3.10/site-packages/diff_pdf_visually $HOME/bin/diff-pdf-visually
-    fi
+    pip3 install --user diff-pdf-visually==1.7.0
   fi
   echo "-------------"
   echo "--- Done! ---"
