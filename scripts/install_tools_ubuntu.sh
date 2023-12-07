@@ -27,9 +27,20 @@ then
   else
     echo "User not root, installing for user $(id -un)"
     pip3 install --user diff-pdf-visually
+
+    # As of 2023-12-07, apparently pip3 installs to
+    # $HOME/.local/lib/python3.10/site-packages/diff_pdf_visually, which is not in path
+    # and the binary name is different for some reason. Trying this band-aid.
+    if [ $(whoami) = "runner" ]
+    then
+     ln -s $HOME/.local/lib/python3.10/site-packages/diff_pdf_visually $HOME/bin/diff-pdf-visually
+    fi
   fi
-  echo "Done!"
-  echo "Installed diff-pdf-visually to $(command -v diff-pdf-visually)"
+  echo "-------------"
+  echo "--- Done! ---"
+  echo "Installed diff-pdf-visually:"
+  pip3 show diff-pdf-visually
+  echo "Checking if it's in path: $(command -v diff-pdf-visually)"
 else
   echo "Found diff-pdf-visually at $(command -v diff-pdf-visually)"
 fi
@@ -64,7 +75,8 @@ then
     echo "Not root - trying to use sudo to install..."
     sudo make install
    fi
-  echo "Done!"
+  echo "-------------"
+  echo "--- Done! ---"
   echo "Installed diff-pdf to $(command -v diff-pdf)"
   cd -
 else

@@ -54,7 +54,7 @@ compare_slide <- function(slide_file, verbose = TRUE, create_comparison_pdf = FA
 
   tmp <- find_slide_tex(slide_file = slide_file)
 
-  result <- list(passed = NA, reason = "", pages = "", signif = "", output = "")
+  result <- list(passed = FALSE, reason = "", pages = "", signif = "", output = "")
 
   # Run check again rather than relying on tmp$pdf_exists just in case PDF was just compiled
   if (!(fs::file_exists(tmp$pdf))) {
