@@ -42,6 +42,8 @@ lecture_service
 You can either manually `git clone` lecture repos or use `scripts/clone_lectures.sh` or `scripts/download_lectures.sh`.
 Since the git repositories can be fairly large due to the included PDF files, I recommend to clone with `--depth 1 --single-branch` if done manually, which only fetches the most recent commit and the default branch.
 
+### Slide Checking
+
 If all required software is installed (see next section), you can run
 
 ```sh
@@ -69,6 +71,24 @@ Or, if you prefer to work from the terminal, I experimentally wrapped most funct
 
 # Only the forests topic (auto-detects that this is in i2ml)
 ./lecheck compile -t forests
+```
+
+### Counting Files
+
+A separate quarto files can be rendered to count all files per directories in lecture folders.
+If you have not set up this repository alread, run:
+
+```sh
+git clone https://github.com/slds-lmu/lecture_service.git
+cd lecture_service
+make download
+make install-service
+```
+
+And then render the report:
+
+```
+quarto render file_counts.qmd
 ```
 
 ## Prerequisites
