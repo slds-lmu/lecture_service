@@ -12,7 +12,7 @@ version <- "SLDS Lecture Checker 0.3\n"
 doc <- 'SLDS Lecture Checker.
 
 Usage:
-  lecheck [compile] [compare] [--lecture=<lc>] [--topic=<tc>] [--slide=<sn>] [--clean] [--no-margin] [--background]
+  lecheck [compile] [compare] [--lecture=<lc>] [--topic=<tc>] [--slide=<sn>] [--clean] [--no-margin] [--background] [--pdf-copy]
   lecheck compile [--pdf-copy] [--tinytex] [--background] [--path=<path>]
   lecheck compare [--no-comparison-pdf] [--background] [--path=<path>]
   lecheck everything [--path=<path>] [--no-comparison-pdf] [--background]
