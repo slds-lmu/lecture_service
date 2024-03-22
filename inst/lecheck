@@ -12,9 +12,10 @@ version <- "SLDS Lecture Checker 0.3\n"
 doc <- 'SLDS Lecture Checker.
 
 Usage:
-  lecheck [compile] [compare] [--lecture=<lc>] [--topic=<tc>] [--slide=<sn>] [--clean] [--no-margin] [--background] [--pdf-copy]
+  lecheck [compile] [compare] [clean] [--lecture=<lc>] [--topic=<tc>] [--slide=<sn>] [--preclean] [--no-margin] [--background] [--pdf-copy] [--verbose]
   lecheck compile [--pdf-copy] [--tinytex] [--background] [--path=<path>]
   lecheck compare [--no-comparison-pdf] [--background] [--path=<path>]
+  lecheck clean [--background]
   lecheck everything [--path=<path>] [--no-comparison-pdf] [--background]
   lecheck list [--lecture=<lc>] [--topic=<tc>] [--path=<path>]
   lecheck (-h | --help)
@@ -24,6 +25,7 @@ Example:
   lecheck compile -l i2ml
   lecheck compile -t cart
   lecheck compare -s slides-basics-riskminimization
+  lecheck clean -l i2ml
   lecheck list
   lecheck # same as lecheck list
 
@@ -45,7 +47,7 @@ Options:
   list                  List all lectures and topics found at <path>.
   --path=<path>         Set directory to look for lecture_* repos in. Defaults to `here::here()` [default: here].
                         This is still experimental, unfortunately path flexibility is hard.
-  --clean               Cleans up using `latexmk -C` before compilation.
+  --preclean             Cleans up using `latexmk -C` before compilation.
   --tinytex             Use TinyTex latexmk emulation to auto-install missing packages.
   --background          Do not wait for compilation for status checks. Not applicable if --tinytex is used.
                         Note that this still enumerates lectures and topics but omits status reports.
@@ -61,11 +63,10 @@ if (is.null(arguments)) quit(save = "no", status = 1)
 if (interactive()) {
   # For debugging
   # arguments <- docopt::docopt(doc, version = version, args = c("compile", "--clean", "--slide=slides-boosting-cwb-basics"))
-  arguments <- docopt::docopt(doc, version = version, args = c("compile", "-t cart", "--no-margin"))
-  arguments <- docopt::docopt(doc, version = version, args = c("compile", "-t cart", "--pdf-copy"))
-  arguments <- docopt::docopt(doc, version = version, args = c("compile", "-t cart", "--background"))
-
-  arguments <- tryCatch(docopt::docopt(doc, version = version, args = c("list", "compile")), error = function(e) cat(doc))
+  #arguments <- docopt::docopt(doc, version = version, args = c("compile", "-t cart", "--no-margin"))
+  #arguments <- docopt::docopt(doc, version = version, args = c("compile", "-t cart", "--pdf-copy"))
+  #arguments <- tryCatch(docopt::docopt(doc, version = version, args = c("list", "compile")), error = function(e) cat(doc))
+  arguments <- docopt::docopt(doc, version = version, args = c("compile", "-l i2ml", "-t cart", "--background"))
 
   print(arguments)
 }
@@ -97,13 +98,13 @@ if (!(arguments$slide == "NULL")) {
 stopifnot("No matching slides found." = nrow(lectures_tbl) >= 1)
 
 if (arguments$everything) {
-  check_all_slides(lectures_tbl, pre_clean = arguments$clean,
+  check_all_slides(lectures_tbl, pre_clean = arguments$preclean,
                    create_comparison_pdf = !arguments$no_comparison_pdf)
   quit(save = "no", status = 0)
 }
 
 # If we're here and neither compile nor compare, we fall back to listing lectures.
-if (!(arguments$compile | arguments$compare)) {
+if (!(arguments$compile | arguments$compare | arguments$clean)) {
   arguments$list <- TRUE
 }
 
@@ -150,15 +151,19 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
     for (current_slide in unique(current_topic_tbl$slide_name)) {
       current_slide_tbl <- current_topic_tbl[current_topic_tbl[["slide_name"]] == current_slide, ]
 
+      if (arguments$clean) clean_slide(slide_file = current_slide_tbl[["slide_name"]], verbose = arguments$verbose)
+
       if (arguments$compile) {
         if (arguments$tinytex) {
           compile_slide_tinytex(current_slide_tbl[["slide_name"]], margin = !arguments$no_margin)
         }
+
         res <- compile_slide(
           current_slide_tbl[["slide_name"]],
           margin = !arguments$no_margin,
           check_status = !arguments$background,
-          pre_clean = arguments$clean
+          pre_clean = arguments$preclean,
+          verbose = arguments$verbose
         )
 
         if (!arguments$background & !res$passed) {
@@ -179,11 +184,13 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
         } else {
           cli::cli_alert_warning("Can't copy {fs::path_file(current_slide_tbl[[\"pdf\"]])} to slides-pdf/: Does not exist.")
         }
-
       }
 
       if (arguments$compare) {
-        compare_slide(current_slide_tbl[["slide_name"]], create_comparison_pdf = !arguments$no_comparison_pdf)
+        compare_slide(
+          current_slide_tbl[["slide_name"]],
+          create_comparison_pdf = !arguments$no_comparison_pdf, verbose = arguments$verbose
+        )
       }
     }
   }

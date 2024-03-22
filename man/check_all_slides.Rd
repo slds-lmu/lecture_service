@@ -5,7 +5,7 @@
 \title{Compile and compare all the slides}
 \usage{
 check_all_slides(
-  lectures_tbl = collect_lectures(),
+  lectures_tbl = collect_lectures(filter_lectures = lectures()),
   pre_clean = FALSE,
   create_comparison_pdf = TRUE,
   parallel = TRUE,

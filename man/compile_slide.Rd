@@ -16,7 +16,7 @@ compile_slide(
 \arguments{
 \item{slide_file}{\code{character(1)}: A single slide .tex file (see examples).}
 
-\item{pre_clean}{\verb{[TRUE]}: Run \verb{make clean} beforehand, ensuring a clean slate.}
+\item{pre_clean}{\verb{[TRUE]}: Run \code{clean_slide()} beforehand, ensuring a clean slate.}
 
 \item{margin}{\verb{[TRUE]} By default renders slides with margin. Otherwise a 4:3 slide is
 rendered.}

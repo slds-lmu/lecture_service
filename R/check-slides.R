@@ -10,7 +10,7 @@
 #'
 #' @export
 check_all_slides <- function(
-    lectures_tbl = collect_lectures(), pre_clean = FALSE,
+    lectures_tbl = collect_lectures(filter_lectures = lectures()), pre_clean = FALSE,
     create_comparison_pdf = TRUE, parallel = TRUE,
     thresh_psnr = 40, dpi_check = 50, dpi_out = 100,
     pixel_tol = 20, overwrite = FALSE

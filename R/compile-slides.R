@@ -74,12 +74,55 @@ make_slides <- function(topic, lectures_tbl = collect_lectures(), make_arg = "mo
   invisible(result)
 }
 
+#' Clean output for a single .tex file
+#'
+#' @param slide_file `character(1)`: A single slide .tex file (see examples).
+#' @param verbose `[TRUE]`: Print additional output to the console.
+#'
+#' @return Invisibly: A list with entries
+#'  - passed: TRUE indicates a successful compilation, FALSE a failure.
+#'  - log: Absolute path to the log file in case of a non-zero exit status.
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' # Create the PDF
+#' compile_slide("slides-cart-computationalaspects.tex")
+#'
+#'# Remove the PDF and other output
+#' clean_slide("slides-cart-computationalaspects.tex")
+#' }
+clean_slide <- function(slide_file, verbose = FALSE) {
+  tmp <- find_slide_tex(slide_file = slide_file)
 
+  # .nav and .snm are not covered by latexmk -C
+  check = sapply(c("nav", "snm"), \(ext) {
+    detritus <- fs::path_ext_set(tmp$tex, ext)
+    if (fs::file_exists(detritus)) {
+      if (verbose) cli::cli_alert("Deleting {detritus}")
+      fs::file_delete(detritus)
+    }
+  })
+
+  pc <- processx::process$new(
+    command = "latexmk", args = c("-C", tmp$slide_name),
+    wd = tmp$slides_dir,
+    echo_cmd = verbose
+  )
+  pc$wait()
+  exit <- pc$get_exit_status()
+  # I don't see how this should fail, so if it does you dun goof'd
+  if (exit != 0) {
+    cli::cli_alert_danger("latexmk -C failed for some unholy reason for {slide_file}")
+  }
+
+  exit == 0
+}
 
 #' Compile a single .tex file
 #'
 #' @param slide_file `character(1)`: A single slide .tex file (see examples).
-#' @param pre_clean `[TRUE]`: Run `make clean` beforehand, ensuring a clean slate.
+#' @param pre_clean `[TRUE]`: Run `clean_slide()` beforehand, ensuring a clean slate.
 #' @param margin `[TRUE]` By default renders slides with margin. Otherwise a 4:3 slide is
 #'   rendered.
 #' @param check_status `[TRUE]`: Wait for `make` to finish and return the exit status.
@@ -107,14 +150,7 @@ compile_slide <- function(slide_file, pre_clean = TRUE, margin = TRUE,
 
   tmp <- find_slide_tex(slide_file = slide_file)
 
-  if (pre_clean) {
-    pc <- processx::process$new(
-      command = "latexmk", args = c("-C", tmp$slide_name),
-      wd = tmp$slides_dir, echo_cmd = FALSE)
-    pc$wait()
-    # I don't see how this should fail, so if it does you dun goof'd
-    stopifnot("latexmk -C failed for some unholy reason" = pc$get_exit_status() == 0)
-  }
+  if (pre_clean) clean_slide(slide_file)
 
   log_stderr <- NULL
   log_stdout <- NULL
@@ -137,7 +173,7 @@ compile_slide <- function(slide_file, pre_clean = TRUE, margin = TRUE,
     wd = tmp$slides_dir,
     stderr = log_stderr,
     stdout = log_stdout,
-    echo_cmd = FALSE,
+    echo_cmd = verbose,
     supervise = TRUE
   )
 
@@ -147,7 +183,7 @@ compile_slide <- function(slide_file, pre_clean = TRUE, margin = TRUE,
     p$wait()
 
     if (p$get_exit_status() == 0) {
-      if (verbose) cli::cli_alert_success("{tmp$slide_name} compiles")
+      cli::cli_alert_success("{tmp$slide_name} compiles")
       # Only keep error log if there's an actual error, file contains spurious error msg otherwise
       # if (log) {
       #   fs::file_delete(log_stdout)
@@ -155,7 +191,7 @@ compile_slide <- function(slide_file, pre_clean = TRUE, margin = TRUE,
       # }
       result$passed <- TRUE
     } else {
-      if (verbose) cli::cli_alert_danger("{tmp$slide_name} exited with status {p$get_exit_status()}")
+      cli::cli_alert_danger("{tmp$slide_name} exited with status {p$get_exit_status()}")
       result$passed <- FALSE
       result$note <- check_log(slide_file, before = 0, after = 2)
     }
