@@ -12,7 +12,7 @@ slide_status*.html
 attic
 logs
 comparison
-_site
+_site*
 *html
 *_files
 

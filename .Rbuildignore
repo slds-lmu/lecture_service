@@ -9,7 +9,7 @@
 ^_site$
 \.Rmd$
 \.rds$
-^LECTURES_INCLUDE$
+^include_lectures$
 \./code-workspace$
 ^lecheck$
 ^Makefile$
@@ -19,4 +19,6 @@
 ^\.github$
 ^slide_status_files$
 ^slide_status\.html$
+^slide_status_pr\.md$
 ^LICENSE\.md$
+^file_counts\.*$
