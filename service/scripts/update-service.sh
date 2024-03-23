@@ -9,14 +9,15 @@ CURRENTDIR="$(basename $PWD)"
 
 if [[ $CURRENTDIR == lecture_service ]]
 then
-  echo "THis script should be run in the lecture repo, not the service repo!"
+  echo "This script should be run in the lecture repo (e.g. lecture_i2ml), \033[1mnot\033[22m the service repo!"
   exit 1
 fi
 
 
 if [[ $CURRENTDIR != lecture_* ]]
 then
-  echo "This does not look like a lecture repo?"
+  echo "This does not look like a lecture repo!"
+  echo "Make sure your current working directory is e.g. \033[1mlecture_i2ml\033[22m, rather than a subdirectory."
   exit 1
 fi
 
