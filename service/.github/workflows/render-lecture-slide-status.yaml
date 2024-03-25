@@ -82,7 +82,7 @@ jobs:
         run: |
           echo "dir=$(Rscript --quiet -e 'cat(.libPaths()[[1]])')" >> $GITHUB_OUTPUT
       - name: Restore R package cache
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ steps.r-cache.outputs.dir }}
           key: ${{ runner.os }}-r-${{inputs.cache-version }}-${{ hashFiles('scripts/install_r_deps.R') }}
@@ -112,7 +112,7 @@ jobs:
       # Deploy using this rather than JamesIves/github-pages-deploy-action, as this supports pushing
       # orphan branches. Since we're adding a bunch of PDFs, we really want to avoid a bloated branch history
       - name: Deploy to GitHub pages
-        uses: peaceiris/actions-gh-pages@v3
+        uses: peaceiris/actions-gh-pages@v3.9.3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./_site
