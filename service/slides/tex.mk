@@ -11,8 +11,12 @@ FLSFILES = $(TSLIDES:%.tex=%.fls)
 
 # Default action compiles without margin and copies to slides-pdf!
 all: $(TPDFS)
-	$(MAKE) copy
-
+	@if [ -d "../../latex-math" ]; then\
+		$(MAKE) texclean;\
+		$(MAKE) copy;\
+	else\
+		echo "Cannot find 'latex-math' in root directory";\
+	fi
 # derivative action does the same for slides without margin (different filenames!)
 all-nomargin: $(NOMARGINPDFS)
 	$(MAKE) copy
@@ -21,11 +25,22 @@ all-nomargin: $(NOMARGINPDFS)
 most: $(FLSFILES)
 most-nomargin: $(NOMARGINPDFS)
 
+slides-pdf:
+	@if [ -d "../../latex-math" ]; then\
+		make texclean;\
+		make $(TPDFS);\
+		make copy;\
+		make texclean;\
+	else\
+		echo "Cannot find 'latex-math' in root directory";\
+	fi
+
 # Conditionally remove or create empty nospeakermargin.tex file to decide which layout to use
 # See /style/lmu-lecture.sty -- it's a whole thing but does the job.
 $(TPDFS): %.pdf: %.tex
 	-rm nospeakermargin.tex
-	latexmk -pdf $<
+	@echo render $<;
+	latexmk -halt-on-error -pdf $<
 
 $(NOMARGINPDFS): %-nomargin.pdf: %.tex
 	touch nospeakermargin.tex
