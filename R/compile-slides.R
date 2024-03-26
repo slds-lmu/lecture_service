@@ -99,7 +99,7 @@ clean_slide <- function(slide_file, verbose = FALSE) {
   check = sapply(c("nav", "snm"), \(ext) {
     detritus <- fs::path_ext_set(tmp$tex, ext)
     if (fs::file_exists(detritus)) {
-      if (verbose) cli::cli_alert("Deleting {detritus}")
+      # if (verbose) cli::cli_alert("Deleting {detritus}")
       fs::file_delete(detritus)
     }
   })

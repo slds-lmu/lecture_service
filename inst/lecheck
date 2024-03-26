@@ -41,13 +41,13 @@ Options:
                         No need for file extension etc. [default: NULL].
                         Takes precedence over --lecture and --topic.
   --no-margin           If set, compiles slides without speaker margin, i.e. 4:3 layout.
-  --pdf-copy            Copy rendered slides to slides-pdf/.
+  --pdf-copy            Copy rendered slides to slides-pdf/<slide-name>.tex.
   --no-comparison-pdf   Do not render comparison PDFs to comparison/.
   everything            Runs check_all_slides(), which saves results to a file rather than displaying them.
   list                  List all lectures and topics found at <path>.
   --path=<path>         Set directory to look for lecture_* repos in. Defaults to `here::here()` [default: here].
                         This is still experimental, unfortunately path flexibility is hard.
-  --preclean             Cleans up using `latexmk -C` before compilation.
+  --preclean            Cleans up using `latexmk -C` before compilation.
   --tinytex             Use TinyTex latexmk emulation to auto-install missing packages.
   --background          Do not wait for compilation for status checks. Not applicable if --tinytex is used.
                         Note that this still enumerates lectures and topics but omits status reports.
@@ -151,7 +151,10 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
     for (current_slide in unique(current_topic_tbl$slide_name)) {
       current_slide_tbl <- current_topic_tbl[current_topic_tbl[["slide_name"]] == current_slide, ]
 
-      if (arguments$clean) clean_slide(slide_file = current_slide_tbl[["slide_name"]], verbose = arguments$verbose)
+      if (arguments$clean) {
+        cli::cli_alert_info("Cleaning {current_slide_tbl[['slide_name']]}", id = current_topic)
+        clean_slide(slide_file = current_slide_tbl[["slide_name"]], verbose = arguments$verbose)
+      }
 
       if (arguments$compile) {
         if (arguments$tinytex) {
