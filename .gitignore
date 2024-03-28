@@ -9,6 +9,9 @@ slide_status.html
 slide_status*.md
 slide_status*.html
 
+# Only for local testing of tex.mk
+service/slides/Makefile
+
 attic
 logs
 comparison
