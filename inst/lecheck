@@ -139,7 +139,8 @@ if (arguments$list) {
 
 # Iterate over lectures if there are more than one in the current set
 # Iteratively creating subsets of the lectures_tbl for the respective scope (lecture / topic / slide)
-# is probably not the best solution here but it feels easy to understand and robust enough. Can still smartify this.
+# is probably not the best solution here but it feels easy to understand and robust enough.
+# Can still smartify this.
 for (current_lecture in unique(lectures_tbl$lecture)) {
   cli::cli_h1("{current_lecture}")
   current_lecture_tbl <- lectures_tbl[lectures_tbl[["lecture"]] == current_lecture, ]
@@ -172,7 +173,6 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
         if (!arguments$background & !res$passed) {
           cli::cli_alert("Checking log for common errors:")
           found_errors <- check_log(current_slide_tbl[["slide_name"]], after = 2)
-
           cli::cli_ul("{found_errors}")
         }
       }

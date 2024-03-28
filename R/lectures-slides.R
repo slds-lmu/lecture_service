@@ -18,7 +18,7 @@ collect_lectures <- function(
     filter_lectures = NULL,
     exclude_slide_subdirs = c("attic", "rsrc", "all", "figure_man", "figures_tikz",
                               "figure", "tex", "backup"),
-    exclude_slide_names = c("chapter-order", "chapter-order-nutshell")
+    exclude_slide_names = c("chapter-order", "chapter-order-nutshell", "nospeakermargin")
 ) {
 
   # Take ls with absolute file paths, directories only, and those matching lecture_asdf format
@@ -71,11 +71,10 @@ collect_lectures <- function(
   lectures_tbl <- subset(lectures_tbl, !(slide_name %in% exclude_slide_names))
   lectures_tbl <- subset(lectures_tbl, !grepl("^OLD-", slide_name))
 
-
   lectures_tbl$pdf_exists <- fs::file_exists(lectures_tbl$pdf)
   lectures_tbl$pdf_static_exists <- fs::file_exists(lectures_tbl$pdf_static)
 
-  # Rownames where absolute paths to tex files, not helpful
+  # Rownames were absolute paths to tex files, not helpful
   rownames(lectures_tbl) <- NULL
 
   lectures_tbl[, c("lecture", "topic", "slide_name", "tex", "tex_log", "slides_dir", "pdf", "pdf_exists",
