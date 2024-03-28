@@ -1,7 +1,10 @@
 ---
 title: "Lecture Slide Status Overview"
 date: '`r format(Sys.time(), format = "%F %T", tz = "Europe/Berlin", usetz = TRUE)`'
-output: github_document
+output: 
+  github_document:
+    toc: true
+    toc_depth: 3
 always_allow_html: true
 editor_options:
   chunk_output_type: console
@@ -22,7 +25,7 @@ if (!file.exists("slide_check_cache.rds")) {
   stop(paste(
     "slide_check_cache.rds does not exists.",
     "Run `make` and get a coffee, or",
-    "Rscript -e 'source(here::here(\"helpers.R\")); check_all_slides()", sep = "\n "
+    "Rscript -e 'lese::check_all_slides()", sep = "\n "
   ))
 }
 
@@ -98,12 +101,26 @@ check_table <- all_slide_check |>
 
 for (current_lecture in lectures) {
 
-  tmp <-  check_table |>
+  tmp <- check_table |>
     dplyr::filter(lecture == current_lecture)
 
   cat(sprintf("\n## %s \n\n", current_lecture))
 
   cat(sprintf("%i topics with a total of %i slides\n", length(unique(tmp$topic)), nrow(tmp)))
+  
+  tmp |>
+    dplyr::count(compile_check) |>
+    knitr::kable(
+      format = "html"
+    ) |>
+    cat()
+  
+  tmp |>
+    dplyr::count(compile_check, compare_check) |>
+    knitr::kable(
+      format = "html"
+    ) |>
+    cat()
 
   for (current_topic in sort(unique(tmp$topic))) {
     tmp <- check_table |>
