@@ -13,11 +13,11 @@ doc <- 'SLDS Lecture Checker.
 
 Usage:
   lecheck [compile] [compare] [clean] [--lecture=<lc>] [--topic=<tc>] [--slide=<sn>] [--preclean] [--no-margin] [--background] [--pdf-copy] [--verbose]
-  lecheck compile [--pdf-copy] [--tinytex] [--background] [--path=<path>]
-  lecheck compare [--no-comparison-pdf] [--background] [--path=<path>]
+  lecheck compile [--pdf-copy] [--tinytex] [--background]
+  lecheck compare [--no-comparison-pdf] [--background]
   lecheck clean [--background]
-  lecheck everything [--path=<path>] [--no-comparison-pdf] [--background]
-  lecheck list [--lecture=<lc>] [--topic=<tc>] [--path=<path>]
+  lecheck everything [--no-comparison-pdf] [--background]
+  lecheck list [--lecture=<lc>] [--topic=<tc>]
   lecheck (-h | --help)
   lecheck --version
 
@@ -27,11 +27,12 @@ Example:
   lecheck compare -s slides-basics-riskminimization
   lecheck clean -l i2ml
   lecheck list
-  lecheck # same as lecheck list
 
 Options:
   -h --help             Show this screen.
   --version             Show version.
+  everything            Runs check_all_slides(), which saves results to a file rather than displaying them.
+  list                  List all lectures and topics found in this directory.
   -l --lecture=<lc>     Lecture repository, e.g. "lecture_i2ml".
                         Can be abbreviated (dropping "lecture_" prefix) [default: NULL].
   -t --topic=<tc>       Lecture topic, e.g. "cart".
@@ -43,10 +44,6 @@ Options:
   --no-margin           If set, compiles slides without speaker margin, i.e. 4:3 layout.
   --pdf-copy            Copy rendered slides to slides-pdf/<slide-name>.tex.
   --no-comparison-pdf   Do not render comparison PDFs to comparison/.
-  everything            Runs check_all_slides(), which saves results to a file rather than displaying them.
-  list                  List all lectures and topics found at <path>.
-  --path=<path>         Set directory to look for lecture_* repos in. Defaults to `here::here()` [default: here].
-                        This is still experimental, unfortunately path flexibility is hard.
   --preclean            Cleans up using `latexmk -C` before compilation.
   --tinytex             Use TinyTex latexmk emulation to auto-install missing packages.
   --background          Do not wait for compilation for status checks. Not applicable if --tinytex is used.
@@ -77,9 +74,9 @@ arguments$lecture <- gsub("^\\s*", "", arguments$lecture)
 arguments$slide <- gsub("^\\s*", "", arguments$slide)
 
 # Subset to only currently relevant lecture
-if (arguments$path == "here") arguments$path <- here::here()
+# if (arguments$path == "here") arguments$path <- here::here()
 
-lectures_tbl <- collect_lectures(lectures_path = arguments$path, filter_lectures = lectures())
+lectures_tbl <- collect_lectures(lectures_path = here::here(), filter_lectures = lectures())
 
 # If slide is specified, takes highest precedence. Then topic, then lecture.
 # Ensures that if e.g. slide from advml is set but lecture is i2ml, slide "wins"
@@ -192,7 +189,7 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
       if (arguments$compare) {
         compare_slide(
           current_slide_tbl[["slide_name"]],
-          create_comparison_pdf = !arguments$no_comparison_pdf, verbose = arguments$verbose
+          create_comparison_pdf = !arguments$no_comparison_pdf, verbose = TRUE # arguments$verbose
         )
       }
     }
