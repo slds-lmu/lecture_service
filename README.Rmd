@@ -1,0 +1,241 @@
+---
+title: SLDS Lecture Service
+output: 
+  github_document:
+    toc: true
+---
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+<!-- badges: start -->
+[![render-status-check](https://github.com/slds-lmu/lecture_service/actions/workflows/render-status-check.yaml/badge.svg)](https://github.com/slds-lmu/lecture_service/actions/workflows/render-status-check.yaml)
+[![Slide Check Overview](https://img.shields.io/badge/Slide_Check_Overview-E0911F)](https://slds-lmu.github.io/lecture_service/)
+<!-- badges: end -->
+
+This project has two goals:
+
+1. Provide common assets needed for all lectures, once, to keep them in sync.
+2. Check slides in lecture repositories (do they compile, are the PDFs up to date?).
+
+(It also happens to be an R package `lese` you can install with many convenience functions)
+
+For 1), all required files should live in `./service/` with the **correct folder structure** such that one can simply copy the files from this directory "on top" of an existing lecture, e.g.:
+
+```sh
+rsync -r lecture_service/service/ lecture_i2ml/
+```
+
+This is wrapped with the script in `service/scripts/update-service.sh`, which is also synced into each lecture's top-level `/scripts/` folder.
+
+Afterwards, `git status` can be used to check changes.
+Note that as of 2024-04-03 the state of the `service` folder is almost ready for action.
+
+The remainder of this document describes the steps needed for goal 2) slide checking.
+
+## Overview
+
+The assumed directory structure once lecture repositories where cloned (or downloaded) looks like this:
+
+```
+lecture_service
+├── lecture_advml
+├── lecture_i2ml
+├── lecture_sl
+├── [...]
+├── helpers.R
+├── Makefile
+├── scripts
+└── [...]
+```
+
+You can either manually `git clone` lecture repos or use `scripts/clone_lectures.sh` or `download_lectures.sh` respectively.
+The `Makefiles` has targets `clone` and `download` for these purposes.
+Since the git repositories can be fairly large due to the included PDF files, I recommend to clone with `--depth 1 --single-branch` if done manually, which only fetches the most recent commit and the default branch.
+
+Note that the text file `include_lectures` is used to globally keep track of the relevant lecture repos, so if you only intend to work on `lecture_advml` you could set it to only contain `lecture_advml` and subsequent `make` commands and other functions
+will be limited on scope to this lecture.
+By default it contains all lectures currently hosted at `slds-lmu/`.
+
+### Quick Start
+
+The remaining README goes into a little more detail, while this is the "just get me started" bit.
+
+Say you are working on `lecture_sl` and want to ensure all slides are compiling without error, then starting from scratch the workflow is as follows:
+
+1. Setup the service repo, using a `--single-branch` clone to avoid pulling the `gh-pages` branch that's not needed locally.
+2. File `include_lectures` globally determindes the lecture(s) of interest, so set it to `lecture_sl`
+3. Install various things in R, LaTeX and the system with `make`. See also `make help` and the scripts in `./scripts/install_*`.
+
+```sh
+git clone --single-branch https://github.com/slds-lmu/lecture_service.git
+cd lecture_service
+
+# Content in 'include_lectures' determines which lectures are cloned and otherwise considered
+echo "lecture_sl" > include_lectures
+
+# Clone lecture_sl (uses shallow clone, main branch only)
+make clone
+# Install all the things
+make install
+```
+
+From here on out, you have various options for compilation and comparison.  
+The `Makefile` default target is `site`, giving you the whole comparison site:
+
+```r
+# Renderes comparison to _site/index.html incl comparison PDFs
+make site
+```
+
+Alternatively, you can use the included R package `lese` to compile and compare slides individually:
+
+```r
+# Full path to slide
+lese::compile_slide("lecture_sl/slides/regularization/slides-regu-early-stopping.tex")
+
+# Optionally omitting the path and even the file extension, relying on internal lookup
+lese::compile_slide("slides-regu-early-stopping")
+
+# And compare to slides-pdf/ version
+lese::compare_slide("slides-regu-early-stopping")
+```
+
+The included command-line tool in `./inst/lecheck` can be used as well, if symlinked into your `$PATH:
+
+```sh
+# Compile all slides in the 'regularization' topic (in lecture_sl)
+lecheck compile -t regularization
+
+# Remove all LaTeX detritus and output PDF from all slides in the lecture.
+# Can also use 'sl' as 'lecture_' prefix is trimmed
+lecheck clean -l lecture_sl
+
+# Compile a single slide (from i2ml in this case)
+lecheck compile -s slides-regu-early-stopping
+
+# Compare against slides in slides-pdf
+lecheck compare -t regularization
+```
+
+Note that `lecheck` can only be run in the `lecture_service` directory which must contain the lecture repos.  
+
+## Slide Checking
+
+If all required software is installed (see next section), you can run
+
+```sh
+make
+```
+
+which produces a site at `_site/index.html`.
+
+`_site/` also contains `lecture_*` folders which *do not* contain the entire lecture repositories, but only the rendered slide PDF files.
+These are used for visual comparison of PDFs produced from `<slide>.tex` files and the "known good" `slide-pdf/<slide>.pdf` file.
+It also contains a `comparison` folder, which contains PDF diffs produced by [`diff-pdf`](https://github.com/vslavik/diff-pdf).
+These notably only contain the pages that actually contain some (possibly very minor) differences.
+
+For manual use in R you can also use the helper functions in `R/` directly.
+
+Or, if you prefer to work from the terminal, I experimentally wrapped most functionality in a command-line tool, see `./inst/lecheck --help`.  
+The following examples assume that you have added or symlinked `lecheck` into your `$PATH`:
+
+```sh
+# List topics in given lecture
+lecheck -l lecture_i2ml
+
+# Compile and then compare all slides in i2ml, using lazy shorthand for i2ml
+lecheck compile -l i2ml
+lecheck compare -l i2ml
+
+# Only the forests topic (auto-detects that this is in i2ml as slide names and topics are assumed to be unique)
+lecheck compile -t forests
+```
+
+## Counting Files
+
+A separate quarto file can be rendered to count all files per directories in lecture folders.
+If you have not set up this repository alread, run:
+
+```sh
+git clone --single-branch https://github.com/slds-lmu/lecture_service.git
+cd lecture_service
+make download
+make install-service
+```
+
+And then render the report:
+
+```
+quarto render file_counts.qmd
+```
+
+## Prerequisites
+
+Scripts to install R, LaTeX, and system dependencies are located in `scripts/`.
+This should work reproducibly on recent Ubuntu versions as it does on GitHub actions, but system tools will need special handling on other OSes.
+I have it running on macOS as well but have no test system to check a reproducible approach, and I have no idea how to make any of this work on Windows, sorry (maybe try WSL?).
+
+```sh
+# Install R packages
+make install-r
+
+# Install LaTeX packages via TinyTeX
+make install-tex
+
+# Attempt to install diff-pdf (from source) and diff-pdf-visually (via pip)
+make install-tools-ubuntu
+
+# Since this is also an R package, install it with e.g.
+make install-service
+```
+
+### Tools
+
+These are installed via `scripts/install_tools_ubuntu.sh` or `make install-tools-ubuntu`.
+
+- [`diff-pdf-visually`](https://pypi.org/project/diff-pdf-visually/): For a simple parseable check, e.g.
+
+```sh
+❯ diff-pdf-visually slides-forests-proximities.pdf ../../slides-pdf/slides-forests-proximities.pdf
+  Temporary directory: /var/folders/n1/p1hxy7856nndrd0njv0lxzgw0000gn/T/diffpdfdy0681qc
+  Converting each page of the PDFs to an image...
+  PDFs have same number of pages. Checking each pair of converted images...
+Min sig = 14.1795, significant?=True. The PDFs are different. The most different pages are: page 5 (sgf. 14.1795), page 2 (sgf. 14.6277), page 4 (sgf. 15.1376), page 7 (sgf. 16.1474), page 3 (sgf. 16.6224).
+```
+
+This needs to be installed and in your `$PATH`, such that `processx::process()` can run it.
+The output is used to automatically check if it is necessary to run `diff-pdf`.
+
+
+- [`diff-pdf`](https://vslavik.github.io/diff-pdf/), for an actual visual comparison for your eyeballs:
+
+```sh
+diff-pdf --view slides-forests-proximities.pdf ../../slides-pdf/slides-forests-proximities.pdf
+```
+
+This is used to produce PDFs of only the differences at `comparison` and for the HTML table.
+
+
+### LaTeX Dependencies
+
+LaTeX dependencies are installed via `scripts/install_tex_deps.R` or `make install-tex` via TinyTeX (recommended) or system `tlmgr`.
+
+Install [TinyTeX](https://yihui.org/tinytex/):
+
+```r
+install.packages("tinytex")
+tinytex::install_tinytex()
+```
+
+To make sure you can compile slides locally:
+
+```r
+# tinytex emulates latexmk and installs missing latex packages automatically.
+# Wrapper fun in service repo just sets working directories automatically
+lese::compile_slide_tinytex("lecture_i2ml/slides/cart/slides-cart-splitcriteria-classification.tex")
+```
+
+Or using `latexmk` instead of TinyTeX:
+
+```r
+lese::compile_slide("lecture_i2ml/slides/cart/slides-cart-splitcriteria-classification.tex")
+```
