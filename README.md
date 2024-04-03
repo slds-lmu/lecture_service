@@ -112,6 +112,8 @@ site:
 make site
 ```
 
+#### Using the R package `lese`
+
 Alternatively, you can use the included R package `lese` to compile and
 compare slides individually:
 
@@ -138,6 +140,8 @@ lese::compare_slide("slides-regu-early-stopping")
 ```
 
     ## ✔ slides-regu-early-stopping
+
+#### Using the cli `lecheck`
 
 The included command-line tool in `./inst/lecheck` can be used as well,
 if symlinked into your \`\$PATH.  
@@ -242,6 +246,26 @@ lecheck compare -s slides-regu-early-stopping
 
 Note that `lecheck` can only be run in the `lecture_service` directory
 which must contain the lecture repos.
+
+#### Compile `all` slides
+
+To compile all slides in a lecture in 4:3 (relying on the LaTeX file in
+`style/` to be updated in the lecture) and copies them to `slides-pdf`:
+
+    lecheck compile -l sl --preclean --no-margin --pdf-copy
+
+This compiles one-by one, emitting errors if they come up. Add
+`--background` to skip any error reporting and speed up the process.
+
+Afterwards the special `slides/all` slide set containing all slides
+combined can be compiled manually using the regular `Makefile`:
+
+    cd lecture_sl/slides/all
+
+    make most-nomargin
+
+This does not copy the `lecture_sl.pdf` file to `slides-pdf` yet, but
+`make all-nomargin` would.
 
 ## Slide Checking
 
