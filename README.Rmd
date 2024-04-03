@@ -29,7 +29,7 @@ This is wrapped with the script in `service/scripts/update-service.sh`, which is
 Afterwards, `git status` can be used to check changes.
 Note that as of 2024-04-03 the state of the `service` folder is almost ready for action.
 
-The remainder of this document describes the steps needed for goal 2) slide checking.
+The remainder of this document describes the steps needed for goal 2) [slide checking](#slide-checking).
 
 ## Overview
 
@@ -88,32 +88,46 @@ make site
 
 Alternatively, you can use the included R package `lese` to compile and compare slides individually:
 
-```r
-# Full path to slide
+```{r}
 lese::compile_slide("lecture_sl/slides/regularization/slides-regu-early-stopping.tex")
+```
 
-# Optionally omitting the path and even the file extension, relying on internal lookup
+You can omit most parts for the slide file path to rely on the internal lookup mechanism
+
+```r
 lese::compile_slide("slides-regu-early-stopping")
+```
 
-# And compare to slides-pdf/ version
+Comparing slides to their `slides-pdf/` counterparts works analogously (see [Tools](#tools) for an explanation).
+
+```{r}
 lese::compare_slide("slides-regu-early-stopping")
 ```
 
-The included command-line tool in `./inst/lecheck` can be used as well, if symlinked into your `$PATH:
+The included command-line tool in `./inst/lecheck` can be used as well, if symlinked into your `$PATH.  
+It is still experimental and features can and will change.
 
-```sh
+```{sh}
+lecheck --help
+```
+
+```{sh}
 # Compile all slides in the 'regularization' topic (in lecture_sl)
 lecheck compile -t regularization
+```
 
+```sh
 # Remove all LaTeX detritus and output PDF from all slides in the lecture.
 # Can also use 'sl' as 'lecture_' prefix is trimmed
 lecheck clean -l lecture_sl
+```
 
+```{sh}
 # Compile a single slide (from i2ml in this case)
 lecheck compile -s slides-regu-early-stopping
 
 # Compare against slides in slides-pdf
-lecheck compare -t regularization
+lecheck compare -s slides-regu-early-stopping
 ```
 
 Note that `lecheck` can only be run in the `lecture_service` directory which must contain the lecture repos.  
@@ -234,7 +248,7 @@ To make sure you can compile slides locally:
 lese::compile_slide_tinytex("lecture_i2ml/slides/cart/slides-cart-splitcriteria-classification.tex")
 ```
 
-Or using `latexmk` instead of TinyTeX:
+Or using `latexmk` internally instead of TinyTeX:
 
 ```r
 lese::compile_slide("lecture_i2ml/slides/cart/slides-cart-splitcriteria-classification.tex")

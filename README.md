@@ -2,7 +2,7 @@ SLDS Lecture Service
 ================
 
 - [Overview](#overview)
-- [Quick Start](#quick-start)
+  - [Quick Start](#quick-start)
 - [Slide Checking](#slide-checking)
 - [Counting Files](#counting-files)
 - [Prerequisites](#prerequisites)
@@ -42,7 +42,7 @@ Afterwards, `git status` can be used to check changes. Note that as of
 2024-04-03 the state of the `service` folder is almost ready for action.
 
 The remainder of this document describes the steps needed for goal 2)
-slide checking.
+[slide checking](#slide-checking).
 
 ## Overview
 
@@ -73,7 +73,7 @@ subsequent `make` commands and other functions will be limited on scope
 to this lecture. By default it contains all lectures currently hosted at
 `slds-lmu/`.
 
-## Quick Start
+### Quick Start
 
 The remaining README goes into a little more detail, while this is the
 “just get me started” bit.
@@ -116,33 +116,129 @@ Alternatively, you can use the included R package `lese` to compile and
 compare slides individually:
 
 ``` r
-# Full path to slide
 lese::compile_slide("lecture_sl/slides/regularization/slides-regu-early-stopping.tex")
+```
 
-# Optionally omitting the path and even the file extension, relying on internal lookup
+    ## Running latexmk -pdf slides-regu-early-stopping
+
+    ## ✔ slides-regu-early-stopping compiles
+
+You can omit most parts for the slide file path to rely on the internal
+lookup mechanism
+
+``` r
 lese::compile_slide("slides-regu-early-stopping")
+```
 
-# And compare to slides-pdf/ version
+Comparing slides to their `slides-pdf/` counterparts works analogously
+(see [Tools](#tools) for an explanation).
+
+``` r
 lese::compare_slide("slides-regu-early-stopping")
 ```
 
+    ## ✔ slides-regu-early-stopping
+
 The included command-line tool in `./inst/lecheck` can be used as well,
-if symlinked into your \`\$PATH:
+if symlinked into your \`\$PATH.  
+It is still experimental and features can and will change.
+
+``` sh
+lecheck --help
+```
+
+    ## SLDS Lecture Checker.
+    ## 
+    ## Usage:
+    ##   lecheck [compile] [compare] [clean] [--lecture=<lc>] [--topic=<tc>] [--slide=<sn>] [--preclean] [--no-margin] [--background] [--pdf-copy] [--verbose]
+    ##   lecheck compile [--pdf-copy] [--tinytex] [--background]
+    ##   lecheck compare [--no-comparison-pdf] [--background]
+    ##   lecheck clean [--background]
+    ##   lecheck everything [--no-comparison-pdf] [--background]
+    ##   lecheck list [--lecture=<lc>] [--topic=<tc>]
+    ##   lecheck (-h | --help)
+    ##   lecheck --version
+    ## 
+    ## Example:
+    ##   lecheck compile -l i2ml
+    ##   lecheck compile -t cart
+    ##   lecheck compare -s slides-basics-riskminimization
+    ##   lecheck clean -l i2ml
+    ##   lecheck list
+    ## 
+    ## Options:
+    ##   -h --help             Show this screen.
+    ##   --version             Show version.
+    ##   everything            Runs check_all_slides(), which saves results to a file rather than displaying them.
+    ##   list                  List all lectures and topics found in this directory.
+    ##   -l --lecture=<lc>     Lecture repository, e.g. "lecture_i2ml".
+    ##                         Can be abbreviated (dropping "lecture_" prefix) [default: NULL].
+    ##   -t --topic=<tc>       Lecture topic, e.g. "cart".
+    ##                         Assumed to be unique across lectures.
+    ##                         Takes precedence over --lecture [default: NULL].
+    ##   -s --slide=<sn>       Slide name, e.g. slides-boosting-cwb-basics.
+    ##                         No need for file extension etc. [default: NULL].
+    ##                         Takes precedence over --lecture and --topic.
+    ##   --no-margin           If set, compiles slides without speaker margin, i.e. 4:3 layout.
+    ##   --pdf-copy            Copy rendered slides to slides-pdf/<slide-name>.tex.
+    ##   --no-comparison-pdf   Do not render comparison PDFs to comparison/.
+    ##   --preclean            Cleans up using `latexmk -C` before compilation.
+    ##   --tinytex             Use TinyTex latexmk emulation to auto-install missing packages.
+    ##   --background          Do not wait for compilation for status checks. Not applicable if --tinytex is used.
+    ##                         Note that this still enumerates lectures and topics but omits status reports.
 
 ``` sh
 # Compile all slides in the 'regularization' topic (in lecture_sl)
 lecheck compile -t regularization
+```
 
+    ## 
+    ## ── lecture_sl ──────────────────────────────────────────────────────────────────
+    ## 
+    ## ── regularization ──
+    ## 
+    ## ✔ slides-regu-bagging-deepdive compiles
+    ## ✔ slides-regu-bayes compiles
+    ## ✔ slides-regu-bias-variance compiles
+    ## ✔ slides-regu-early-stopping compiles
+    ## ✔ slides-regu-enetlogreg compiles
+    ## ✔ slides-regu-geom-l1 compiles
+    ## ✔ slides-regu-geom-l2-wdecay compiles
+    ## ✔ slides-regu-intro compiles
+    ## ✔ slides-regu-l1 compiles
+    ## ✔ slides-regu-l1vsl2 compiles
+    ## ✔ slides-regu-l2 compiles
+    ## ✔ slides-regu-lasso-deepdive compiles
+    ## ✔ slides-regu-nonlin compiles
+    ## ✔ slides-regu-others compiles
+    ## ✔ slides-regu-ridge-deepdive compiles
+
+``` sh
 # Remove all LaTeX detritus and output PDF from all slides in the lecture.
 # Can also use 'sl' as 'lecture_' prefix is trimmed
 lecheck clean -l lecture_sl
+```
 
+``` sh
 # Compile a single slide (from i2ml in this case)
 lecheck compile -s slides-regu-early-stopping
 
 # Compare against slides in slides-pdf
-lecheck compare -t regularization
+lecheck compare -s slides-regu-early-stopping
 ```
+
+    ## 
+    ## ── lecture_sl ──────────────────────────────────────────────────────────────────
+    ## 
+    ## ── regularization ──
+    ## 
+    ## ✔ slides-regu-early-stopping compiles
+    ## 
+    ## ── lecture_sl ──────────────────────────────────────────────────────────────────
+    ## 
+    ## ── regularization ──
+    ## 
+    ## ✔ slides-regu-early-stopping
 
 Note that `lecheck` can only be run in the `lecture_service` directory
 which must contain the lecture repos.
@@ -277,7 +373,7 @@ To make sure you can compile slides locally:
 lese::compile_slide_tinytex("lecture_i2ml/slides/cart/slides-cart-splitcriteria-classification.tex")
 ```
 
-Or using `latexmk` instead of TinyTeX:
+Or using `latexmk` internally instead of TinyTeX:
 
 ``` r
 lese::compile_slide("lecture_i2ml/slides/cart/slides-cart-splitcriteria-classification.tex")
