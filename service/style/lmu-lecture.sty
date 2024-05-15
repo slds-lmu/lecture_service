@@ -347,14 +347,16 @@
 \defbeamertemplate*{headline}{lecture theme}{}
 
 %-------------------------------------------------------------------%
-%   Citebutton                                                      %
+%   Citebutton (superseded by \citelink defined in preamble.tex)    %
 %-------------------------------------------------------------------%
 
+% This version is superseded and \citelink will likely be defined here once widely adopted
 % Example usage (from slides-cart-discussion.tex)
 % \citebutton{Breiman, 1984}{https://www.taylorfrancis.com/books/mono/10.1201/9781315139470/classification-regression-trees-leo-breiman}
 \newcommand{\citebutton}[2]{%
-\NoCaseChange{\resizebox{!}{9pt}{\protect\beamergotobutton{\href{#2}{#1}}}}%
+  \NoCaseChange{\resizebox{!}{9pt}{\protect\beamergotobutton{\href{#2}{#1}}}}%
 }
+
 
 %-------------------------------------------------------------------%
 %   Environments                                                    %
