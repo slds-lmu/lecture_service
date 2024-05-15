@@ -162,14 +162,15 @@ compile_slide <- function(slide_file, pre_clean = TRUE, margin = TRUE,
     # log_stderr <- here::here("logs", paste0(tmp$lecture, "-", tmp$topic, "-", tmp$slide_name, "-stderr.log"))
     # Combine both log streams, keeping them separate is not informative in latexmk's case anyway
     log_stderr <- "2>&1"
-    log_stdout <- here::here("logs", paste0(tmp$lecture, "-", tmp$topic, "-",
-                                            tmp$slide_name, "-stdout.log"))
+    log_stdout <- here::here("logs",
+                    paste0(tmp$lecture, "-", tmp$topic, "-", tmp$slide_name, "-stdout.log"))
   }
 
   set_margin_token_file(tmp$slides_dir, margin = margin)
 
   p <- processx::process$new(
     command = "latexmk", args = c("-pdf", tmp$slide_name),
+    # Need to change to directory of slide, could also use  "--cd" option for latexmk probably
     wd = tmp$slides_dir,
     stderr = log_stderr,
     stdout = log_stdout,
