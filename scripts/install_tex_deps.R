@@ -71,7 +71,10 @@ manually_selected_deps <- c(
   "pax",
   # Only needed for Docker container?
   "booktabs",
-  "float"
+  "float",
+  "biblatex", # \citelink
+  "usebib",   # \citelink
+  "biber"     # \citelink
 )
 
 if (tinytex_installed) {
