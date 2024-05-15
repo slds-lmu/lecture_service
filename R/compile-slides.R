@@ -95,8 +95,8 @@ make_slides <- function(topic, lectures_tbl = collect_lectures(), make_arg = "mo
 clean_slide <- function(slide_file, verbose = FALSE) {
   tmp <- find_slide_tex(slide_file = slide_file)
 
-  # .nav and .snm are not covered by latexmk -C
-  check = sapply(c("nav", "snm"), \(ext) {
+  # .nav ,.snm, ... are not covered by latexmk -C
+  check = sapply(c("nav", "snm", "bbl"), \(ext) {
     detritus <- fs::path_ext_set(tmp$tex, ext)
     if (fs::file_exists(detritus)) {
       # if (verbose) cli::cli_alert("Deleting {detritus}")
