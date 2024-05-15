@@ -46,6 +46,9 @@ exercises/*/.ipynb_checkpoints/
 *.synctex(busy)
 **.pax # pdfannotextractor / pax
 *.pax
+**.bbl
+**.bcf
+**.run.xml
 
 #----------------------------------------------------------#
 #  Editor-specific stuff that should generally be ignored  #
