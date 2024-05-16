@@ -91,7 +91,7 @@ lecture_status_local(lectures) |>
   kableExtra::column_spec(5, width = "40%")
 ```
 
-If you're missing a lecture here, you might have to add them to `included_lectures` in `slide_status.Rmd` (L21) and/or ensure they are downloaded correctly.
+If you're missing a lecture here, you might have to add them to or ensure they are downloaded correctly.
 
 # Slide status
 
