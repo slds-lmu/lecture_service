@@ -72,6 +72,7 @@ manually_selected_deps <- c(
   # Only needed for Docker container?
   "booktabs",
   "float",
+  "textcase", # \citelink (\NoCaseChange)
   "biblatex", # \citelink
   "usebib",   # \citelink
   "biber"     # \citelink
