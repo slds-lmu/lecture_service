@@ -125,7 +125,7 @@ clean_slide <- function(slide_file, verbose = FALSE) {
 #' @param pre_clean `[TRUE]`: Run `clean_slide()` beforehand, ensuring a clean slate.
 #' @param margin `[TRUE]` By default renders slides with margin. Otherwise a 4:3 slide is
 #'   rendered.
-#' @param check_status `[TRUE]`: Wait for `make` to finish and return the exit status.
+#' @param check_status `[TRUE]`: Wait for `latexmk` to finish and return the exit status.
 #' @param verbose `[TRUE]`: Print additional output to the console.
 #' @param log `[FALSE]`: Write stdout and stderr logs to `./logs/`.
 #'
