@@ -1,4 +1,4 @@
-url: ~
+url: https://jemsudatasets.s3.eu-central-1.amazonaws.com/podcaststats/
 
 template:
   bootstrap: 5
