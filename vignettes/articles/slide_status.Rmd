@@ -33,16 +33,16 @@ library(lese)
 library(ggplot2)
 
 included_lectures <- lectures()
+cache_file <- getOption("lese.slide_check_cache_file")
 
-if (!file.exists("slide_check_cache.rds")) {
-  stop(paste(
-    "slide_check_cache.rds does not exists.",
-    "Run `make` and get a coffee, or",
-    "Rscript -e 'source(here::here(\"helpers.R\")); check_all_slides()", sep = "\n "
+if (!fs::file_exists(cache_file)) {
+  cli::cli_abort(c(
+    x = "Slide check cache file expected at {.file {cache_file}} does not exist!",
+    i = "Run {.code lese::check_all_slides()} first."
   ))
 }
 
-all_slide_check <- readRDS("slide_check_cache.rds")
+all_slide_check <- readRDS(cache_file)
 
 # Get lectures and reorder them
 # Ignores lectures that exist locally but are not listed in included_lectures
@@ -95,7 +95,7 @@ If you're missing a lecture here, you might have to add them to or ensure they a
 
 # Slide status
 
-```{r slide-status-plot, eval = requireNamespace("ggplot2")}
+```{r slide-status-plot}
 #| fig.width: 10
 #| fig.height: 6
 #| out.width: "100%"

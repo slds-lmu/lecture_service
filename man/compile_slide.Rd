@@ -21,7 +21,7 @@ compile_slide(
 \item{margin}{\verb{[TRUE]} By default renders slides with margin. Otherwise a 4:3 slide is
 rendered.}
 
-\item{check_status}{\verb{[TRUE]}: Wait for \code{make} to finish and return the exit status.}
+\item{check_status}{\verb{[TRUE]}: Wait for \code{latexmk} to finish and return the exit status.}
 
 \item{verbose}{\verb{[TRUE]}: Print additional output to the console.}
 

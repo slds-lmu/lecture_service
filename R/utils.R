@@ -82,7 +82,7 @@ lecture_status_local <- function(lectures = lectures()) {
 #' @return A `data.frame` similar to `lecture_status_local()`.
 #' @export
 this_repo_status <- function() {
-  ret <- lecture_status_local(".")
+  ret <- lecture_status_local(here::here())
   ret[["lecture"]] <- "lecture_service"
 
   ret
@@ -197,3 +197,16 @@ install_lecheck <- function(path = "~/bin", overwrite = TRUE) {
 #     Sys.setenv(PATH = paste(Sys.getenv("PATH"), brew_dir, sep = ":"))
 #   }
 # }
+
+#' Ensure a directory exists
+#'
+#' Creates the directory `x` or the directory containing the file `x`.
+#' @param x (`character(1)`) A file or directory path.
+#' @return `TRUE` if the file exists, `FALSE` otherwise
+#' @export
+ensure_dir <- function(x) {
+  x <- fs::path_dir(x)
+  if (!fs::dir_exists(x)) fs::dir_create(x)
+
+  fs::dir_exists(x)
+}

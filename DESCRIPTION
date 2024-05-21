@@ -17,6 +17,7 @@ Imports:
     here,
     jsonlite,
     processx,
+    rappdirs,
     stringr,
     tictoc,
     tinytex
@@ -25,5 +26,6 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
 Suggests: 
     dplyr,
+    ggplot2,
     kableExtra,
     rmarkdown
