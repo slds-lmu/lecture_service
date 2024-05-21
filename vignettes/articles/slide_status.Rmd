@@ -26,13 +26,13 @@ h3 {
 }
 ```
 
-```{r setup, include=FALSE}
+```{r setup, echo=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 
 library(lese)
 library(ggplot2)
 
-included_lectures <- lectures()
+# included_lectures <- lectures()
 cache_file <- getOption("lese.slide_check_cache_file")
 
 if (!fs::file_exists(cache_file)) {
@@ -47,11 +47,11 @@ all_slide_check <- readRDS(cache_file)
 # Get lectures and reorder them
 # Ignores lectures that exist locally but are not listed in included_lectures
 lectures <- unique(all_slide_check$lecture)
-lectures <- lectures[match(included_lectures, lectures, nomatch = 0)]
+lectures <- lectures[match(lectures(), lectures, nomatch = 0)]
 
 # Might as well subset table to only selected lectures
 # This allows having a lecture locally for testing but not include them here yet.
-all_slide_check <- all_slide_check[all_slide_check$lecture %in% included_lectures, ]
+all_slide_check <- all_slide_check[all_slide_check$lecture %in% lectures(), ]
 ```
 
 This document tabulates the state of the slides in `lecture*/slides/<topic>/` in terms of a) compilability and b) comparison with presumably "known good" versions of the slides located in `lecture_*/slides-pdf/`.
@@ -102,7 +102,7 @@ If you're missing a lecture here, you might have to add them to or ensure they a
 
 check_counts <- do.call(rbind, lapply(c("compile_check", "compare_check"), \(x) {
   all_slide_check |>
-    dplyr::filter(lecture %in% .env$included_lectures) |>
+    dplyr::filter(lecture %in% lectures()) |>
     dplyr::count(lecture, .data[[x]]) |>
     dplyr::group_by(lecture) |>
     dplyr::mutate(prop = n / sum(n), check = x) |>
@@ -117,7 +117,7 @@ check_counts <- do.call(rbind, lapply(c("compile_check", "compare_check"), \(x) 
 })) |>
   dplyr::mutate(
     lecture = stringr::str_remove(lecture, "^lecture_"),
-    lecture = factor(lecture, levels = stringr::str_remove(included_lectures, "^lecture_")),
+    lecture = factor(lecture, levels = stringr::str_remove(lectures(), "^lecture_")),
     check = stringr::str_remove(check, "_check$"),
   )
 

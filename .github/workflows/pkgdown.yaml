@@ -37,6 +37,33 @@ jobs:
           extra-packages: any::pkgdown, local::.
           needs: website
 
+      # This downloads rather than clones lectures to speed things up a little
+      - name: Download lecture repos
+        run: make download
+
+      - name: Install R packages
+        run: make install-r
+
+      - name: Install additional LaTeX packages
+        run: |
+          make install-tex
+          tlmgr list --only-installed
+
+      - name: Install diff-pdf and diff-pdf-visually
+        run: make install-tools-ubuntu
+
+      # Get a tmux ssh session for interactive debugging
+      # Controlled via inputs from GitHub webinterface
+      # See https://github.com/mxschmitt/action-tmate
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.debug_enabled }}
+
+      - name: Install package, check slides and build HTML overview
+        run: |
+          make install-service
+          make site
+
       - name: Build site
         run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
         shell: Rscript {0}
