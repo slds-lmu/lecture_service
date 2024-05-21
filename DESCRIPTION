@@ -7,6 +7,7 @@ Authors@R:
 Description: Provides infrastructure around SLDS lectures for maintenance
     and development.
 License: MIT + file LICENSE
+URL: https://slds-lmu.github.io/lecture_service/
 Imports: 
     checkmate,
     cli,
@@ -17,13 +18,15 @@ Imports:
     here,
     jsonlite,
     processx,
+    rappdirs,
     stringr,
     tictoc,
     tinytex
+Suggests: 
+    dplyr,
+    ggplot2,
+    kableExtra,
+    rmarkdown
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
-Suggests: 
-    dplyr,
-    kableExtra,
-    rmarkdown
