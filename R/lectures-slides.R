@@ -1,8 +1,8 @@
 #' Assemble table of lecture slides
 #'
 #' @param lectures_path Path containing lecture_* directories. Defaulting to `here::here()`.
-#' @param filter_lectures `[NULL]`: Vector of lecture repo names to filter table by, e.g. `"lecture_i2ml"`.
-#'   Can be set to [`lectures()`] to respect `include_lectures`.
+#' @param filter_lectures (`character()`): Vector of lecture repo names to filter table by, e.g. `"lecture_i2ml"`.
+#'   Defaults to [`lectures()`] to respect `include_lectures`.
 #' @param exclude_slide_subdirs Exclude slides/ subfolders, e.g. `c("attic", "rsrc", "all")`.
 #' @param exclude_slide_names Exclude slides matching these names exactly, e.g. `"chapter-order"` (default).
 #'
@@ -15,7 +15,7 @@
 #' }
 collect_lectures <- function(
     lectures_path = here::here(),
-    filter_lectures = NULL,
+    filter_lectures = lectures(),
     exclude_slide_subdirs = c("attic", "rsrc", "all", "figure_man", "figures_tikz",
                               "figure", "tex", "backup"),
     exclude_slide_names = c("chapter-order", "chapter-order-nutshell", "nospeakermargin")

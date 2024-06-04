@@ -6,7 +6,7 @@
 \usage{
 collect_lectures(
   lectures_path = here::here(),
-  filter_lectures = NULL,
+  filter_lectures = lectures(),
   exclude_slide_subdirs = c("attic", "rsrc", "all", "figure_man", "figures_tikz",
     "figure", "tex", "backup"),
   exclude_slide_names = c("chapter-order", "chapter-order-nutshell", "nospeakermargin")
@@ -15,8 +15,8 @@ collect_lectures(
 \arguments{
 \item{lectures_path}{Path containing lecture_* directories. Defaulting to \code{here::here()}.}
 
-\item{filter_lectures}{\verb{[NULL]}: Vector of lecture repo names to filter table by, e.g. \code{"lecture_i2ml"}.
-Can be set to \code{\link[=lectures]{lectures()}} to respect \code{include_lectures}.}
+\item{filter_lectures}{(\code{character()}): Vector of lecture repo names to filter table by, e.g. \code{"lecture_i2ml"}.
+Defaults to \code{\link[=lectures]{lectures()}} to respect \code{include_lectures}.}
 
 \item{exclude_slide_subdirs}{Exclude slides/ subfolders, e.g. \code{c("attic", "rsrc", "all")}.}
 
