@@ -2,9 +2,9 @@
 set -eo pipefail
 # This script checks which files are present in a given folder that were not used by a given set of tex-files.
 # It does this by relying on *.fls-files, that are generated when tex is run with the 'record' option.
-# the Makefile should do this when 'make most' is run.
+# The Makefile should do this when 'make most' is run.
 #
-# When a tex-file imports another file (e.g. a graphic), the generated fls-file gets a line 'IMPORT <filename>'.
+# When a tex-file imports another file (e.g. a figure), the generated fls-file contains a line 'IMPORT <filename>'.
 # This script compares the files listed in the given fls-files with the files that are present in a given folder.
 
 # ------
