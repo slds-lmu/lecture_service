@@ -170,7 +170,7 @@ install_lecheck <- function(path = "~/bin", overwrite = TRUE) {
 #' works.
 #'
 #' @param x,y If `x` is NULL or length 0, will return `y`; otherwise returns `x`.
-#' @export
+#' @rawNamespace if (getRversion() < "4.3.0") export(`%||%`)
 #' @name op-null-default
 #' @examples
 #' 1 %||% 2
