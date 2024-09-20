@@ -20,7 +20,8 @@ pak::pak(c(
   "dplyr",
   "ggplot2",
   "kableExtra",
-  "rmarkdown"
+  "rmarkdown",
+  "reactable" # for file count doc
 ))
 
 # GH version required due to collapse_rows() bug in CRAN version
