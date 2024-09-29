@@ -29,7 +29,8 @@ all: site
 
 .PHONY: help
 help:
-	@echo "clone                : Clone selected lecture repositories."
+	@echo "clone                : Clone selected lecture repositories. Makes a full clone and will take a while!"
+	@echo "clone-shallow        : Same as 'clone' but makes a shallow clone of the default branch only. Significantly faster but may be unsuitable for active work."
 	@echo "download             : Download selected lecture repositories rather than using git."
 	@echo "install              : Installs everything below. Assumes an Ubuntu OS!"
 	@echo "install-service      : Installs this package via R CMD INSTALL."
@@ -106,9 +107,12 @@ install-service:
 
 install: install-r install-tex install-tools-ubuntu install-service
 
-.PHONY: clone download
+.PHONY: clone clone-shallow download
 clone:
 	scripts/clone_lectures.sh
+
+clone-shallow:
+	scripts/clone_lectures.sh --shallow
 
 download:
 	scripts/download_lectures.sh
