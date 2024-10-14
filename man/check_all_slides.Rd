@@ -13,7 +13,8 @@ check_all_slides(
   dpi_check = 50,
   dpi_out = 100,
   pixel_tol = 20,
-  overwrite = FALSE
+  overwrite = FALSE,
+  cache_file = getOption("lese.slide_check_cache_file", default = NA)
 )
 }
 \arguments{
@@ -32,4 +33,14 @@ Also saves output at \code{slide_check_cache.rds}.
 }
 \description{
 Compile and compare all the slides
+}
+\examples{
+
+\dontrun{
+check_all_slides(
+ lectures_tbl = collect_lectures(filter_lectures = lectures()),
+ pre_clean = TRUE
+)
+}
+
 }

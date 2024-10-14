@@ -9,12 +9,27 @@
 #' Also saves output at `slide_check_cache.rds`.
 #'
 #' @export
+#' @examples
+#'
+#' \dontrun{
+#' check_all_slides(
+#'  lectures_tbl = collect_lectures(filter_lectures = lectures()),
+#'  pre_clean = TRUE
+#' )
+#' }
+#'
 check_all_slides <- function(
     lectures_tbl = collect_lectures(filter_lectures = lectures()), pre_clean = FALSE,
     create_comparison_pdf = TRUE, parallel = TRUE,
     thresh_psnr = 40, dpi_check = 50, dpi_out = 100,
-    pixel_tol = 20, overwrite = FALSE
+    pixel_tol = 20, overwrite = FALSE,
+    cache_file = getOption("lese.slide_check_cache_file", default = NA)
 ) {
+
+  ensure_dir(cache_file)
+  checkmate::assert_path_for_output(cache_file)
+
+  cli::cli_alert_info("Writing cache file to {.file {cache_file}}")
 
   check_tex <- function(tex) {
 
@@ -69,6 +84,6 @@ check_all_slides <- function(
   took <- tictoc::toc()
 
   cli::cli_alert_info("{took$callback_msg}. Saving results to \"slide_check_cache.rds\".")
-  saveRDS(check_table_result, file = "slide_check_cache.rds")
+  saveRDS(check_table_result, file = cache_file)
   invisible(check_table_result)
 }
