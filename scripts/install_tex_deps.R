@@ -19,7 +19,7 @@ manually_selected_deps <- c(
   "beamer",
   "framed",
   "fp",
-  "ms",
+  # "ms", # not present in repository (TL 2024, 2024-10-23)
   "pgf",
   "translator",
   "colortbl",
@@ -74,7 +74,14 @@ manually_selected_deps <- c(
   "float",
   "biblatex", # \citelink
   "usebib",   # \citelink
-  "biber"     # \citelink
+  "biber",     # \citelink
+  # for exercises, based on lecture_sl/advriskmin
+  "a4wide",
+  "ntgclass",
+  "paralist",
+  "xfrac",
+  "bytefield",
+  "cancel"
 )
 
 if (tinytex_installed) {
