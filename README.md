@@ -3,11 +3,12 @@ SLDS Lecture Service
 
 - [Overview](#overview)
   - [Quick Start](#quick-start)
-- [Slide Checking](#slide-checking)
+- [Slide Compilation & Checking](#slide-compilation--checking)
 - [Counting Files](#counting-files)
 - [Prerequisites](#prerequisites)
-  - [Tools](#tools)
-  - [LaTeX Dependencies](#latex-dependencies)
+  - [LaTeX Dependencies (Required)](#latex-dependencies-required)
+  - [Tools for Slide-Checking
+    (Optional)](#tools-for-slide-checking-optional)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
@@ -61,7 +62,7 @@ The assumed directory structure once lecture repositories where cloned
 
 You can either manually `git clone` lecture repos or use
 `scripts/clone_lectures.sh` or `download_lectures.sh` respectively. The
-`Makefiles` has targets `clone` and `download` for these purposes. Since
+`Makefile` has targets `clone` and `download` for these purposes. Since
 the git repositories can be fairly large due to the included PDF files,
 I recommend to clone with `--depth 1 --single-branch` if done manually,
 which only fetches the most recent commit and the default branch.
@@ -84,7 +85,7 @@ follows:
 
 1.  Setup the service repo, using a `--single-branch` clone to avoid
     pulling the `gh-pages` branch that’s not needed locally.
-2.  File `include_lectures` globally determindes the lecture(s) of
+2.  File `include_lectures` globally determines the lecture(s) of
     interest, so set it to `lecture_sl`
 3.  Install various things in R, LaTeX and the system with `make`. See
     also `make help` and the scripts in `./scripts/install_*`.
@@ -108,7 +109,7 @@ The `Makefile` default target is `site`, giving you the whole comparison
 site:
 
 ``` r
-# Renderes comparison to _site/index.html incl comparison PDFs
+# Renders comparison to _site/index.html incl comparison PDFs
 make site
 ```
 
@@ -120,10 +121,6 @@ compare slides individually:
 ``` r
 lese::compile_slide("lecture_sl/slides/regularization/slides-regu-early-stopping.tex")
 ```
-
-    ## Running latexmk -pdf slides-regu-early-stopping
-
-    ## ✔ slides-regu-early-stopping compiles
 
 You can omit most parts for the slide file path to rely on the internal
 lookup mechanism
@@ -139,8 +136,6 @@ Comparing slides to their `slides-pdf/` counterparts works analogously
 lese::compare_slide("slides-regu-early-stopping")
 ```
 
-    ## ✔ slides-regu-early-stopping
-
 #### Using the cli `lecheck`
 
 The included command-line tool in `./inst/lecheck` can be used as well,
@@ -148,7 +143,7 @@ if symlinked into your \`\$PATH.
 It is still experimental and features can and will change.
 
 ``` sh
-lecheck --help
+./inst/lecheck --help
 ```
 
     ## SLDS Lecture Checker.
@@ -196,27 +191,6 @@ lecheck --help
 lecheck compile -t regularization
 ```
 
-    ## 
-    ## ── lecture_sl ──────────────────────────────────────────────────────────────────
-    ## 
-    ## ── regularization ──
-    ## 
-    ## ✔ slides-regu-bagging-deepdive compiles
-    ## ✔ slides-regu-bayes compiles
-    ## ✔ slides-regu-bias-variance compiles
-    ## ✔ slides-regu-early-stopping compiles
-    ## ✔ slides-regu-enetlogreg compiles
-    ## ✔ slides-regu-geom-l1 compiles
-    ## ✔ slides-regu-geom-l2-wdecay compiles
-    ## ✔ slides-regu-intro compiles
-    ## ✔ slides-regu-l1 compiles
-    ## ✔ slides-regu-l1vsl2 compiles
-    ## ✔ slides-regu-l2 compiles
-    ## ✔ slides-regu-lasso-deepdive compiles
-    ## ✔ slides-regu-nonlin compiles
-    ## ✔ slides-regu-others compiles
-    ## ✔ slides-regu-ridge-deepdive compiles
-
 ``` sh
 # Remove all LaTeX detritus and output PDF from all slides in the lecture.
 # Can also use 'sl' as 'lecture_' prefix is trimmed
@@ -230,19 +204,6 @@ lecheck compile -s slides-regu-early-stopping
 # Compare against slides in slides-pdf
 lecheck compare -s slides-regu-early-stopping
 ```
-
-    ## 
-    ## ── lecture_sl ──────────────────────────────────────────────────────────────────
-    ## 
-    ## ── regularization ──
-    ## 
-    ## ✔ slides-regu-early-stopping compiles
-    ## 
-    ## ── lecture_sl ──────────────────────────────────────────────────────────────────
-    ## 
-    ## ── regularization ──
-    ## 
-    ## ✔ slides-regu-early-stopping
 
 Note that `lecheck` can only be run in the `lecture_service` directory
 which must contain the lecture repos.
@@ -267,12 +228,12 @@ combined can be compiled manually using the regular `Makefile`:
 This does not copy the `lecture_sl.pdf` file to `slides-pdf` yet, but
 `make all-nomargin` would.
 
-## Slide Checking
+## Slide Compilation & Checking
 
 If all required software is installed (see next section), you can run
 
 ``` sh
-make
+make site
 ```
 
 which produces a site at `_site/index.html`.
@@ -334,6 +295,9 @@ system to check a reproducible approach, and I have no idea how to make
 any of this work on Windows, sorry (maybe try WSL?).
 
 ``` sh
+# Install everything below
+make install
+
 # Install R packages
 make install-r
 
@@ -347,7 +311,88 @@ make install-tools-ubuntu
 make install-service
 ```
 
-### Tools
+### LaTeX Dependencies (Required)
+
+<style type="text/css">
+.note-box > h6 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding-top: 10px;
+  padding-left: 2rem;
+}
+&#10;.note-box > p {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  border-left-color: #FECE31;
+}
+&#10;div.note-box {
+  border-left: 0.5rem;
+  border-left-style: solid;
+  padding-bottom: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: 90%;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  border-radius: 1rem;
+}
+</style>
+
+<div class="note-box">
+
+<h6>
+⚠ LaTeX version ⚠
+</h6>
+<p>
+Note that <strong>TeX Live 2024</strong> is required for slides to
+compile correctly.
+</p>
+<p>
+Check with e.g.
+</p>
+<code>
+<pre>
+$ tlmgr --version
+tlmgr revision 71331 (2024-05-24 09:30:36 +0200)
+tlmgr using installation: <some path>/TinyTeX
+TeX Live (https://tug.org/texlive) version 2024
+</pre>
+
+</code>
+
+</div>
+
+LaTeX dependencies are installed via `scripts/install_tex_deps.R` or
+`make install-tex` via TinyTeX (recommended) or system `tlmgr`.
+
+I recommend installing [TinyTeX](https://yihui.org/tinytex/) to manage
+TeX Live, as I found it to be easy and reliable, and you are independent
+from whatever your OS package manager offers.
+
+Install it in R:
+
+``` r
+install.packages("tinytex")
+tinytex::install_tinytex()
+```
+
+To make sure you can compile slides locally:
+
+``` r
+# tinytex emulates latexmk and installs missing latex packages automatically.
+# Wrapper fun in service repo just sets working directories automatically
+lese::compile_slide_tinytex("lecture_i2ml/slides/cart/slides-cart-splitcriteria-classification.tex")
+```
+
+Or using `latexmk` internally instead of TinyTeX:
+
+``` r
+lese::compile_slide("lecture_i2ml/slides/cart/slides-cart-splitcriteria-classification.tex")
+```
+
+### Tools for Slide-Checking (Optional)
 
 These are installed via `scripts/install_tools_ubuntu.sh` or
 `make install-tools-ubuntu`.
@@ -376,29 +421,3 @@ diff-pdf --view slides-forests-proximities.pdf ../../slides-pdf/slides-forests-p
 
 This is used to produce PDFs of only the differences at `comparison` and
 for the HTML table.
-
-### LaTeX Dependencies
-
-LaTeX dependencies are installed via `scripts/install_tex_deps.R` or
-`make install-tex` via TinyTeX (recommended) or system `tlmgr`.
-
-Install [TinyTeX](https://yihui.org/tinytex/):
-
-``` r
-install.packages("tinytex")
-tinytex::install_tinytex()
-```
-
-To make sure you can compile slides locally:
-
-``` r
-# tinytex emulates latexmk and installs missing latex packages automatically.
-# Wrapper fun in service repo just sets working directories automatically
-lese::compile_slide_tinytex("lecture_i2ml/slides/cart/slides-cart-splitcriteria-classification.tex")
-```
-
-Or using `latexmk` internally instead of TinyTeX:
-
-``` r
-lese::compile_slide("lecture_i2ml/slides/cart/slides-cart-splitcriteria-classification.tex")
-```

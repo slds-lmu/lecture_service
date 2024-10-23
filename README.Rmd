@@ -48,7 +48,7 @@ lecture_service
 ```
 
 You can either manually `git clone` lecture repos or use `scripts/clone_lectures.sh` or `download_lectures.sh` respectively.
-The `Makefiles` has targets `clone` and `download` for these purposes.
+The `Makefile` has targets `clone` and `download` for these purposes.
 Since the git repositories can be fairly large due to the included PDF files, I recommend to clone with `--depth 1 --single-branch` if done manually, which only fetches the most recent commit and the default branch.
 
 Note that the text file `include_lectures` is used to globally keep track of the relevant lecture repos, so if you only intend to work on `lecture_advml` you could set it to only contain `lecture_advml` and subsequent `make` commands and other functions
@@ -62,7 +62,7 @@ The remaining README goes into a little more detail, while this is the "just get
 Say you are working on `lecture_sl` and want to ensure all slides are compiling without error, then starting from scratch the workflow is as follows:
 
 1. Setup the service repo, using a `--single-branch` clone to avoid pulling the `gh-pages` branch that's not needed locally.
-2. File `include_lectures` globally determindes the lecture(s) of interest, so set it to `lecture_sl`
+2. File `include_lectures` globally determines the lecture(s) of interest, so set it to `lecture_sl`
 3. Install various things in R, LaTeX and the system with `make`. See also `make help` and the scripts in `./scripts/install_*`.
 
 ```sh
@@ -82,7 +82,7 @@ From here on out, you have various options for compilation and comparison.
 The `Makefile` default target is `site`, giving you the whole comparison site:
 
 ```r
-# Renderes comparison to _site/index.html incl comparison PDFs
+# Renders comparison to _site/index.html incl comparison PDFs
 make site
 ```
 
@@ -90,7 +90,7 @@ make site
 
 Alternatively, you can use the included R package `lese` to compile and compare slides individually:
 
-```{r}
+```r
 lese::compile_slide("lecture_sl/slides/regularization/slides-regu-early-stopping.tex")
 ```
 
@@ -102,7 +102,7 @@ lese::compile_slide("slides-regu-early-stopping")
 
 Comparing slides to their `slides-pdf/` counterparts works analogously (see [Tools](#tools) for an explanation).
 
-```{r}
+```r
 lese::compare_slide("slides-regu-early-stopping")
 ```
 
@@ -112,10 +112,10 @@ The included command-line tool in `./inst/lecheck` can be used as well, if symli
 It is still experimental and features can and will change.
 
 ```{sh}
-lecheck --help
+./inst/lecheck --help
 ```
 
-```{sh}
+```sh
 # Compile all slides in the 'regularization' topic (in lecture_sl)
 lecheck compile -t regularization
 ```
@@ -126,7 +126,7 @@ lecheck compile -t regularization
 lecheck clean -l lecture_sl
 ```
 
-```{sh}
+```sh
 # Compile a single slide (from i2ml in this case)
 lecheck compile -s slides-regu-early-stopping
 
@@ -156,12 +156,12 @@ make most-nomargin
 
 This does not copy the `lecture_sl.pdf` file to `slides-pdf` yet, but `make all-nomargin` would.
 
-## Slide Checking
+## Slide Compilation & Checking
 
 If all required software is installed (see next section), you can run
 
 ```sh
-make
+make site
 ```
 
 which produces a site at `_site/index.html`.
@@ -213,6 +213,9 @@ This should work reproducibly on recent Ubuntu versions as it does on GitHub act
 I have it running on macOS as well but have no test system to check a reproducible approach, and I have no idea how to make any of this work on Windows, sorry (maybe try WSL?).
 
 ```sh
+# Install everything below
+make install
+
 # Install R packages
 make install-r
 
@@ -226,7 +229,76 @@ make install-tools-ubuntu
 make install-service
 ```
 
-### Tools
+
+### LaTeX Dependencies (Required)
+
+```{css, echo=FALSE}
+.note-box > h6 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  padding-top: 10px;
+  padding-left: 2rem;
+}
+
+.note-box > p {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  border-left-color: #FECE31;
+}
+
+div.note-box {
+  border-left: 0.5rem;
+  border-left-style: solid;
+  padding-bottom: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: 90%;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  border-radius: 1rem;
+}
+```
+
+<div class="note-box">
+<h6> &#9888; LaTeX version &#9888;</h6>
+<p>Note that <strong>TeX Live 2024</strong> is required for slides to compile correctly.</p>
+<p>Check with e.g.</p>
+<code><pre>
+$ tlmgr --version
+tlmgr revision 71331 (2024-05-24 09:30:36 +0200)
+tlmgr using installation: <some path>/TinyTeX
+TeX Live (https://tug.org/texlive) version 2024
+</pre></code>
+</div>
+
+LaTeX dependencies are installed via `scripts/install_tex_deps.R` or `make install-tex` via TinyTeX (recommended) or system `tlmgr`.
+
+I recommend installing [TinyTeX](https://yihui.org/tinytex/) to manage TeX Live, as I found it to be easy and reliable, and you are independent from whatever your OS package manager offers.
+
+Install it in R:
+
+```r
+install.packages("tinytex")
+tinytex::install_tinytex()
+```
+
+To make sure you can compile slides locally:
+
+```r
+# tinytex emulates latexmk and installs missing latex packages automatically.
+# Wrapper fun in service repo just sets working directories automatically
+lese::compile_slide_tinytex("lecture_i2ml/slides/cart/slides-cart-splitcriteria-classification.tex")
+```
+
+Or using `latexmk` internally instead of TinyTeX:
+
+```r
+lese::compile_slide("lecture_i2ml/slides/cart/slides-cart-splitcriteria-classification.tex")
+```
+
+### Tools for Slide-Checking (Optional)
 
 These are installed via `scripts/install_tools_ubuntu.sh` or `make install-tools-ubuntu`.
 
@@ -252,28 +324,3 @@ diff-pdf --view slides-forests-proximities.pdf ../../slides-pdf/slides-forests-p
 
 This is used to produce PDFs of only the differences at `comparison` and for the HTML table.
 
-
-### LaTeX Dependencies
-
-LaTeX dependencies are installed via `scripts/install_tex_deps.R` or `make install-tex` via TinyTeX (recommended) or system `tlmgr`.
-
-Install [TinyTeX](https://yihui.org/tinytex/):
-
-```r
-install.packages("tinytex")
-tinytex::install_tinytex()
-```
-
-To make sure you can compile slides locally:
-
-```r
-# tinytex emulates latexmk and installs missing latex packages automatically.
-# Wrapper fun in service repo just sets working directories automatically
-lese::compile_slide_tinytex("lecture_i2ml/slides/cart/slides-cart-splitcriteria-classification.tex")
-```
-
-Or using `latexmk` internally instead of TinyTeX:
-
-```r
-lese::compile_slide("lecture_i2ml/slides/cart/slides-cart-splitcriteria-classification.tex")
-```
