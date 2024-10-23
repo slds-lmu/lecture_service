@@ -119,13 +119,13 @@ lectures <- function() {
 #' @examples
 #' \dontrun{
 #' # The "normal" way: A .tex file name
-#' find_slide_tex("slides-cart-computationalaspects.tex")
+#' find_slide_tex(slide_file = "slides-cart-computationalaspects.tex")
 #'
 #' # Also acceptable: A full path (absolute or relative), convenient for scripts
-#' find_slide_tex("lecture_advml/slides/gaussian-processes/slides-gp-bayes-lm.tex")
+#' find_slide_tex(slide_file = "lecture_advml/slides/gaussian-processes/slides-gp-bayes-lm.tex")
 #'
 #' # Lazy way: No extension, just a name
-#' find_slide_tex("slides-cart-predictions")
+#' find_slide_tex(slide_file = "slides-cart-predictions")
 #' }
 find_slide_tex <- function(lectures_tbl = collect_lectures(), slide_file) {
   # Allow both "slides-cart-predictions.tex" and lazy "slides-cart-predictions"
@@ -134,20 +134,26 @@ find_slide_tex <- function(lectures_tbl = collect_lectures(), slide_file) {
   if (identical(fs::path_ext(slide_file), "pdf")) slide_file <- fs::path_ext_set(slide_file, "tex")
 
   if (slide_file %in% lectures_tbl$tex) {
-    tmp <- lectures_tbl[lectures_tbl$tex == slide_file, ]
+    matching_slides <- lectures_tbl[lectures_tbl$tex == slide_file, ]
   } else if (slide_file %in% fs::path_rel(lectures_tbl$tex)) {
-    tmp <- lectures_tbl[fs::path_rel(lectures_tbl$tex) == slide_file, ]
+    matching_slides <- lectures_tbl[fs::path_rel(lectures_tbl$tex) == slide_file, ]
   }
 
   slide_file <- fs::path_file(slide_file)
-  tmp <- lectures_tbl[fs::path_file(lectures_tbl$tex) == slide_file, ]
+  matching_slides <- lectures_tbl[fs::path_file(lectures_tbl$tex) == slide_file, ]
 
-  if (nrow(tmp) == 0) {
-    stop(sprintf("No matching file for %s", slide_file))
-  }
-  if (nrow(tmp) > 1) {
-    stop(sprintf("Multiple files matching name %s, got %i matches", slide_file, nrow(tmp)))
+  if (nrow(matching_slides) == 0) {
+    cli::cli_abort("No matching file for {.val {slide_file}}")
   }
 
-  tmp
+  if (nrow(matching_slides) > 1) {
+    cli::cli_alert_danger("Found {nrow(matching_slides)} files matching {.val {slide_file}}:")
+    cli::cli_li(matching_slides$tex)
+    cli::cli_alert_warning("Returning the most recently modified match only:")
+    idx_newer <- which.max(fs::file_info(matching_slides$tex)$modification_time)
+    matching_slides <- matching_slides[idx_newer,  ]
+    cli::cli_alert_info("{.val {matching_slides$tex}}")
+  }
+
+  matching_slides
 }

@@ -18,12 +18,12 @@ It is strongly assumed that slide names such as \code{slides-cart-predictions.te
 \examples{
 \dontrun{
 # The "normal" way: A .tex file name
-find_slide_tex("slides-cart-computationalaspects.tex")
+find_slide_tex(slide_file = "slides-cart-computationalaspects.tex")
 
 # Also acceptable: A full path (absolute or relative), convenient for scripts
-find_slide_tex("lecture_advml/slides/gaussian-processes/slides-gp-bayes-lm.tex")
+find_slide_tex(slide_file = "lecture_advml/slides/gaussian-processes/slides-gp-bayes-lm.tex")
 
 # Lazy way: No extension, just a name
-find_slide_tex("slides-cart-predictions")
+find_slide_tex(slide_file = "slides-cart-predictions")
 }
 }
