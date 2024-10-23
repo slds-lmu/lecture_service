@@ -1,3 +1,11 @@
+# lese 0.1.1
+
+* Add heuristic to handle duplicate slide matches.
+  * If topics move between lectures, the current heuristic prefers the most recently edited one.
+  * Example: `slides-gp-bayes-lm.tex` is included in `lecture_sl` and `lecture_advml`, but the former is more recent.
+* Extend LaTeX dependencies install via `make install-tex` based on requirements of exercises in `lecture_sl`
+* Explicitly document that TeX Live 2024 is assumed for the entire setup.
+
 # lese 0.1.0
 
 * `lecheck`: Add `clean` subcommand to run `latexmk -C` and nothing else.
