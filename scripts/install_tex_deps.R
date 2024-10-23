@@ -11,6 +11,24 @@ if (has_tinytex) {
   tinytex_installed <- tinytex::is_tinytex()
 }
 
+tl_check <- processx::run("tlmgr", args = "--version")
+
+if (tl_check$status != 0) {
+  cli::cli_alert_danger("TeX Live / tlmgr not found, please install it:")
+  cli::cli_li(c(
+    "{.code install.packages(\"tinytex\")}",
+    "{.fun tinytex::install_tinytex}"
+  ))
+  cli::cli_abort("Re-run once TeX Live is installed")
+}
+
+tl_version <- stringr::str_extract(tl_check$stdout, "20\\d{2}")
+cli::cli_alert_info("Found TeX Live version {tl_version}")
+if (tl_version != "2024") {
+  cli::cli_alert_danger("Slides assume TeX Live 2024, please update to avoid issues:")
+  cli::cli_inform("{.fun tinytex::reinstall_tinytex}")
+}
+
 # Script to extract packages didn't work on GH so I ran tinytex::latexmk()
 # interactively via tmate and just.. wrote down the pkg it installed.
 # ...if it works it works. I guess.
