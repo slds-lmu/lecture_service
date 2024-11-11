@@ -1,4 +1,5 @@
 *.code-workspace
+.vscode
 
 # Don't accidentally commit lecture repo contents
 lecture_*
