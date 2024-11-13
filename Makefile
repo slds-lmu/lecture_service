@@ -24,8 +24,17 @@ SITEDIR=_site
 STATUSRMD_PR=slide_status_pr.Rmd
 STATUSMD=${STATUSRMD_PR:%.Rmd=%.md}
 
+# FIle count qmd and HTML files
+FILECOUNTQMD=file_counts.qmd
+FILECOUNTHTML=${FILECOUNTQMD:%.qmd=%.html}
+
+# This runs latexmk internally, but it's fast if there's nothing new to do for most slides (unless you clean up)
+${CACHETBL}: $(TSLIDES) $(PREAMBLES)
+	@# Rscript --quiet -e 'source("helpers.R"); check_all_slides()'
+	Rscript --quiet -e 'lese::check_all_slides()'
+
 .PHONY: all
-all: site
+all: help
 
 .PHONY: help
 help:
@@ -41,11 +50,7 @@ help:
 	@echo "table                : Generate markdown table rather than site. Used to append to PRs."
 	@echo "clean                : Remove ${CACHETBL}, ${STATUSHTML}, ${STATUSASSETS}, and ${SITEDIR}."
 	@echo "clean-site           : Remove ${STATUSHTML}, ${STATUSASSETS}, and ${SITEDIR}."
-
-# This runs latexmk internally, but it's fast if there's nothing new to do for most slides (unless you clean up)
-${CACHETBL}: $(TSLIDES) $(PREAMBLES)
-	@# Rscript --quiet -e 'source("helpers.R"); check_all_slides()'
-	Rscript --quiet -e 'lese::check_all_slides()'
+	@echo "file-count           : Render ${FILECOUNTQMD} to ${FILECOUNTHTML} for an overview of files per lecture. Requires `quarto` to be in PATH"
 
 .PHONY: check_results
 check_results: ${CACHETBL}
@@ -116,3 +121,8 @@ clone-shallow:
 
 download:
 	scripts/download_lectures.sh
+
+.PHONY: file-counts
+${FILECOUNTHTML}: $(FILECOUNTQMD)
+file-count: $(FILECOUNTHTML)
+	quarto render ${FILECOUNTQMD} --to html
