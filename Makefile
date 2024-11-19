@@ -28,13 +28,14 @@ STATUSMD=${STATUSRMD_PR:%.Rmd=%.md}
 FILECOUNTQMD=file_counts.qmd
 FILECOUNTHTML=${FILECOUNTQMD:%.qmd=%.html}
 
+.PHONY: all
+all: help
+
 # This runs latexmk internally, but it's fast if there's nothing new to do for most slides (unless you clean up)
 ${CACHETBL}: $(TSLIDES) $(PREAMBLES)
 	@# Rscript --quiet -e 'source("helpers.R"); check_all_slides()'
 	Rscript --quiet -e 'lese::check_all_slides()'
 
-.PHONY: all
-all: help
 
 .PHONY: help
 help:

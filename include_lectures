@@ -1,9 +1,10 @@
 # This file lists lecture repos that are downloaded by scripts in scripts/,
 # tabulated in slide_status.Rmd,
 # and used as defaults in R helper functions.
-lecture_i2ml
-lecture_advml
+#lecture_i2ml
+#lecture_advml
 lecture_sl
 lecture_algods
-lecture_optimization
-lecture_iml
+#lecture_optimization
+#lecture_iml
+lecture_debug
