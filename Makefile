@@ -25,7 +25,7 @@ STATUSRMD_PR=slide_status_pr.Rmd
 STATUSMD=${STATUSRMD_PR:%.Rmd=%.md}
 
 # FIle count qmd and HTML files
-FILECOUNTQMD=file_counts.qmd
+FILECOUNTQMD=file-counts.qmd
 FILECOUNTHTML=${FILECOUNTQMD:%.qmd=%.html}
 
 .PHONY: all
@@ -51,7 +51,7 @@ help:
 	@echo "table                : Generate markdown table rather than site. Used to append to PRs."
 	@echo "clean                : Remove ${CACHETBL}, ${STATUSHTML}, ${STATUSASSETS}, and ${SITEDIR}."
 	@echo "clean-site           : Remove ${STATUSHTML}, ${STATUSASSETS}, and ${SITEDIR}."
-	@echo "file-count           : Render ${FILECOUNTQMD} to ${FILECOUNTHTML} for an overview of files per lecture. Requires `quarto` to be in PATH"
+	@echo "file-count           : Render ${FILECOUNTQMD} to ${FILECOUNTHTML} for an overview of files per lecture. Requires 'quarto' to be in PATH"
 
 .PHONY: check_results
 check_results: ${CACHETBL}
