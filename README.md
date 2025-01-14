@@ -12,10 +12,6 @@ SLDS Lecture Service
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
-
-[![render-status-check](https://github.com/slds-lmu/lecture_service/actions/workflows/render-status-check.yaml/badge.svg)](https://github.com/slds-lmu/lecture_service/actions/workflows/render-status-check.yaml)
-[![Slide Check
-Overview](https://img.shields.io/badge/Slide_Check_Overview-E0911F)](https://slds-lmu.github.io/lecture_service/)
 <!-- badges: end -->
 
 This project has two goals:
@@ -210,10 +206,10 @@ which must contain the lecture repos.
 
 #### Compile `all` slides
 
-To compile all slides in a lecture in 4:3 (relying on the LaTeX file in
-`style/` to be updated in the lecture) and copies them to `slides-pdf`:
+To compile all slides in a lecture in 16:9 and copy them to
+`slides-pdf`:
 
-    lecheck compile -l sl --preclean --no-margin --pdf-copy
+    lecheck compile -l sl --preclean --pdf-copy
 
 This compiles one-by one, emitting errors if they come up. Add
 `--background` to skip any error reporting and speed up the process.
@@ -223,10 +219,19 @@ combined can be compiled manually using the regular `Makefile`:
 
     cd lecture_sl/slides/all
 
-    make most-nomargin
+    make most
 
 This does not copy the `lecture_sl.pdf` file to `slides-pdf` yet, but
-`make all-nomargin` would.
+`make all` would.
+
+Alternatively, to create 4:3 slides (without margin):
+
+``` sh
+lecheck compile -l sl --preclean --pdf-copy
+
+cd lecture_sl/slides/all
+make most-nomargin
+```
 
 ## Slide Compilation & Checking
 
