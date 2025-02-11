@@ -11,7 +11,9 @@ SLDS Lecture Service
     (Optional)](#tools-for-slide-checking-optional)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+
 <!-- badges: start -->
+
 <!-- badges: end -->
 
 This project has two goals:
@@ -224,6 +226,14 @@ combined can be compiled manually using the regular `Makefile`:
 This does not copy the `lecture_sl.pdf` file to `slides-pdf` yet, but
 `make all` would.
 
+**Important**: For lectures like I2ML and SL, the `all`-slideset
+produces a PDF that is too large (\>35MB) and breaks Overleaf
+integration. In these cases the PDF must be moved manually to the Google
+Drive SLDS folder (e.g. `Teaching/I2ML/slides_website` for I2ML and SL).
+Create a “view only” public share link to the course website where
+appropriate (see [here for I2ML and
+SL](https://github.com/slds-lmu/i2ml/blob/main/content/chapters/00_all/_index.md?plain=1))
+
 Alternatively, to create 4:3 slides (without margin):
 
 ``` sh
@@ -232,6 +242,11 @@ lecheck compile -l sl --preclean --pdf-copy
 cd lecture_sl/slides/all
 make most-nomargin
 ```
+
+Please note that this `all` slideset merely aggregates the existing
+PDFs, so if you want to change the margin setting you have to rerender
+*all* slides in the lecture (e.g. via
+`lecheck compile -l i2ml --preclean --no-margin` for all of I2ML)
 
 ## Slide Compilation & Checking
 
@@ -348,15 +363,21 @@ make install-service
 <div class="note-box">
 
 <h6>
+
 ⚠ LaTeX version ⚠
 </h6>
+
 <p>
+
 Note that <strong>TeX Live 2024</strong> is required for slides to
 compile correctly.
 </p>
+
 <p>
+
 Check with e.g.
 </p>
+
 <code>
 <pre>
 $ tlmgr --version
