@@ -13,7 +13,6 @@ SLDS Lecture Service
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
 <!-- badges: start -->
-
 <!-- badges: end -->
 
 This project has two goals:
@@ -225,14 +224,6 @@ combined can be compiled manually using the regular `Makefile`:
 
 This does not copy the `lecture_sl.pdf` file to `slides-pdf` yet, but
 `make all` would.
-
-**Important**: For lectures like I2ML and SL, the `all`-slideset
-produces a PDF that is too large (\>35MB) and breaks Overleaf
-integration. In these cases the PDF must be moved manually to the Google
-Drive SLDS folder (e.g. `Teaching/I2ML/slides_website` for I2ML and SL).
-Create a “view only” public share link to the course website where
-appropriate (see [here for I2ML and
-SL](https://github.com/slds-lmu/i2ml/blob/main/content/chapters/00_all/_index.md?plain=1))
 
 Alternatively, to create 4:3 slides (without margin):
 
