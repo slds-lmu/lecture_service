@@ -72,7 +72,7 @@
 {\enditemize}
 
 %-------------------------------------------------------------------%
-%   BeginLecture // Title slide                           %
+%   BeginLecture // Title slide                                     %
 %-------------------------------------------------------------------%
 
 % Wrapper to insert title figure within a column env
@@ -395,6 +395,67 @@
       }
       {
     \end{itemize}\end{block}
+}
+
+
+% ------------------------------------------------------------------------
+%    Layout macros                                                       %
+% ------------------------------------------------------------------------
+
+% Two columns side-by-side (horizontal layout))
+
+% Right column takes remaining space
+% \splitV[0.4]{0}{Left content}{Right content}
+% Explicit widths for both columns
+% \splitV[0.4]{0.4}{Left content}{Right content}
+% !! Note that \twocolumn as a name can not be used due to conflicts!
+\newcommand{\splitV}[4][0.5]{%
+    \begin{columns}[c]%
+        \begin{column}{#1\textwidth}% Left column
+            #3
+        \end{column}%
+        \begin{column}{%
+            \ifdim#2pt=0pt% If second optional arg is 0 (default)
+                \dimexpr\textwidth-#1\textwidth\relax% Take remaining space
+            \else
+                #2\textwidth% Use specified width
+            \fi
+        }%
+            #4
+        \end{column}%
+    \end{columns}
+    \vspace{-1em}
+}
+
+% Full-size quadrant layout
+% Quadrant order is 
+% 1 2
+% 3 4
+% \quadrant{Top left}{Top right}{Bottom left}{Bottom right}
+\newcommand{\quadrant}[4]{%
+    \vspace{-0.5em}% Remove top margin
+    \begin{columns}[c,T,totalwidth=\textwidth]% totalwidth ensures full width
+        \begin{column}{0.495\textwidth}% Slightly less than 0.5 to avoid overflow
+            \begin{columns}[c,T]
+                \begin{column}{\textwidth}#1\end{column}
+            \end{columns}
+            \vspace{0.2em}% Minimal spacing between top and bottom
+            \begin{columns}[c,T]
+                \begin{column}{\textwidth}#3\end{column}
+            \end{columns}
+        \end{column}
+        \hspace{0.01\textwidth}% Minimal spacing between left and right
+        \begin{column}{0.495\textwidth}
+            \begin{columns}[c,T]
+                \begin{column}{\textwidth}#2\end{column}
+            \end{columns}
+            \vspace{0.2em}% Minimal spacing between top and bottom
+            \begin{columns}[c,T]
+                \begin{column}{\textwidth}#4\end{column}
+            \end{columns}
+        \end{column}
+    \end{columns}
+    \vspace{-0.5em}% Remove bottom margin
 }
 
 % ------------------------------------------------------------------------
