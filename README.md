@@ -336,9 +336,10 @@ make install-service
 > [!NOTE]  
 > The LaTeX version expected by out setup is **TeX Live 2024** for slides to compile correctly.
 > You can check this in the terminal of Linux/macOS/WSL with `tlmgr --version`, which should show e.g.
-&#10;     tlmgr revision 71331 (2024-05-24 09:30:36 +0200)
-     tlmgr using installation: <some path>/TinyTeX
-     TeX Live (https://tug.org/texlive) version 2024
+
+    tlmgr revision 71331 (2024-05-24 09:30:36 +0200)
+    tlmgr using installation: <some path>/TinyTeX
+    TeX Live (https://tug.org/texlive) version 2024
 
 LaTeX dependencies are installed via `scripts/install_tex_deps.R` or
 `make install-tex` via TinyTeX (recommended) or system `tlmgr`.
