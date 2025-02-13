@@ -333,62 +333,12 @@ make install-service
 
 ### LaTeX Dependencies (Required)
 
-<style type="text/css">
-.note-box > h6 {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  padding-top: 10px;
-  padding-left: 2rem;
-}
-&#10;.note-box > p {
-  margin-top: 0;
-  margin-bottom: 0;
-  padding-left: 2rem;
-  padding-right: 2rem;
-  border-left-color: #FECE31;
-}
-&#10;div.note-box {
-  border-left: 0.5rem;
-  border-left-style: solid;
-  padding-bottom: 1rem;
-  margin-left: auto;
-  margin-right: auto;
-  width: 90%;
-  margin-bottom: 1rem;
-  margin-top: 1rem;
-  border-radius: 1rem;
-}
-</style>
-
-<div class="note-box">
-
-<h6>
-
-⚠ LaTeX version ⚠
-</h6>
-
-<p>
-
-Note that <strong>TeX Live 2024</strong> is required for slides to
-compile correctly.
-</p>
-
-<p>
-
-Check with e.g.
-</p>
-
-<code>
-<pre>
-$ tlmgr --version
-tlmgr revision 71331 (2024-05-24 09:30:36 +0200)
-tlmgr using installation: <some path>/TinyTeX
-TeX Live (https://tug.org/texlive) version 2024
-</pre>
-
-</code>
-
-</div>
+> [!NOTE]  
+> The LaTeX version expected by out setup is **TeX Live 2024** for slides to compile correctly.
+> You can check this in the terminal of Linux/macOS/WSL with `tlmgr --version`, which should show e.g.
+>     tlmgr revision 71331 (2024-05-24 09:30:36 +0200)
+>     tlmgr using installation: <some path>/TinyTeX
+>     TeX Live (https://tug.org/texlive) version 2024
 
 LaTeX dependencies are installed via `scripts/install_tex_deps.R` or
 `make install-tex` via TinyTeX (recommended) or system `tlmgr`.
