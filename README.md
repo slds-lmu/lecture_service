@@ -333,8 +333,8 @@ make install-service
 
 ### LaTeX Dependencies (Required)
 
-> [!NOTE]  
-> The LaTeX version expected by out setup is **TeX Live 2024** for slides to compile correctly.
+> [!CAUTION]  
+> The LaTeX version expected by out setup is **TeX Live 2024** for slides to compile correctly, and to avoid painful updating issues in the long run we will try to continuously maintain compatibility with the latest TeX Live version.
 > You can check this in the terminal of Linux/macOS/WSL with `tlmgr --version`, which should show e.g.
 
     tlmgr revision 71331 (2024-05-24 09:30:36 +0200)
