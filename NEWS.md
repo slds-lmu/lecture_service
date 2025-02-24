@@ -1,3 +1,7 @@
+# lese 0.2.0
+
+* Add new layout helpers `\splitV`, `\twobytwo` and others, see https://github.com/slds-lmu/teaching_devops_issues/issues/18
+
 # lese 0.1.1
 
 * Add heuristic to handle duplicate slide matches.
