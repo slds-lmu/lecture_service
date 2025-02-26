@@ -4,10 +4,10 @@
 \alias{install_lecheck}
 \title{Install the lecheck cli tool}
 \usage{
-install_lecheck(path = "~/bin", overwrite = TRUE)
+install_lecheck(path = "~/.local/bin", overwrite = TRUE)
 }
 \arguments{
-\item{path}{\verb{["~/bin"]} Path to symlink the tool to. Must exist and be writable.}
+\item{path}{\verb{["~/.local/bin"]} Path to symlink the tool to. Must exist and be writable.}
 
 \item{overwrite}{\verb{[TRUE]} Overwrite any existing symlink.}
 }
@@ -20,7 +20,7 @@ Otherwise: The path to the symlink is returned.
 }
 \examples{
 if (FALSE) {
-install_lecheck("~/bin")
+install_lecheck()
 
 # Would only work if the R session is started under a user that can write to /usr/local/bin
 install_lecheck("/usr/local/bin")

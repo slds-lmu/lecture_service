@@ -32,7 +32,7 @@ check_system_tool <- function(x, strict = FALSE, warn = TRUE) {
 #'
 #' @return A `data.frame` suitable for display via `kable` in RMarkdown.
 #' @export
-#' @noRd
+#' @keywords internal
 #' @importFrom stringi stri_escape_unicode
 #' @examples
 #' \dontrun{
@@ -103,7 +103,7 @@ lecture_status_local <- function(lectures = lectures()) {
 #'
 #' @return A `data.frame` similar to `lecture_status_local()`.
 #' @export
-#' @noRd
+#' @keywords internal
 this_repo_status <- function() {
   ret <- lecture_status_local(".")
   ret[["lecture"]] <- "lecture_service"

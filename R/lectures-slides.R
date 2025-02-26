@@ -121,8 +121,9 @@ collect_lectures <- function(
   )]
 }
 
-#' Read included lectures from one central file, ignoring commented out lines
+#' Get included lectures
 #'
+#' Uses central file `./include_lectures`, ignoring commented out lines.
 #' Can be overridden with environment variable `$include_lectures`.
 #' If neither the environment variable nor the file exists, it defaults to listing
 #' all lectures.

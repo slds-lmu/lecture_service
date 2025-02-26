@@ -2,7 +2,7 @@
 % Please edit documentation in R/lectures-slides.R
 \name{lectures}
 \alias{lectures}
-\title{Read included lectures from one central file, ignoring commented out lines}
+\title{Get included lectures}
 \usage{
 lectures()
 }
@@ -10,6 +10,7 @@ lectures()
 A character vector, e.g. \code{c("lecture_i2ml", "lecture_advml")}, depending on \code{./include_lectures}
 }
 \description{
+Uses central file \code{./include_lectures}, ignoring commented out lines.
 Can be overridden with environment variable \verb{$include_lectures}.
 If neither the environment variable nor the file exists, it defaults to listing
 all lectures.

@@ -2,7 +2,8 @@
 % Please edit documentation in R/utils.R
 \name{this_repo_status}
 \alias{this_repo_status}
-\title{lecture_status_local() but for this service repo}
+\title{Status of the service repo checkout
+Same as \code{lecture_status_local()} but for this service repo}
 \usage{
 this_repo_status()
 }
@@ -10,5 +11,7 @@ this_repo_status()
 A \code{data.frame} similar to \code{lecture_status_local()}.
 }
 \description{
-lecture_status_local() but for this service repo
+Status of the service repo checkout
+Same as \code{lecture_status_local()} but for this service repo
 }
+\keyword{internal}
