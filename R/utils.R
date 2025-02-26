@@ -30,6 +30,7 @@ check_system_tool <- function(x, strict = FALSE, warn = TRUE) {
 #'
 #' @return A `data.frame` suitable for display via `kable` in RMarkdown.
 #' @export
+#' @importFrom stringi stri_escape_unicode
 #' @examples
 #' \dontrun{
 #' lecture_status_local()
@@ -56,7 +57,7 @@ lecture_status_local <- function(lectures = lectures()) {
         branch = branch,
         last_commit_time = as.POSIXct(lastcommit$author$when, tz = "UTC"),
         last_commit_by = lastcommit$author$name,
-        last_commit_summary = lastcommit$summary
+        last_commit_summary = stringi::stri_escape_unicode(lastcommit$summary)
       )
     } else {
       # This is for downloaded (not cloned) repos, e.g. on CI.

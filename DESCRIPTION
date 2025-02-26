@@ -18,6 +18,7 @@ Imports:
     jsonlite,
     processx,
     stringr,
+    stringi,
     tictoc,
     tinytex
 Encoding: UTF-8

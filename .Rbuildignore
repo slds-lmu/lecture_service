@@ -11,6 +11,7 @@
 \.rds$
 ^include_lectures$
 \./code-workspace$
+^\.vscode$
 ^lecheck$
 ^Makefile$
 ^Dockerfile$
@@ -26,3 +27,4 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^.*\.qmd$
