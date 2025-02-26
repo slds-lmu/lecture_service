@@ -76,7 +76,7 @@ site: ${CACHETBL} ${STATUSRMD}
 	@# For GitHub Pages (prevents running jekyll)
 	@touch ${SITEDIR}/.nojekyll
 	@# Copy lecture slide PDFs to site dir, preserving folder structure (-R) for clean and predictable paths,
-	@# but of course to avoid having top copy the complete directories in lecture_*/
+	@# but of course to avoid having to copy the complete directories in lecture_*/
 	@# Also suppressing output with @ and > /dev/null 2>&1 for less verbose make output,
 	@# but could be relevant for debugging
 	@rsync -R $(TPDFS) ${SITEDIR} > /dev/null 2>&1
