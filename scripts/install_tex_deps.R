@@ -25,7 +25,9 @@ if (tl_check$status != 0) {
 tl_version <- stringr::str_extract(tl_check$stdout, "20\\d{2}")
 cli::cli_alert_info("Found TeX Live version {tl_version}")
 if (tl_version != "2024") {
-  cli::cli_alert_danger("Slides assume TeX Live 2024, please update to avoid issues:")
+  cli::cli_alert_danger(
+    "Slides assume TeX Live 2024, please update to avoid issues:"
+  )
   cli::cli_inform("{.fun tinytex::reinstall_tinytex}")
 }
 
@@ -60,13 +62,13 @@ manually_selected_deps <- c(
   "bbm-macros",
   # Below are packages specifically added in iml or optim
   "transparent", # lecture_sl/slides/boosting/slides-boosting-cwb-basics2.tex
-  "adjustbox",   # optim and iml, lecture_optimization/slides/01-mathematical-concepts/slides-concepts-3-convexity.tex and cheatsheets
+  "adjustbox", # optim and iml, lecture_optimization/slides/01-mathematical-concepts/slides-concepts-3-convexity.tex and cheatsheets
   "verbatimbox", # optim, 07-derivative-free/slides-optim-derivative-free-4-multistart-optimization
-  "forloop",     # same loc
+  "forloop", # same loc
   "listofitems", # optim, slides-optim-derivative-free-4-multistart-optimization // Do not know why this is needed though
-  "tcolorbox",   # iml, 01_intro/slides05-intro-interaction.tex
-  "siunitx",     # iml, 04_shapley/slides04-shap.tex, but used in latex-math anyway
-  "pdfpages",    # iml, but why?
+  "tcolorbox", # iml, 01_intro/slides05-intro-interaction.tex
+  "siunitx", # iml, 04_shapley/slides04-shap.tex, but used in latex-math anyway
+  "pdfpages", # iml, but why?
   # All of the following were iml-specific dependencies I have not investigated specifically
   # Ideally we'd be able to identify which dependency is included for which purposes/feature
   # to avoid having to install a bag of mystery packages just to keep the latex demon happy.
@@ -91,8 +93,8 @@ manually_selected_deps <- c(
   "booktabs",
   "float",
   "biblatex", # \citelink
-  "usebib",   # \citelink
-  "biber",     # \citelink
+  "usebib", # \citelink
+  "biber", # \citelink
   # for exercises, based on lecture_sl/advriskmin
   "a4wide",
   "ntgclass",
@@ -103,10 +105,14 @@ manually_selected_deps <- c(
 )
 
 if (tinytex_installed) {
-  cli::cli_alert_info("Attempting to install manually selected LaTeX dependencies via {.fun tinytex::tlmgr_install}")
+  cli::cli_alert_info(
+    "Attempting to install manually selected LaTeX dependencies via {.fun tinytex::tlmgr_install}"
+  )
   tinytex::tlmgr_install(manually_selected_deps)
 } else {
-  cli::cli_alert_info("Attempting to install manually selected LaTeX dependencies via system tlmgr")
+  cli::cli_alert_info(
+    "Attempting to install manually selected LaTeX dependencies via system tlmgr"
+  )
   processx::run("tlmgr", args = c("install", manually_selected_deps))
 }
 
@@ -237,7 +243,12 @@ zapfding"
 
   default_installed <- unlist(strsplit(default_installed, "\n"))
 
-  latex_packages <- list.files("lecture_sl/style", pattern = "*.tex", recursive = TRUE, full.names = TRUE) |>
+  latex_packages <- list.files(
+    "lecture_sl/style",
+    pattern = "*.tex",
+    recursive = TRUE,
+    full.names = TRUE
+  ) |>
     lapply(\(x) grep("^\\\\usepackage", readLines(x), value = TRUE)) |>
     unlist() |>
     stringr::str_subset("lmu-lecture", negate = TRUE) |>
@@ -259,7 +270,11 @@ zapfding"
   missing <- setdiff(latex_packages, default_installed)
   missing <- latex_packages[which(tinytex::check_installed(missing))]
 
-  cli::cli_inform("Found the following possibly missing LaTeX packages: {missing}")
-  cli::cli_alert_info("Attemtping to install them via {.fun tinytex::tlmgr_install}")
+  cli::cli_inform(
+    "Found the following possibly missing LaTeX packages: {missing}"
+  )
+  cli::cli_alert_info(
+    "Attemtping to install them via {.fun tinytex::tlmgr_install}"
+  )
   tinytex::tlmgr_install(missing)
 }

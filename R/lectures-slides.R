@@ -14,52 +14,82 @@
 #' collect_lectures()
 #' }
 collect_lectures <- function(
-    lectures_path = here::here(),
-    filter_lectures = lectures(),
-    exclude_slide_subdirs = c("attic", "rsrc", "all", "figure_man", "figures_tikz",
-                              "figure", "tex", "backup"),
-    exclude_slide_names = c("chapter-order", "chapter-order-nutshell", "nospeakermargin")
+  lectures_path = here::here(),
+  filter_lectures = lectures(),
+  exclude_slide_subdirs = c(
+    "attic",
+    "rsrc",
+    "all",
+    "figure_man",
+    "figures_tikz",
+    "figure",
+    "tex",
+    "backup"
+  ),
+  exclude_slide_names = c(
+    "chapter-order",
+    "chapter-order-nutshell",
+    "nospeakermargin"
+  )
 ) {
-
   # Take ls with absolute file paths, directories only, and those matching lecture_asdf format
   # Must not use just "lecture_*" because regex or glob will match "lecture_service" as part of
   # absolute file path
-  lecture_dirs <- fs::dir_ls(lectures_path, regexp = "/lecture_[a-z0-9]*$", type = "directory")
+  lecture_dirs <- fs::dir_ls(
+    lectures_path,
+    regexp = "/lecture_[a-z0-9]*$",
+    type = "directory"
+  )
   # Kick out spurious "lecture_service" match just in case it happens (shouldn't matter though)
-  lecture_dirs <- lecture_dirs[which(!fs::path_file(lecture_dirs) == "lecture_service")]
+  lecture_dirs <- lecture_dirs[which(
+    !fs::path_file(lecture_dirs) == "lecture_service"
+  )]
 
   stopifnot("Found no lecture_* folders" = length(lecture_dirs) > 0)
 
-  lectures_tbl <- do.call(rbind, lapply(lecture_dirs, \(lecture_dir) {
-    lecture_slides <- fs::path(lecture_dir, "slides")
-    if (!fs::dir_exists(lecture_slides)) return(data.frame())
+  lectures_tbl <- do.call(
+    rbind,
+    lapply(lecture_dirs, \(lecture_dir) {
+      lecture_slides <- fs::path(lecture_dir, "slides")
+      if (!fs::dir_exists(lecture_slides)) return(data.frame())
 
-    # It's hard to collect all the slide tex files because naming conventions
-    # differ (standard is slide-*.tex, optimization and iml differ),
-    # and we don't want stuff in attic/ or the chapter-order.tex file.
-    # Not-smart but easy-ish method is to enumerate everything and than filter out
-    # the useless stuff.
-    topic_dirs <- fs::dir_ls(lecture_slides, recurse = FALSE, type = "directory")
-    # Exclude e.g. /slides/all
-    topic_dirs <- topic_dirs[which(!(fs::path_file(topic_dirs) %in% exclude_slide_subdirs))]
-    # Non-recursively list tex files now, so we avoid
-    # e.g. lecture_i2ml/slides/tuning/attic/ files
-    tex_files <- fs::dir_ls(topic_dirs, recurse = FALSE, glob = "*.tex")
-    slides_dir <- fs::path_tidy(fs::path_dir(tex_files))
-    pdf_files <- fs::path_ext_set(tex_files, "pdf")
+      # It's hard to collect all the slide tex files because naming conventions
+      # differ (standard is slide-*.tex, optimization and iml differ),
+      # and we don't want stuff in attic/ or the chapter-order.tex file.
+      # Not-smart but easy-ish method is to enumerate everything and than filter out
+      # the useless stuff.
+      topic_dirs <- fs::dir_ls(
+        lecture_slides,
+        recurse = FALSE,
+        type = "directory"
+      )
+      # Exclude e.g. /slides/all
+      topic_dirs <- topic_dirs[which(
+        !(fs::path_file(topic_dirs) %in% exclude_slide_subdirs)
+      )]
+      # Non-recursively list tex files now, so we avoid
+      # e.g. lecture_i2ml/slides/tuning/attic/ files
+      tex_files <- fs::dir_ls(topic_dirs, recurse = FALSE, glob = "*.tex")
+      slides_dir <- fs::path_tidy(fs::path_dir(tex_files))
+      pdf_files <- fs::path_ext_set(tex_files, "pdf")
 
-    data.frame(
-      lecture = fs::path_file(lecture_dir),
-      tex = tex_files,
-      # latexmk-generated log file for later grep'ing for common errors. Might not exist but path is known.
-      tex_log = fs::path_ext_set(tex_files, ext = "log"),
-      slides_dir = slides_dir,
-      topic = fs::path_file(slides_dir),
-      slide_name = fs::path_file(fs::path_ext_remove(tex_files)),
-      pdf = pdf_files,
-      pdf_static = fs::path_tidy(here::here(lecture_dir, "slides-pdf", fs::path_file(pdf_files)))
-    )
-  }))
+      data.frame(
+        lecture = fs::path_file(lecture_dir),
+        tex = tex_files,
+        # latexmk-generated log file for later grep'ing for common errors. Might not exist but path is known.
+        tex_log = fs::path_ext_set(tex_files, ext = "log"),
+        slides_dir = slides_dir,
+        topic = fs::path_file(slides_dir),
+        slide_name = fs::path_file(fs::path_ext_remove(tex_files)),
+        pdf = pdf_files,
+        pdf_static = fs::path_tidy(here::here(
+          lecture_dir,
+          "slides-pdf",
+          fs::path_file(pdf_files)
+        ))
+      )
+    })
+  )
 
   if (!is.null(filter_lectures)) {
     #sapply(filter_lectures, checkmate::assert_directory_exists)
@@ -77,8 +107,18 @@ collect_lectures <- function(
   # Rownames were absolute paths to tex files, not helpful
   rownames(lectures_tbl) <- NULL
 
-  lectures_tbl[, c("lecture", "topic", "slide_name", "tex", "tex_log", "slides_dir", "pdf", "pdf_exists",
-                   "pdf_static", "pdf_static_exists")]
+  lectures_tbl[, c(
+    "lecture",
+    "topic",
+    "slide_name",
+    "tex",
+    "tex_log",
+    "slides_dir",
+    "pdf",
+    "pdf_exists",
+    "pdf_static",
+    "pdf_static_exists"
+  )]
 }
 
 #' Read included lectures from one central file, ignoring commented out lines
@@ -96,11 +136,19 @@ lectures <- function() {
   lectures <- Sys.getenv("include_lectures", unset = NA)
 
   if (is.na(lectures) & file.exists(here::here("include_lectures"))) {
-    lectures <- grep(pattern = "^#", readLines(here::here("include_lectures")), value = TRUE, invert = TRUE)
+    lectures <- grep(
+      pattern = "^#",
+      readLines(here::here("include_lectures")),
+      value = TRUE,
+      invert = TRUE
+    )
   } else {
     lectures <- c(
-        "lecture_i2ml", "lecture_advml", "lecture_sl",
-        "lecture_iml", "lecture_optimization"
+      "lecture_i2ml",
+      "lecture_advml",
+      "lecture_sl",
+      "lecture_iml",
+      "lecture_optimization"
     )
   }
 
@@ -130,28 +178,36 @@ lectures <- function() {
 find_slide_tex <- function(lectures_tbl = collect_lectures(), slide_file) {
   # Allow both "slides-cart-predictions.tex" and lazy "slides-cart-predictions"
   # and "slides-cart-predictions.pdf" because why not.
-  if (identical(fs::path_ext(slide_file), "")) slide_file <- fs::path_ext_set(slide_file, "tex")
-  if (identical(fs::path_ext(slide_file), "pdf")) slide_file <- fs::path_ext_set(slide_file, "tex")
+  if (identical(fs::path_ext(slide_file), ""))
+    slide_file <- fs::path_ext_set(slide_file, "tex")
+  if (identical(fs::path_ext(slide_file), "pdf"))
+    slide_file <- fs::path_ext_set(slide_file, "tex")
 
   if (slide_file %in% lectures_tbl$tex) {
     matching_slides <- lectures_tbl[lectures_tbl$tex == slide_file, ]
   } else if (slide_file %in% fs::path_rel(lectures_tbl$tex)) {
-    matching_slides <- lectures_tbl[fs::path_rel(lectures_tbl$tex) == slide_file, ]
+    matching_slides <- lectures_tbl[
+      fs::path_rel(lectures_tbl$tex) == slide_file,
+    ]
   }
 
   slide_file <- fs::path_file(slide_file)
-  matching_slides <- lectures_tbl[fs::path_file(lectures_tbl$tex) == slide_file, ]
+  matching_slides <- lectures_tbl[
+    fs::path_file(lectures_tbl$tex) == slide_file,
+  ]
 
   if (nrow(matching_slides) == 0) {
     cli::cli_abort("No matching file for {.val {slide_file}}")
   }
 
   if (nrow(matching_slides) > 1) {
-    cli::cli_alert_danger("Found {nrow(matching_slides)} files matching {.val {slide_file}}:")
+    cli::cli_alert_danger(
+      "Found {nrow(matching_slides)} files matching {.val {slide_file}}:"
+    )
     cli::cli_li(matching_slides$tex)
     cli::cli_alert_warning("Returning the most recently modified match only:")
     idx_newer <- which.max(fs::file_info(matching_slides$tex)$modification_time)
-    matching_slides <- matching_slides[idx_newer,  ]
+    matching_slides <- matching_slides[idx_newer, ]
     cli::cli_alert_info("{.val {matching_slides$tex}}")
   }
 

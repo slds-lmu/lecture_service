@@ -48,13 +48,26 @@
 #'
 #' compare_slide("slides-boosting-cwb-basics")
 #' }
-compare_slide <- function(slide_file, verbose = TRUE, create_comparison_pdf = FALSE,
-                          thresh_psnr = 40, dpi_check = 50, dpi_out = 100,
-                          pixel_tol = 20, view = FALSE, overwrite = FALSE) {
-
+compare_slide <- function(
+  slide_file,
+  verbose = TRUE,
+  create_comparison_pdf = FALSE,
+  thresh_psnr = 40,
+  dpi_check = 50,
+  dpi_out = 100,
+  pixel_tol = 20,
+  view = FALSE,
+  overwrite = FALSE
+) {
   tmp <- find_slide_tex(slide_file = slide_file)
 
-  result <- list(passed = FALSE, reason = "", pages = "", signif = "", output = "")
+  result <- list(
+    passed = FALSE,
+    reason = "",
+    pages = "",
+    signif = "",
+    output = ""
+  )
 
   # Run check again rather than relying on tmp$pdf_exists just in case PDF was just compiled
   if (!(fs::file_exists(tmp$pdf))) {
@@ -65,7 +78,8 @@ compare_slide <- function(slide_file, verbose = TRUE, create_comparison_pdf = FA
   }
 
   if (!tmp$pdf_static_exists) {
-    if (verbose) cli::cli_alert_warning("{tmp$slide_name}: No reference PDF to compare to")
+    if (verbose)
+      cli::cli_alert_warning("{tmp$slide_name}: No reference PDF to compare to")
     result$passed <- FALSE
     result$reason <- "No reference PDF"
     return(result)
@@ -79,12 +93,15 @@ compare_slide <- function(slide_file, verbose = TRUE, create_comparison_pdf = FA
     #"-v",
     sprintf("--threshold=%s", thresh_psnr),
     sprintf("--dpi=%s", dpi_check),
-    tmp[["pdf"]], tmp[["pdf_static"]]
+    tmp[["pdf"]],
+    tmp[["pdf_static"]]
   )
   # Might require $PATH adjustments to work
   p <- processx::process$new(
-    command = "diff-pdf-visually", args = args,
-    stdout = "|", stderr = "|"#,
+    command = "diff-pdf-visually",
+    args = args,
+    stdout = "|",
+    stderr = "|" #,
     #echo_cmd = verbose
   )
   # This is the command that's actually executed in quick "print for debugging" format
@@ -101,13 +118,20 @@ compare_slide <- function(slide_file, verbose = TRUE, create_comparison_pdf = FA
   }
 
   output <- p$read_all_output_lines()
-  keep <- which(!grepl("(^  Temporary directory)|(^  Converting each)|(same number of pages)", output))
+  keep <- which(
+    !grepl(
+      "(^  Temporary directory)|(^  Converting each)|(same number of pages)",
+      output
+    )
+  )
   output <- output[keep]
 
   if (length(output) == 0) {
     # This happens e.g. when $PATH does not include diff-pdf-visually dependencies, but the tool itself
     # Symptom is that `output` contains the first two lines as normal but no actual check output
-    cli::cli_abort("Could not parse diff-pdf-visually output correctly for {tmp$slide_name}")
+    cli::cli_abort(
+      "Could not parse diff-pdf-visually output correctly for {tmp$slide_name}"
+    )
   }
 
   result$output <- output
@@ -126,7 +150,10 @@ compare_slide <- function(slide_file, verbose = TRUE, create_comparison_pdf = FA
   }
 
   if (any(grepl("The most different pages are", x = output))) {
-    pages_string <- unlist(stringr::str_extract_all(output, "(page \\d+) \\(sgf\\. (\\d+\\.?\\d+)\\)"))
+    pages_string <- unlist(stringr::str_extract_all(
+      output,
+      "(page \\d+) \\(sgf\\. (\\d+\\.?\\d+)\\)"
+    ))
 
     different_pages <- pages_string |>
       stringr::str_extract(" \\d+ ") |>
@@ -139,9 +166,10 @@ compare_slide <- function(slide_file, verbose = TRUE, create_comparison_pdf = FA
       as.numeric() |>
       round(1)
 
-    if (verbose) cli::cli_alert_warning(
-      "{tmp$slide_name}: Changes detected in pages: {different_pages} (signif.: {pages_signif})"
-    )
+    if (verbose)
+      cli::cli_alert_warning(
+        "{tmp$slide_name}: Changes detected in pages: {different_pages} (signif.: {pages_signif})"
+      )
     result$passed <- FALSE
     result$reason <- "Dissimilar pages"
     result$pages <- paste(sort(different_pages), collapse = ", ")
@@ -149,21 +177,27 @@ compare_slide <- function(slide_file, verbose = TRUE, create_comparison_pdf = FA
   }
 
   if (create_comparison_pdf & !result$passed & check_system_tool("diff-pdf")) {
-
-    if (!dir.exists(here::here("comparison"))) dir.create(here::here("comparison"))
-    out_path <- fs::path_ext_set(here::here("comparison", tmp$slide_name), "pdf")
+    if (!dir.exists(here::here("comparison")))
+      dir.create(here::here("comparison"))
+    out_path <- fs::path_ext_set(
+      here::here("comparison", tmp$slide_name),
+      "pdf"
+    )
 
     # Check if there's already a comparison file, and update it only if
     # either of the input PDF is more recent
     age_check <- TRUE
     if (fs::file_exists(out_path)) {
       slide_age <- fs::file_info(tmp[["pdf"]])[["modification_time"]]
-      slide_static_age <- fs::file_info(tmp[["pdf_static"]])[["modification_time"]]
+      slide_static_age <- fs::file_info(tmp[["pdf_static"]])[[
+        "modification_time"
+      ]]
       comparison_age <- fs::file_info(out_path)[["modification_time"]]
 
       # Unpleasant nested-if thing but oh well.
       if (comparison_age >= max(slide_age, slide_static_age)) {
-        if (verbose) cli::cli_inform("Comparison PDF appears up to date already!")
+        if (verbose)
+          cli::cli_inform("Comparison PDF appears up to date already!")
         age_check <- FALSE
       }
 
@@ -174,7 +208,8 @@ compare_slide <- function(slide_file, verbose = TRUE, create_comparison_pdf = FA
     }
 
     if (age_check | view | overwrite) {
-      if (verbose & !view) cli::cli_inform("Creating diff PDF at {.file {fs::path_rel(out_path)}}")
+      if (verbose & !view)
+        cli::cli_inform("Creating diff PDF at {.file {fs::path_rel(out_path)}}")
       args <- c(
         # Red highlight on the left side to highlight small differences
         "--mark-differences",
@@ -185,7 +220,8 @@ compare_slide <- function(slide_file, verbose = TRUE, create_comparison_pdf = FA
         # Maybe skip identical pages? Not sure if that makes it actually easier
         "--skip-identical",
         # Input and reference PDF paths
-        tmp[["pdf"]], tmp[["pdf_static"]]
+        tmp[["pdf"]],
+        tmp[["pdf_static"]]
       )
 
       # If we want to view interactively, --output-diff must not be passed apparently.
@@ -196,7 +232,10 @@ compare_slide <- function(slide_file, verbose = TRUE, create_comparison_pdf = FA
       }
 
       p <- processx::process$new(
-        command = "diff-pdf", args = args, stdout = "|", stderr = "|"#,
+        command = "diff-pdf",
+        args = args,
+        stdout = "|",
+        stderr = "|" #,
         #echo_cmd = verbose
       )
 
@@ -211,7 +250,9 @@ compare_slide <- function(slide_file, verbose = TRUE, create_comparison_pdf = FA
         p$wait()
 
         if (!fs::file_exists(out_path)) {
-          cli::cli_alert_warning("{.file {fs::path_rel(out_path)}} was not created!")
+          cli::cli_alert_warning(
+            "{.file {fs::path_rel(out_path)}} was not created!"
+          )
         } else if (fs::file_size(out_path) == 0) {
           cli::cli_alert_warning("{.file {fs::path_rel(out_path)}} is empty!")
         }

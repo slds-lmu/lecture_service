@@ -26,7 +26,7 @@ check_system_tool <- function(x, strict = FALSE, warn = TRUE) {
 #' Collect the git status of lectures
 #'
 #' Show latest changes to locally available lectures.
-#' 
+#'
 #' @param lectures Character vector of lecture repo names, defaults to `lectures()`.
 #'    E.g. `c("lecture_advml", "lecture_i2ml")`.
 #'
@@ -38,46 +38,63 @@ check_system_tool <- function(x, strict = FALSE, warn = TRUE) {
 #' lecture_status_local()
 #' }
 lecture_status_local <- function(lectures = lectures()) {
-  do.call(rbind, lapply(lectures, \(lecture) {
+  do.call(
+    rbind,
+    lapply(lectures, \(lecture) {
+      if (fs::dir_exists(fs::path(lecture, ".git"))) {
+        # git2r::repository(lecture)
 
-    if (fs::dir_exists(fs::path(lecture, ".git"))) {
-      # git2r::repository(lecture)
+        lastcommit <- git2r::last_commit(lecture)
+        # Get name of GitHub org, take remot url, select for github (rather than overleaf), and extract
+        org <- git2r::remote_url(lecture) |>
+          stringr::str_subset("github") |>
+          # SSH vs HTTP clone URLs differ but basic idea is the same
+          stringr::str_extract(
+            "(https://github.com/|git@github.com:)(.*)/",
+            group = 2
+          )
 
-      lastcommit <- git2r::last_commit(lecture)
-      # Get name of GitHub org, take remot url, select for github (rather than overleaf), and extract
-      org <- git2r::remote_url(lecture) |>
-        stringr::str_subset("github") |>
-        # SSH vs HTTP clone URLs differ but basic idea is the same
-        stringr::str_extract("(https://github.com/|git@github.com:)(.*)/", group = 2)
+        branch <- git2r::repository_head(lecture)[["name"]] %||% "?"
 
-      branch <- git2r::repository_head(lecture)[["name"]] %||% "?"
+        data.frame(
+          # Using path_file like `basename`, to enable using other paths
+          lecture = fs::path_file(lecture),
+          org = org,
+          branch = branch,
+          last_commit_time = as.POSIXct(lastcommit$author$when, tz = "UTC"),
+          last_commit_by = lastcommit$author$name,
+          last_commit_summary = stringi::stri_escape_unicode(lastcommit$summary)
+        )
+      } else {
+        # This is for downloaded (not cloned) repos, e.g. on CI.
+        # We don't know the upstream repo so we assume defaults.
+        repo <- jsonlite::fromJSON(sprintf(
+          "https://api.github.com/repos/slds-lmu/%s",
+          lecture
+        ))
+        lastcommit <- jsonlite::fromJSON(sprintf(
+          "https://api.github.com/repos/slds-lmu/%s/commits/%s",
+          lecture,
+          repo$default_branch
+        ))
 
-      data.frame(
-        # Using path_file like `basename`, to enable using other paths
-        lecture = fs::path_file(lecture),
-        org = org,
-        branch = branch,
-        last_commit_time = as.POSIXct(lastcommit$author$when, tz = "UTC"),
-        last_commit_by = lastcommit$author$name,
-        last_commit_summary = stringi::stri_escape_unicode(lastcommit$summary)
-      )
-    } else {
-      # This is for downloaded (not cloned) repos, e.g. on CI.
-      # We don't know the upstream repo so we assume defaults.
-      repo <- jsonlite::fromJSON(sprintf("https://api.github.com/repos/slds-lmu/%s", lecture))
-      lastcommit <- jsonlite::fromJSON(sprintf("https://api.github.com/repos/slds-lmu/%s/commits/%s", lecture, repo$default_branch))
-
-      data.frame(
-        lecture = fs::path_file(lecture),
-        org = "slds-lmu",
-        branch = repo$default_branch,
-        last_commit_time = as.POSIXct(lastcommit$commit$author$date, tz = "UTC", format = "%FT%T"),
-        last_commit_by = lastcommit$commit$author$name,
-        last_commit_summary = stringi::stri_escape_unicode(lastcommit$commit$message)
-      )
-    }
-
-  }))
+        data.frame(
+          lecture = fs::path_file(lecture),
+          org = "slds-lmu",
+          branch = repo$default_branch,
+          last_commit_time = as.POSIXct(
+            lastcommit$commit$author$date,
+            tz = "UTC",
+            format = "%FT%T"
+          ),
+          last_commit_by = lastcommit$commit$author$name,
+          last_commit_summary = stringi::stri_escape_unicode(
+            lastcommit$commit$message
+          )
+        )
+      }
+    })
+  )
 }
 
 #' Status of the service repo checkout
@@ -116,7 +133,11 @@ this_repo_status <- function() {
 #'
 #' set_margin_token_file(wd = wd, margin = TRUE)
 #' stopifnot("file is removed when margin set" = !file.exists(file.path(wd, "nospeakermargin.tex")))
-set_margin_token_file <- function(wd, margin = TRUE, token_name = "nospeakermargin.tex") {
+set_margin_token_file <- function(
+  wd,
+  margin = TRUE,
+  token_name = "nospeakermargin.tex"
+) {
   margin_token_file <- fs::path(wd, token_name)
 
   if (margin) {
@@ -159,7 +180,9 @@ install_lecheck <- function(path = "~/.local/bin", overwrite = TRUE) {
       cli::cli_alert_info("{lecheck_bin_path} already exists, overwriting...")
       fs::link_delete(lecheck_bin_path)
     } else {
-      cli::cli_alert_warning("{lecheck_bin_path} already exists, doing nothing.")
+      cli::cli_alert_warning(
+        "{lecheck_bin_path} already exists, doing nothing."
+      )
       return(FALSE)
     }
   }

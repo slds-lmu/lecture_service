@@ -23,23 +23,41 @@
 #' # Runs in background, but doesn't capture exit code
 #' make_slides("cart", check_status = FALSE)
 #' }
-make_slides <- function(topic, lectures_tbl = collect_lectures(), make_arg = "most",
-                        pre_clean = TRUE, check_status = TRUE, verbose = TRUE, log = FALSE) {
+make_slides <- function(
+  topic,
+  lectures_tbl = collect_lectures(),
+  make_arg = "most",
+  pre_clean = TRUE,
+  check_status = TRUE,
+  verbose = TRUE,
+  log = FALSE
+) {
   tmp <- lectures_tbl[lectures_tbl$topic == topic, ]
 
-  make_arg <- match.arg(make_arg, c("most", "all", "most-normargin", "all-nomargin"))
+  make_arg <- match.arg(
+    make_arg,
+    c("most", "all", "most-normargin", "all-nomargin")
+  )
 
   stopifnot("No matching topic" = nrow(tmp) != 0)
-  stopifnot("Multiple lectures matching topic" = length(unique(tmp$lecture)) == 1)
+  stopifnot(
+    "Multiple lectures matching topic" = length(unique(tmp$lecture)) == 1
+  )
 
   slides_dir <- unique(tmp$slides_dir)
 
   # Clean up beforehand just in case
   if (pre_clean) {
-    pc <- processx::process$new(command = "make", args = "clean", wd = slides_dir)
+    pc <- processx::process$new(
+      command = "make",
+      args = "clean",
+      wd = slides_dir
+    )
     pc$wait()
     # I don't see how this should fail, so if it does you dun goof'd
-    stopifnot("make clean failed for some unholy reason" = pc$get_exit_status() == 0)
+    stopifnot(
+      "make clean failed for some unholy reason" = pc$get_exit_status() == 0
+    )
   }
 
   if (log) {
@@ -52,12 +70,16 @@ make_slides <- function(topic, lectures_tbl = collect_lectures(), make_arg = "mo
   }
 
   # Start process and keep track of it
-  p <- processx::process$new(command = "make", args = make_arg, wd = slides_dir, stderr = log_file)
+  p <- processx::process$new(
+    command = "make",
+    args = make_arg,
+    wd = slides_dir,
+    stderr = log_file
+  )
   #p$get_status()
 
   result <- list(passed = NA, log = log_file)
   if (check_status) {
-
     p$wait()
     if (p$get_exit_status() == 0) {
       if (verbose) cli::cli_alert_success(topic)
@@ -66,7 +88,10 @@ make_slides <- function(topic, lectures_tbl = collect_lectures(), make_arg = "mo
       if (log) fs::file_delete(log_file)
       result$passed <- TRUE
     } else {
-      if (verbose) cli::cli_alert_danger("{topic}: make exited with code {p$get_exit_status()}")
+      if (verbose)
+        cli::cli_alert_danger(
+          "{topic}: make exited with code {p$get_exit_status()}"
+        )
       result$passed <- FALSE
     }
   }
@@ -105,7 +130,8 @@ clean_slide <- function(slide_file, verbose = FALSE) {
   })
 
   pc <- processx::process$new(
-    command = "latexmk", args = c("-C", tmp$slide_name),
+    command = "latexmk",
+    args = c("-C", tmp$slide_name),
     wd = tmp$slides_dir,
     echo_cmd = verbose
   )
@@ -113,7 +139,9 @@ clean_slide <- function(slide_file, verbose = FALSE) {
   exit <- pc$get_exit_status()
   # I don't see how this should fail, so if it does you dun goof'd
   if (exit != 0) {
-    cli::cli_alert_danger("latexmk -C failed for some unholy reason for {slide_file}")
+    cli::cli_alert_danger(
+      "latexmk -C failed for some unholy reason for {slide_file}"
+    )
   }
 
   exit == 0
@@ -145,9 +173,14 @@ clean_slide <- function(slide_file, verbose = FALSE) {
 #' # Lazy way: No extension, just a name
 #' compile_slide("slides-cart-predictions")
 #' }
-compile_slide <- function(slide_file, pre_clean = TRUE, margin = TRUE,
-                          check_status = TRUE, verbose = TRUE, log = FALSE) {
-
+compile_slide <- function(
+  slide_file,
+  pre_clean = TRUE,
+  margin = TRUE,
+  check_status = TRUE,
+  verbose = TRUE,
+  log = FALSE
+) {
   tmp <- find_slide_tex(slide_file = slide_file)
 
   if (pre_clean) clean_slide(slide_file)
@@ -162,14 +195,17 @@ compile_slide <- function(slide_file, pre_clean = TRUE, margin = TRUE,
     # log_stderr <- here::here("logs", paste0(tmp$lecture, "-", tmp$topic, "-", tmp$slide_name, "-stderr.log"))
     # Combine both log streams, keeping them separate is not informative in latexmk's case anyway
     log_stderr <- "2>&1"
-    log_stdout <- here::here("logs",
-                    paste0(tmp$lecture, "-", tmp$topic, "-", tmp$slide_name, "-stdout.log"))
+    log_stdout <- here::here(
+      "logs",
+      paste0(tmp$lecture, "-", tmp$topic, "-", tmp$slide_name, "-stdout.log")
+    )
   }
 
   set_margin_token_file(tmp$slides_dir, margin = margin)
 
   p <- processx::process$new(
-    command = "latexmk", args = c("-pdf", tmp$slide_name),
+    command = "latexmk",
+    args = c("-pdf", tmp$slide_name),
     # Need to change to directory of slide, could also use  "--cd" option for latexmk probably
     wd = tmp$slides_dir,
     stderr = log_stderr,
@@ -192,7 +228,9 @@ compile_slide <- function(slide_file, pre_clean = TRUE, margin = TRUE,
       # }
       result$passed <- TRUE
     } else {
-      cli::cli_alert_danger("{tmp$slide_name} exited with status {p$get_exit_status()}")
+      cli::cli_alert_danger(
+        "{tmp$slide_name} exited with status {p$get_exit_status()}"
+      )
       result$passed <- FALSE
       result$note <- check_log(slide_file, before = 0, after = 2)
     }
@@ -219,7 +257,6 @@ compile_slide <- function(slide_file, pre_clean = TRUE, margin = TRUE,
 #' compile_slide_tinytex("lecture_advml/slides/gaussian-processes/slides-gp-basic-3.tex")
 #' }
 compile_slide_tinytex <- function(tex, margin, ...) {
-
   tex <- find_slide_tex(slide_file = tex)[["tex"]]
 
   newwd <- fs::path_dir(tex)
@@ -228,7 +265,12 @@ compile_slide_tinytex <- function(tex, margin, ...) {
 
   set_margin_token_file(newwd, margin = margin)
 
-  res <- try(tinytex::latexmk(file = tex, emulation = TRUE, install_packages = TRUE, ...))
+  res <- try(tinytex::latexmk(
+    file = tex,
+    emulation = TRUE,
+    install_packages = TRUE,
+    ...
+  ))
 
   file.exists(res)
 }

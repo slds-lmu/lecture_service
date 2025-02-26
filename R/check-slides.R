@@ -10,14 +10,17 @@
 #'
 #' @export
 check_all_slides <- function(
-    lectures_tbl = collect_lectures(filter_lectures = lectures()), pre_clean = FALSE,
-    create_comparison_pdf = TRUE, parallel = TRUE,
-    thresh_psnr = 40, dpi_check = 50, dpi_out = 100,
-    pixel_tol = 20, overwrite = FALSE
+  lectures_tbl = collect_lectures(filter_lectures = lectures()),
+  pre_clean = FALSE,
+  create_comparison_pdf = TRUE,
+  parallel = TRUE,
+  thresh_psnr = 40,
+  dpi_check = 50,
+  dpi_out = 100,
+  pixel_tol = 20,
+  overwrite = FALSE
 ) {
-
   check_tex <- function(tex) {
-
     result <- data.frame(
       tex = tex,
       compile_check = NA,
@@ -33,9 +36,14 @@ check_all_slides <- function(
 
     if (compile_status$passed) {
       compare_status <- compare_slide(
-        tex, verbose = FALSE, create_comparison_pdf = create_comparison_pdf,
-        thresh_psnr = thresh_psnr, dpi_check = dpi_check, dpi_out = dpi_out,
-        pixel_tol = pixel_tol, overwrite = overwrite
+        tex,
+        verbose = FALSE,
+        create_comparison_pdf = create_comparison_pdf,
+        thresh_psnr = thresh_psnr,
+        dpi_check = dpi_check,
+        dpi_out = dpi_out,
+        pixel_tol = pixel_tol,
+        overwrite = overwrite
       )
 
       result$compare_check <- compare_status$passed
@@ -45,7 +53,11 @@ check_all_slides <- function(
         if (compare_status$pages == "") {
           result$compare_check_note <- compare_status$reason
         } else {
-          result$compare_check_note <- sprintf("%s: %s", compare_status$reason, compare_status$pages)
+          result$compare_check_note <- sprintf(
+            "%s: %s",
+            compare_status$reason,
+            compare_status$pages
+          )
         }
       }
     }
@@ -55,7 +67,11 @@ check_all_slides <- function(
   tictoc::tic()
   if (parallel) {
     future::plan("multisession")
-    check_out <- future.apply::future_lapply(lectures_tbl$tex, check_tex, future.seed = NULL)
+    check_out <- future.apply::future_lapply(
+      lectures_tbl$tex,
+      check_tex,
+      future.seed = NULL
+    )
     # future.seed silences future warning about RNG stuff not relevant in this context
   } else {
     check_out <- lapply(lectures_tbl$tex, check_tex)
@@ -68,7 +84,9 @@ check_all_slides <- function(
 
   took <- tictoc::toc()
 
-  cli::cli_alert_info("{took$callback_msg}. Saving results to \"slide_check_cache.rds\".")
+  cli::cli_alert_info(
+    "{took$callback_msg}. Saving results to \"slide_check_cache.rds\"."
+  )
   saveRDS(check_table_result, file = "slide_check_cache.rds")
   invisible(check_table_result)
 }
