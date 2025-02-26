@@ -47,7 +47,8 @@ then
   if [ -z ${INSIDE_SERVICE_DOCKER} ]
   then
     echo "Installing dependencies..."
-    sudo apt-get install -y libpoppler-glib-dev poppler-utils libwxgtk3.0-gtk3-dev
+    # Older: libwxgtk3.0-gtk3-dev
+    sudo apt-get install -y libpoppler-glib-dev poppler-utils libwxgtk3.2-dev
   fi
 
   TEMPDIR=$(mktemp -d)
