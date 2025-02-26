@@ -14,8 +14,8 @@ reference:
       - lectures
       - collect_lectures
       - find_slide_tex
-      - lecture_status_local
-      - this_repo_status
+      # - lecture_status_local
+      # - this_repo_status
       - check_system_tool
   - title: "Compilation and checking"
     desc: |
