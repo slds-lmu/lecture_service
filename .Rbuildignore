@@ -23,3 +23,6 @@
 ^LICENSE\.md$
 ^file_counts\.*$
 ^README\.Rmd$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

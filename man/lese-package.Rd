@@ -8,6 +8,13 @@
 \description{
 Provides infrastructure around SLDS lectures for maintenance and development.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://slds-lmu.github.io/lecture_service/}
+}
+
+}
 \author{
 \strong{Maintainer}: Lukas Burk \email{github@quantenbrot.de} (\href{https://orcid.org/0000-0001-7528-3795}{ORCID})
 

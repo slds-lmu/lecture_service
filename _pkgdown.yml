@@ -1,0 +1,38 @@
+url: https://slds-lmu.github.io/lecture_service/
+
+template:
+  bootstrap: 5
+  bootswatch: litera
+  theme: kate
+
+reference:
+  - title: "Finding things"
+    desc: |
+      Identifying lectures, finding slides, and checking things are
+      the way they need to be.
+    contents:
+      - lectures
+      - collect_lectures
+      - find_slide_tex
+      - lecture_status_local
+      - this_repo_status
+      - check_system_tool
+  - title: "Compilation and checking"
+    desc: |
+      Compile slides with either latexmk or TinyTeX, and check
+      them against the reference files in slides-pdf.
+    contents:
+      - check_all_slides
+      - compile_slide
+      - compile_slide_tinytex
+      - compare_slide
+      - clean_slide
+      - make_slides
+  - title: "Utilities"
+    desc: "Useful"
+    contents:
+      - check_log
+      - install_lecheck
+      - set_margin_token_file
+      - "%||%"
+      - "%|0|%"
