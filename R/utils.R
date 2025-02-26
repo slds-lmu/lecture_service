@@ -25,6 +25,8 @@ check_system_tool <- function(x, strict = FALSE, warn = TRUE) {
 
 #' Collect the git status of lectures
 #'
+#' Show latest changes to locally available lectures.
+#' 
 #' @param lectures Character vector of lecture repo names, defaults to `lectures()`.
 #'    E.g. `c("lecture_advml", "lecture_i2ml")`.
 #'
@@ -129,7 +131,7 @@ set_margin_token_file <- function(wd, margin = TRUE, token_name = "nospeakermarg
 #'
 #' `path` should be in the user's `$PATH` to make the tool usable in shell sessions.
 #'
-#' @param path `["~/bin"]` Path to symlink the tool to. Must exist and be writable.
+#' @param path `["~/.local/bin"]` Path to symlink the tool to. Must exist and be writable.
 #' @param overwrite `[TRUE]` Overwrite any existing symlink.
 #'
 #' @return `FALSE` if a symlink already exists and is not overwritten.
@@ -138,12 +140,12 @@ set_margin_token_file <- function(wd, margin = TRUE, token_name = "nospeakermarg
 #'
 #' @examples
 #' if (FALSE) {
-#' install_lecheck("~/bin")
+#' install_lecheck()
 #'
 #' # Would only work if the R session is started under a user that can write to /usr/local/bin
 #' install_lecheck("/usr/local/bin")
 #' }
-install_lecheck <- function(path = "~/bin", overwrite = TRUE) {
+install_lecheck <- function(path = "~/.local/bin", overwrite = TRUE) {
   lecheck_script <- system.file("lecheck", package = "lese")
   checkmate::assert_file_exists(lecheck_script)
 

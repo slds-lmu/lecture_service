@@ -110,6 +110,7 @@ install-service:
 	Rscript -e 'pak::local_install_dev_deps()'
 	# Install the service package
 	Rscript -e 'pak::local_install()'
+	@echo "Use lese::install_lecheck() to install the lese command line tool"
 
 install: install-r install-tex install-tools-ubuntu install-service
 
