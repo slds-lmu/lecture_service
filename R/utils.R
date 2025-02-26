@@ -71,14 +71,15 @@ lecture_status_local <- function(lectures = lectures()) {
         branch = repo$default_branch,
         last_commit_time = as.POSIXct(lastcommit$commit$author$date, tz = "UTC", format = "%FT%T"),
         last_commit_by = lastcommit$commit$author$name,
-        last_commit_summary = lastcommit$commit$message
+        last_commit_summary = stringi::stri_escape_unicode(lastcommit$commit$message)
       )
     }
 
   }))
 }
 
-#' lecture_status_local() but for this service repo
+#' Status of the service repo checkout
+#' Same as `lecture_status_local()` but for this service repo
 #'
 #' @return A `data.frame` similar to `lecture_status_local()`.
 #' @export
