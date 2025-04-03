@@ -53,6 +53,8 @@ Note that the text file `include_lectures` is used to globally keep track of the
 will be limited on scope to this lecture.
 By default it contains all lectures currently hosted at `slds-lmu/`.
 
+See also the [Teaching DevOps Wiki](https://github.com/slds-lmu/lecture_service/wiki) for our central documentation hub.
+
 ### Quick Start
 
 The remaining README goes into a little more detail, while this is the "just get me started" bit.
