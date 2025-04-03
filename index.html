@@ -91,6 +91,7 @@
 <span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>└── [...]</span></code></pre></div>
 <p>You can either manually <code>git clone</code> lecture repos or use <code>scripts/clone_lectures.sh</code> or <code>download_lectures.sh</code> respectively. The <code>Makefile</code> has targets <code>clone</code> and <code>download</code> for these purposes. Since the git repositories can be fairly large due to the included PDF files, I recommend to clone with <code>--depth 1 --single-branch</code> if done manually, which only fetches the most recent commit and the default branch.</p>
 <p>Note that the text file <code>include_lectures</code> is used to globally keep track of the relevant lecture repos, so if you only intend to work on <code>lecture_advml</code> you could set it to only contain <code>lecture_advml</code> and subsequent <code>make</code> commands and other functions will be limited on scope to this lecture. By default it contains all lectures currently hosted at <code>slds-lmu/</code>.</p>
+<p>See also the <a href="https://github.com/slds-lmu/lecture_service/wiki" class="external-link">Teaching DevOps Wiki</a> for our central documentation hub.</p>
 <div class="section level3">
 <h3 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
 </h3>
@@ -261,64 +262,26 @@ The following examples assume that you have added or symlinked <code>lecheck</co
 <div class="section level3">
 <h3 id="latex-dependencies-required">LaTeX Dependencies (Required)<a class="anchor" aria-label="anchor" href="#latex-dependencies-required"></a>
 </h3>
-<style type="text/css">
-.note-box > h6 {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  padding-top: 10px;
-  padding-left: 2rem;
-}
-&#10;.note-box > p {
-  margin-top: 0;
-  margin-bottom: 0;
-  padding-left: 2rem;
-  padding-right: 2rem;
-  border-left-color: #FECE31;
-}
-&#10;div.note-box {
-  border-left: 0.5rem;
-  border-left-style: solid;
-  padding-bottom: 1rem;
-  margin-left: auto;
-  margin-right: auto;
-  width: 90%;
-  margin-bottom: 1rem;
-  margin-top: 1rem;
-  border-radius: 1rem;
-}
-</style>
-<div class="note-box">
-<h6>
-⚠ LaTeX version ⚠
-</h6>
-<p>
-Note that <strong>TeX Live 2024</strong> is required for slides to compile correctly.
-</p>
-<p>
-Check with e.g.
-</p>
-<code>
-<pre>
-$ tlmgr --version
-tlmgr revision 71331 (2024-05-24 09:30:36 +0200)
-tlmgr using installation: <some path>/TinyTeX
-TeX Live (https://tug.org/texlive) version 2024
-</some></pre>
-<p></p></code>
-</div>
+<blockquote>
+<p>[!CAUTION]<br>
+The LaTeX version expected by out setup is <strong>TeX Live 2024</strong> for slides to compile correctly, and to avoid painful updating issues in the long run we will try to continuously maintain compatibility with the latest TeX Live version. You can check this in the terminal of Linux/macOS/WSL with <code>tlmgr --version</code>, which should show e.g.</p>
+</blockquote>
+<div class="sourceCode" id="cb21"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>tlmgr revision <span class="dv">71331</span> (<span class="dv">2024-05-24</span> <span class="dv">09</span><span class="sc">:</span><span class="dv">30</span><span class="sc">:</span><span class="dv">36</span> <span class="sc">+</span><span class="dv">0200</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>tlmgr using installation<span class="sc">:</span> <span class="er">&lt;</span>some path<span class="sc">&gt;</span><span class="er">/</span>TinyTeX</span>
+<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>TeX <span class="fu">Live</span> (https<span class="sc">:</span><span class="er">//</span>tug.org<span class="sc">/</span>texlive) version <span class="dv">2024</span></span></code></pre></div>
 <p>LaTeX dependencies are installed via <code>scripts/install_tex_deps.R</code> or <code>make install-tex</code> via TinyTeX (recommended) or system <code>tlmgr</code>.</p>
 <p>I recommend installing <a href="https://yihui.org/tinytex/" class="external-link">TinyTeX</a> to manage TeX Live, as I found it to be easy and reliable, and you are independent from whatever your OS package manager offers.</p>
 <p>Install it in R:</p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"tinytex"</span><span class="op">)</span></span>
 <span><span class="fu">tinytex</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">install_tinytex</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>To make sure you can compile slides locally:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># tinytex emulates latexmk and installs missing latex packages automatically.</span></span>
 <span><span class="co"># Wrapper fun in service repo just sets working directories automatically</span></span>
 <span><span class="fu">lese</span><span class="fu">::</span><span class="fu"><a href="reference/compile_slide_tinytex.html">compile_slide_tinytex</a></span><span class="op">(</span><span class="st">"lecture_i2ml/slides/cart/slides-cart-splitcriteria-classification.tex"</span><span class="op">)</span></span></code></pre></div>
 <p>Or using <code>latexmk</code> internally instead of TinyTeX:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">lese</span><span class="fu">::</span><span class="fu"><a href="reference/compile_slide.html">compile_slide</a></span><span class="op">(</span><span class="st">"lecture_i2ml/slides/cart/slides-cart-splitcriteria-classification.tex"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -329,17 +292,17 @@ TeX Live (https://tug.org/texlive) version 2024
 <li>
 <a href="https://pypi.org/project/diff-pdf-visually/" class="external-link"><code>diff-pdf-visually</code></a>: For a simple parseable check, e.g.</li>
 </ul>
-<div class="sourceCode" id="cb24"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="ex">❯</span> diff-pdf-visually slides-forests-proximities.pdf ../../slides-pdf/slides-forests-proximities.pdf</span>
-<span id="cb24-2"><a href="#cb24-2" tabindex="-1"></a>  <span class="ex">Temporary</span> directory: /var/folders/n1/p1hxy7856nndrd0njv0lxzgw0000gn/T/diffpdfdy0681qc</span>
-<span id="cb24-3"><a href="#cb24-3" tabindex="-1"></a>  <span class="ex">Converting</span> each page of the PDFs to an image...</span>
-<span id="cb24-4"><a href="#cb24-4" tabindex="-1"></a>  <span class="ex">PDFs</span> have same number of pages. Checking each pair of converted images...</span>
-<span id="cb24-5"><a href="#cb24-5" tabindex="-1"></a><span class="ex">Min</span> sig = 14.1795, significant<span class="pp">?</span>=True. The PDFs are different. The most different pages are: page 5 <span class="er">(</span><span class="ex">sgf.</span> 14.1795<span class="kw">)</span><span class="ex">,</span> page 2 <span class="er">(</span><span class="ex">sgf.</span> 14.6277<span class="kw">)</span><span class="ex">,</span> page 4 <span class="er">(</span><span class="ex">sgf.</span> 15.1376<span class="kw">)</span><span class="ex">,</span> page 7 <span class="er">(</span><span class="ex">sgf.</span> 16.1474<span class="kw">)</span><span class="ex">,</span> page 3 <span class="er">(</span><span class="ex">sgf.</span> 16.6224<span class="kw">)</span><span class="bu">.</span></span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="ex">❯</span> diff-pdf-visually slides-forests-proximities.pdf ../../slides-pdf/slides-forests-proximities.pdf</span>
+<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>  <span class="ex">Temporary</span> directory: /var/folders/n1/p1hxy7856nndrd0njv0lxzgw0000gn/T/diffpdfdy0681qc</span>
+<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>  <span class="ex">Converting</span> each page of the PDFs to an image...</span>
+<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a>  <span class="ex">PDFs</span> have same number of pages. Checking each pair of converted images...</span>
+<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a><span class="ex">Min</span> sig = 14.1795, significant<span class="pp">?</span>=True. The PDFs are different. The most different pages are: page 5 <span class="er">(</span><span class="ex">sgf.</span> 14.1795<span class="kw">)</span><span class="ex">,</span> page 2 <span class="er">(</span><span class="ex">sgf.</span> 14.6277<span class="kw">)</span><span class="ex">,</span> page 4 <span class="er">(</span><span class="ex">sgf.</span> 15.1376<span class="kw">)</span><span class="ex">,</span> page 7 <span class="er">(</span><span class="ex">sgf.</span> 16.1474<span class="kw">)</span><span class="ex">,</span> page 3 <span class="er">(</span><span class="ex">sgf.</span> 16.6224<span class="kw">)</span><span class="bu">.</span></span></code></pre></div>
 <p>This needs to be installed and in your <code>$PATH</code>, such that <code><a href="http://processx.r-lib.org/reference/process.html" class="external-link">processx::process()</a></code> can run it. The output is used to automatically check if it is necessary to run <code>diff-pdf</code>.</p>
 <ul>
 <li>
 <a href="https://vslavik.github.io/diff-pdf/" class="external-link"><code>diff-pdf</code></a>, for an actual visual comparison for your eyeballs:</li>
 </ul>
-<div class="sourceCode" id="cb25"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="ex">diff-pdf</span> <span class="at">--view</span> slides-forests-proximities.pdf ../../slides-pdf/slides-forests-proximities.pdf</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="ex">diff-pdf</span> <span class="at">--view</span> slides-forests-proximities.pdf ../../slides-pdf/slides-forests-proximities.pdf</span></code></pre></div>
 <p>This is used to produce PDFs of only the differences at <code>comparison</code> and for the HTML table.</p>
 </div>
 </div>
