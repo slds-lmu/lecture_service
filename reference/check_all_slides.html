@@ -41,7 +41,8 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_all_slides</span><span class="op">(</span></span>
 <span>  lectures_tbl <span class="op">=</span> <span class="fu"><a href="collect_lectures.html">collect_lectures</a></span><span class="op">(</span>filter_lectures <span class="op">=</span> <span class="fu"><a href="lectures.html">lectures</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  pre_clean <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  create_comparison_pdf <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  compare_slides <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  create_comparison_pdf <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  parallel <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  thresh_psnr <span class="op">=</span> <span class="fl">40</span>,</span>
 <span>  dpi_check <span class="op">=</span> <span class="fl">50</span>,</span>
@@ -60,11 +61,15 @@
 
 
 <dt id="arg-pre-clean">pre_clean<a class="anchor" aria-label="anchor" href="#arg-pre-clean"></a></dt>
-<dd><p><code>[FALSE]</code>: Passed to <code>[compile_slide()]</code>.</p></dd>
+<dd><p><code>[FALSE]</code>: Passed to <code><a href="compile_slide.html">compile_slide()</a></code>.</p></dd>
+
+
+<dt id="arg-compare-slides">compare_slides<a class="anchor" aria-label="anchor" href="#arg-compare-slides"></a></dt>
+<dd><p><code>[FALSE]</code> If <code>TRUE</code>, run <code><a href="compare_slide.html">compare_slide()</a></code> on the slide iff the compile check passed.</p></dd>
 
 
 <dt id="arg-create-comparison-pdf-thresh-psnr-dpi-check-dpi-out-pixel-tol-overwrite">create_comparison_pdf, thresh_psnr, dpi_check, dpi_out, pixel_tol, overwrite<a class="anchor" aria-label="anchor" href="#arg-create-comparison-pdf-thresh-psnr-dpi-check-dpi-out-pixel-tol-overwrite"></a></dt>
-<dd><p>Passed to <code>[compare_slide()]</code>.</p></dd>
+<dd><p>Passed to <code><a href="compare_slide.html">compare_slide()</a></code>.</p></dd>
 
 
 <dt id="arg-parallel">parallel<a class="anchor" aria-label="anchor" href="#arg-parallel"></a></dt>
