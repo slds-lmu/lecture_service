@@ -1,10 +1,11 @@
 #' Compile and compare all the slides
 #'
-#' @param lectures_tbl Must contain `tex` column. Defaults to `collect_lectures()`.
-#' @param pre_clean `[FALSE]`: Passed to `[compile_slide()]`.
+#' @param lectures_tbl Must contain `tex` column. Defaults to [collect_lectures()].
+#' @param pre_clean `[FALSE]`: Passed to [compile_slide()].
 #' @param parallel `[TRUE]` Whether to parallelize.
-#'   Uses `future.apply::future_lapply` with `future::plan("multisession")`.
-#' @param create_comparison_pdf,thresh_psnr,dpi_check,dpi_out,pixel_tol,overwrite Passed to `[compare_slide()]`.
+#'   Uses [future.apply::future_lapply] with `future::plan("multisession")`.
+#' @param compare_slides `[FALSE]` If `TRUE`, run [compare_slide()] on the slide iff the compile check passed.
+#' @param create_comparison_pdf,thresh_psnr,dpi_check,dpi_out,pixel_tol,overwrite Passed to [compare_slide()].
 #' @return Invisibly: An expanded `lectures_tbl` with check results
 #' Also saves output at `slide_check_cache.rds`.
 #'
@@ -12,7 +13,8 @@
 check_all_slides <- function(
   lectures_tbl = collect_lectures(filter_lectures = lectures()),
   pre_clean = FALSE,
-  create_comparison_pdf = TRUE,
+  compare_slides = FALSE,
+  create_comparison_pdf = FALSE,
   parallel = TRUE,
   thresh_psnr = 40,
   dpi_check = 50,
@@ -34,7 +36,7 @@ check_all_slides <- function(
     result$compile_check <- compile_status$passed
     result$compile_note <- paste0(compile_status$note, collapse = "\n")
 
-    if (compile_status$passed) {
+    if (compile_status$passed & compare_slides) {
       compare_status <- compare_slide(
         tex,
         verbose = FALSE,

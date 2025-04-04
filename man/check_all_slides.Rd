@@ -7,7 +7,8 @@
 check_all_slides(
   lectures_tbl = collect_lectures(filter_lectures = lectures()),
   pre_clean = FALSE,
-  create_comparison_pdf = TRUE,
+  compare_slides = FALSE,
+  create_comparison_pdf = FALSE,
   parallel = TRUE,
   thresh_psnr = 40,
   dpi_check = 50,
@@ -17,11 +18,13 @@ check_all_slides(
 )
 }
 \arguments{
-\item{lectures_tbl}{Must contain \code{tex} column. Defaults to \code{collect_lectures()}.}
+\item{lectures_tbl}{Must contain \code{tex} column. Defaults to \code{\link[=collect_lectures]{collect_lectures()}}.}
 
-\item{pre_clean}{\verb{[FALSE]}: Passed to \verb{[compile_slide()]}.}
+\item{pre_clean}{\verb{[FALSE]}: Passed to \code{\link[=compile_slide]{compile_slide()}}.}
 
-\item{create_comparison_pdf, thresh_psnr, dpi_check, dpi_out, pixel_tol, overwrite}{Passed to \verb{[compare_slide()]}.}
+\item{compare_slides}{\verb{[FALSE]} If \code{TRUE}, run \code{\link[=compare_slide]{compare_slide()}} on the slide iff the compile check passed.}
+
+\item{create_comparison_pdf, thresh_psnr, dpi_check, dpi_out, pixel_tol, overwrite}{Passed to \code{\link[=compare_slide]{compare_slide()}}.}
 
 \item{parallel}{\verb{[TRUE]} Whether to parallelize.
 Uses \code{future.apply::future_lapply} with \code{future::plan("multisession")}.}
