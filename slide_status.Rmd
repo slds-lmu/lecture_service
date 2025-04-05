@@ -31,6 +31,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 library(lese)
 library(ggplot2)
+library(dplyr)
 
 included_lectures <- lectures()
 
@@ -62,10 +63,10 @@ Displaying the latest commits of the lecture service repository and each of the 
 
 ```{r slide-checker-repo-status}
 this_repo_status() |>
-  dplyr::mutate(
+  mutate(
     branch = sprintf("<a href='https://github.com/slds-lmu/lecture_service/tree/%s'>%s</a>", branch, branch)
   ) |>
-  dplyr::select(branch, last_commit_time, last_commit_by, last_commit_summary) |>
+  select(branch, last_commit_time, last_commit_by, last_commit_summary) |>
   kableExtra::kbl(
     col.names = c("Branch", "Last Commit", "By", "Message"),
     escape = FALSE, caption = "Status of the lecture_service repo (time in UTC)"
@@ -76,12 +77,12 @@ this_repo_status() |>
 
 ```{r lecture-repo-status}
 lecture_status_local(lectures) |>
-  dplyr::arrange(dplyr::desc(last_commit_time)) |>
-  dplyr::mutate(
+  arrange(desc(last_commit_time)) |>
+  mutate(
     lecture_link = sprintf("<a href='https://%s.github.io/%s'>%s</a>", org, lecture, lecture),
     branch = sprintf("<a href='https://github.com/%s/%s/tree/%s'>%s</a>", org, lecture, branch, branch)
   ) |>
-  dplyr::select(lecture_link, branch, last_commit_time, last_commit_by, last_commit_summary) |>
+  select(lecture_link, branch, last_commit_time, last_commit_by, last_commit_summary) |>
   kableExtra::kbl(
     col.names = c("Lecture", "Branch", "Last Commit", "By", "Message"),
     escape = FALSE, caption = "Latest commits per lecture (times in UTC)"
@@ -95,27 +96,74 @@ If you're missing a lecture here, you might have to add them to or ensure they a
 
 # Slide status
 
+```{r data-prep, include=FALSE}
+check_table <- all_slide_check |>
+  # Transforms the logical columns, i.e. pdf_exists, pdf_static_exists, compile_check, ...
+  mutate(across(where(is.logical), \(x) {
+    case_when(
+      x ~ "\u2705",  # Green check symbol
+      !x ~ "\u274c", # Red X symbol
+      is.na(x) ~ ""
+    )
+  })) |>
+  mutate(
+    # Insert red question mark emoji instead of red X for easier visual parsing maybe
+    compare_check = ifelse(grepl("Dissimilar pages", compare_check_note), "\u2753", compare_check),
+    compare_check = ifelse(grepl("No reference", compare_check_note), "", compare_check)
+  ) |>
+  # Make links out of a few columns
+  mutate(
+    comparison_path = here::here("comparison", fs::path_file(pdf)),
+    check_note = ifelse(
+      compare_check %in% c("\u274c", "\u2753"),
+      sprintf("<a href='%s'>%s</a>", fs::path_rel(comparison_path), compare_check_note),
+      compare_check_note
+    ),
+    compile_note = stringr::str_replace_all(compile_note, "`", "'") |>
+      stringr::str_replace_all(r"(\\)", r"(\\\\)"),
+    check_note = ifelse(compile_check == "\u274c", compile_note, check_note),
+    slide_name = ifelse(
+      fs::file_exists(pdf),
+      sprintf("<a href='%s'>%s</a>", fs::path_rel(pdf), slide_name),
+      slide_name
+    )
+  )
+
+with_comparison <- !all(check_table$compare_check == "")
+
+if (with_comparison) {
+  check_cols <- c("compile_check", "compare_check")
+  col_align <- c("l", "c", "c", "l")
+  col_names <- c("Slide", "Compiles?", "Comparison", "Note")
+} else {
+  check_cols <- c("compile_check")
+  col_align <- c("l", "c", "l")
+  col_names <- c("Slide", "Compiles?", "Note")
+}
+
+```
+
 ```{r slide-status-plot, eval = requireNamespace("ggplot2")}
 #| fig.width: 10
 #| fig.height: 6
 #| out.width: "100%"
 
-check_counts <- do.call(rbind, lapply(c("compile_check", "compare_check"), \(x) {
+check_counts <- do.call(rbind, lapply(check_cols, \(x) {
   all_slide_check |>
-    dplyr::filter(lecture %in% .env$included_lectures) |>
-    dplyr::count(lecture, .data[[x]]) |>
-    dplyr::group_by(lecture) |>
-    dplyr::mutate(prop = n / sum(n), check = x) |>
-    dplyr::rename(result = dplyr::all_of(x)) |>
-    dplyr::mutate(
-      result = dplyr::case_when(
+    filter(lecture %in% .env$included_lectures) |>
+    count(lecture, .data[[x]]) |>
+    group_by(lecture) |>
+    mutate(prop = n / sum(n), check = x) |>
+    rename(result = all_of(x)) |>
+    mutate(
+      result = case_when(
         result ~ "Passed",
         !result ~ "Failed",
         .default = "N/A"
       )
     )
 })) |>
-  dplyr::mutate(
+  mutate(
     lecture = stringr::str_remove(lecture, "^lecture_"),
     lecture = factor(lecture, levels = stringr::str_remove(included_lectures, "^lecture_")),
     check = stringr::str_remove(check, "_check$"),
@@ -174,41 +222,6 @@ Topics ignore certain folders like `attic` and `all`.
 
 </details>
 
-```{r data-prep, include=FALSE}
-check_table <- all_slide_check |>
-  # Transforms the logical columns, i.e. pdf_exists, pdf_static_exists, compile_check, ...
-  dplyr::mutate(dplyr::across(dplyr::where(is.logical), \(x) {
-    dplyr::case_when(
-      x ~ "\u2705",  # Green check symbol
-      !x ~ "\u274c", # Red X symbol
-      is.na(x) ~ ""
-    )
-  })) |>
-  dplyr::mutate(
-    # Insert red question mark emoji instead of red X for easier visual parsing maybe
-    compare_check = ifelse(grepl("Dissimilar pages", compare_check_note), "\u2753", compare_check),
-    compare_check = ifelse(grepl("No reference", compare_check_note), "", compare_check)
-  ) |>
-  # Make links out of a few columns
-  dplyr::mutate(
-    comparison_path = here::here("comparison", fs::path_file(pdf)),
-    check_note = ifelse(
-      compare_check %in% c("\u274c", "\u2753"),
-      sprintf("<a href='%s'>%s</a>", fs::path_rel(comparison_path), compare_check_note),
-      compare_check_note
-    ),
-    compile_note = stringr::str_replace_all(compile_note, "`", "'") |>
-      stringr::str_replace_all(r"(\\)", r"(\\\\)"),
-    check_note = ifelse(compile_check == "\u274c", compile_note, check_note),
-    slide_name = ifelse(
-      fs::file_exists(pdf),
-      sprintf("<a href='%s'>%s</a>", fs::path_rel(pdf), slide_name),
-      slide_name
-    )
-  )
-```
-
-
 ```{r  slide-status-table, results='asis'}
 # This is a markdown "asis" chunk that can output raw markdown or HTML and is treated as such by knitr
 # Useful to manually assemble tables with sub-headings
@@ -216,26 +229,24 @@ check_table <- all_slide_check |>
 for (current_lecture in lectures) {
 
   tmp <-  check_table |>
-    dplyr::filter(lecture == current_lecture)
+    filter(lecture == current_lecture)
 
   cat(sprintf("\n## %s \n\n", current_lecture))
-
   cat(sprintf("%i topics with a total of %i slides\n", length(unique(tmp$topic)), nrow(tmp)))
 
   for (current_topic in sort(unique(tmp$topic))) {
     tmp <-  check_table |>
-      dplyr::filter(lecture == current_lecture, topic == current_topic)
+      filter(lecture == current_lecture, topic == current_topic)
 
     cat(sprintf("\n### %s\n\n", current_topic))
 
-    tmp |>
-      dplyr::select(
-        slide_name,
-        compile_check, compare_check, check_note) |>
+    tab <- tmp |>
+      select(
+        slide_name, any_of(check_cols), check_note) |>
       kableExtra::kbl(
         format = "html", escape = FALSE,
-        align = c("l", "c", "c", "l"),
-        col.names = c("Slide", "Compiles?", "Comparison", "Note")
+        align = col_align,
+        col.names = col_names
       ) |>
       kableExtra::kable_styling(
         full_width = TRUE,
@@ -243,11 +254,18 @@ for (current_lecture in lectures) {
         bootstrap_options = c("hover", "condensed", "responsive")
       ) |>
       kableExtra::column_spec(1, width = "40%") |>
-      kableExtra::column_spec(2, width = "10%") |>
-      kableExtra::column_spec(3, width = "10%") |>
-      kableExtra::column_spec(4, width = "40%") |>
-      cat()
+      kableExtra::column_spec(2, width = "10%")
+
+      if (with_comparison) {
+        tab <- tab |> 
+          kableExtra::column_spec(3, width = "10%") |>
+          kableExtra::column_spec(4, width = "40%")
+      } else {
+        tab <- tab |> 
+          kableExtra::column_spec(3, width = "40%")
+      }
+
+      cat(tab)
   }
 }
 ```
-

@@ -18,6 +18,8 @@ It serves as a rough check to ensure that the PR does not cause major breakage.
 knitr::opts_chunk$set(echo = FALSE)
 
 library(lese)
+library(dplyr)
+library(knitr)
 
 included_lectures <- lectures()
 
@@ -43,11 +45,11 @@ all_slide_check <- all_slide_check[all_slide_check$lecture %in% included_lecture
 
 ```{r slide-checker-repo-status}
 this_repo_status() |>
-  dplyr::mutate(
+  mutate(
     branch = sprintf("<a href='https://github.com/slds-lmu/lecture_service/tree/%s'>%s</a>", branch, branch)
   ) |>
-  dplyr::select(branch, last_commit_time, last_commit_by, last_commit_summary) |>
-  knitr::kable(
+  select(branch, last_commit_time, last_commit_by, last_commit_summary) |>
+  kable(
     col.names = c("Branch", "Last Commit", "By", "Message"),
     escape = FALSE, caption = "Status of the lecture_service repo (time in UTC)"
   )
@@ -56,13 +58,13 @@ this_repo_status() |>
 
 ```{r lecture-repo-status}
 lecture_status_local(lectures) |>
-  dplyr::arrange(dplyr::desc(last_commit_time)) |>
-  dplyr::mutate(
+  arrange(desc(last_commit_time)) |>
+  mutate(
     lecture_link = sprintf("<a href='https://%s.github.io/%s'>%s</a>", org, lecture, lecture),
     branch = sprintf("<a href='https://github.com/%s/%s/tree/%s'>%s</a>", org, lecture, branch, branch)
   ) |>
-  dplyr::select(lecture_link, branch, last_commit_time, last_commit_by, last_commit_summary) |>
-  knitr::kable(
+  select(lecture_link, branch, last_commit_time, last_commit_by, last_commit_summary) |>
+  kable(
     col.names = c("Lecture", "Branch", "Last Commit", "By", "Message"),
     escape = FALSE, caption = "Latest commits per lecture (times in UTC)"
   )
@@ -72,26 +74,28 @@ lecture_status_local(lectures) |>
 ```{r data-prep, include=FALSE}
 check_table <- all_slide_check |>
   # Transforms the logical columns, i.e. pdf_exists, pdf_static_exists, compile_check, ...
-  dplyr::mutate(dplyr::across(dplyr::where(is.logical), \(x) {
-    dplyr::case_when(
+  mutate(across(where(is.logical), \(x) {
+    case_when(
       x ~ "\u2705",  # Green check symbol
       !x ~ "\u274c", # Red X symbol
       is.na(x) ~ ""
     )
   })) |>
-  dplyr::mutate(
+  mutate(
     # Insert red question mark emoji instead of red X for easier visual parsing maybe
     compare_check = ifelse(grepl("Dissimilar pages", compare_check_note), "\u2753", compare_check),
     compare_check = ifelse(grepl("No reference", compare_check_note), "", compare_check)
   ) |>
   # Make links out of a few columns
-  dplyr::mutate(
+  mutate(
     comparison_path = here::here("comparison", fs::path_file(pdf)),
     check_note = compare_check_note,
     compile_note = stringr::str_replace_all(compile_note, "`", "'") |>
       stringr::str_replace_all(r"(\\)", r"(\\\\)"),
     check_note = ifelse(compile_check == "\u274c", compile_note, check_note)
   )
+
+
 ```
 
 
@@ -99,47 +103,57 @@ check_table <- all_slide_check |>
 # This is a markdown "asis" chunk that can output raw markdown or HTML and is treated as such by knitr
 # Useful to manually assemble tables with sub-headings
 
+# Switch table properties depending on whether we have comparison checks or not
+if (!all(check_table$compare_check == "")) {
+  check_cols <- c("compile_check", "compare_check")
+  col_align <- c("l", "c", "c", "l")
+  col_names <- c("Slide", "Compiles?", "Comparison", "Note")
+} else {
+  check_cols <- c("compile_check")
+  col_align <- c("l", "c", "l")
+  col_names <- c("Slide", "Compiles?", "Note")
+}
+
 for (current_lecture in lectures) {
 
   tmp <- check_table |>
-    dplyr::filter(lecture == current_lecture)
+    filter(lecture == current_lecture)
 
   cat(sprintf("\n## %s \n\n", current_lecture))
 
   cat(sprintf("%i topics with a total of %i slides\n", length(unique(tmp$topic)), nrow(tmp)))
   
   tmp |>
-    dplyr::count(compile_check) |>
-    knitr::kable(
+    count(compile_check) |>
+    kable(
       format = "html"
     ) |>
     cat()
   
   tmp |>
-    dplyr::count(compile_check, compare_check) |>
-    knitr::kable(
+    count(across(any_of(check_columns))) |>
+    kable(
       format = "html"
     ) |>
     cat()
 
   for (current_topic in sort(unique(tmp$topic))) {
     tmp <- check_table |>
-      dplyr::filter(lecture == current_lecture, topic == current_topic)
+      filter(lecture == current_lecture, topic == current_topic)
 
     cat(sprintf("\n### %s\n\n", current_topic))
     
     tmp |>
-      dplyr::select(
-        slide_name, compile_check, compare_check, check_note
+      select(
+        slide_name, any_of(check_columns), check_note
       ) |>
-      knitr::kable(
+      kable(
         # Needs to be HTML even for markdown output, tables don't render properly otherwise
         format = "html", 
-        align = c("l", "c", "c", "l"),
-        col.names = c("Slide", "Compiles?", "Comparison", "Note")
+        align = col_align,
+        col.names = col_names
       ) |>
       cat()
   }
 }
 ```
-
