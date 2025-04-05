@@ -28,6 +28,7 @@ collect_lectures <- function(
   ),
   exclude_slide_names = c(
     "chapter-order",
+    "chapter-order-slides-all",
     "chapter-order-nutshell",
     "nospeakermargin"
   )

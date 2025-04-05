@@ -9,7 +9,8 @@ collect_lectures(
   filter_lectures = lectures(),
   exclude_slide_subdirs = c("attic", "rsrc", "all", "figure_man", "figures_tikz",
     "figure", "tex", "backup"),
-  exclude_slide_names = c("chapter-order", "chapter-order-nutshell", "nospeakermargin")
+  exclude_slide_names = c("chapter-order", "chapter-order-slides-all",
+    "chapter-order-nutshell", "nospeakermargin")
 )
 }
 \arguments{

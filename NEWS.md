@@ -1,3 +1,7 @@
+# lese 0.2.2
+
+* Ignore  `chapter-order-slides-all.tex` slide name in `collect_lectures()`
+
 # lese 0.2.1
 
 * Added `check_slides()` argument `compare_slides` defaulting to `FALSE`, making the no longer pressingly needed slide comparisons against `slides-pdf` reference slides an optional step rather than default behavior.
