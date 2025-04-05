@@ -21,7 +21,8 @@ compare_slide(
 
 \item{verbose}{\verb{[TRUE]}: Print additional output to the console.}
 
-\item{create_comparison_pdf}{\verb{[FALSE]}: Use \code{diff-pdf} to create a comparison PDF at \verb{./comparison/<slide-name>.pdf}}
+\item{create_comparison_pdf}{\verb{[FALSE]}: Use \code{diff-pdf} to create a comparison PDF at \verb{./comparison/<slide-name>.pdf}.
+The PDF contains only the slide pages with detected differences, highlighted in red/blue.}
 
 \item{thresh_psnr}{\verb{[40]}: PSNR threshold for difference detection in \code{diff-pdf-visually}.
 Higher is more sensitive.}
@@ -34,18 +35,22 @@ Lower values will lead to very pixelated diff PDFs.}
 
 \item{pixel_tol}{\verb{[20]} Per-page pixel tolerance for comparison used by \code{diff-pdf}.}
 
-\item{view}{`\link{FALSE} For interactive use: Opens window showing comparison diff.}
+\item{view}{\verb{[FALSE]} For interactive use: Opens window showing comparison diff.}
 
 \item{overwrite}{\verb{[FALSE]} Re-creates output diff PDF even if it already exists and appears up to date.}
 }
 \value{
 Invisibly: A list of results:
 \itemize{
-\item passed: TRUE indicates a successful comparison, FALSE a failure.
-\item reason: Shorthand reason for a failing comparison.
-\item pages: Vector of pages with differences.
-\item output: Full output produced by diff-pdf-visually.
+\item \code{passed}: TRUE indicates a successful comparison, FALSE a failure.
+\item \code{reason}: Shorthand reason for a failing comparison.
+\item \code{pages}: Vector of pages with differences.
+\item \code{output}: Full output produced by diff-pdf-visually.
 }
+
+Also prints a summary, e.g.:
+
+"! slides-cart-computationalaspects: Changes detected in pages: 11 and 12 (signif.: 0 and 0)"
 }
 \description{
 A compiled .tex file such as \code{slides/gaussian-processes/slides-gp-bayes-lm.pdf} will be compared with

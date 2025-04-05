@@ -27,7 +27,7 @@ check_all_slides(
 \item{create_comparison_pdf, thresh_psnr, dpi_check, dpi_out, pixel_tol, overwrite}{Passed to \code{\link[=compare_slide]{compare_slide()}}.}
 
 \item{parallel}{\verb{[TRUE]} Whether to parallelize.
-Uses \code{future.apply::future_lapply} with \code{future::plan("multisession")}.}
+Uses \link[future.apply:future_lapply]{future.apply::future_lapply} with \code{future::plan("multisession")}.}
 }
 \value{
 Invisibly: An expanded \code{lectures_tbl} with check results

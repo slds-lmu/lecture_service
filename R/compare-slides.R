@@ -13,7 +13,8 @@
 #'
 #' @param slide_file `character(1)`: A single slide .tex file (see examples).
 #' @param verbose `[TRUE]`: Print additional output to the console.
-#' @param create_comparison_pdf `[FALSE]`: Use `diff-pdf` to create a comparison PDF at `./comparison/<slide-name>.pdf`
+#' @param create_comparison_pdf `[FALSE]`: Use `diff-pdf` to create a comparison PDF at `./comparison/<slide-name>.pdf`.
+#'   The PDF contains only the slide pages with detected differences, highlighted in red/blue.
 #' @param thresh_psnr `[40]`: PSNR threshold for difference detection in `diff-pdf-visually`.
 #'   Higher is more sensitive.
 #' @param dpi_check `[50]` Resolution for rasterised files used by both `diff-pdf-visually`.
@@ -21,13 +22,18 @@
 #' @param dpi_out `[100]` Resolution for output PDF produced by `diff-pdf`.
 #'   Lower values will lead to very pixelated diff PDFs.
 #' @param pixel_tol `[20]` Per-page pixel tolerance for comparison used by `diff-pdf`.
-#' @param view `[FALSE] For interactive use: Opens window showing comparison diff.
+#' @param view `[FALSE]` For interactive use: Opens window showing comparison diff.
 #' @param overwrite `[FALSE]` Re-creates output diff PDF even if it already exists and appears up to date.
 #' @return Invisibly: A list of results:
-#'   - passed: TRUE indicates a successful comparison, FALSE a failure.
-#'   - reason: Shorthand reason for a failing comparison.
-#'   - pages: Vector of pages with differences.
-#'   - output: Full output produced by diff-pdf-visually.
+#'   - `passed`: TRUE indicates a successful comparison, FALSE a failure.
+#'   - `reason`: Shorthand reason for a failing comparison.
+#'   - `pages`: Vector of pages with differences.
+#'   - `output`: Full output produced by diff-pdf-visually.
+#'
+#' Also prints a summary, e.g.:
+#'
+#' "! slides-cart-computationalaspects: Changes detected in pages: 11 and 12 (signif.: 0 and 0)"
+#'
 #' @export
 #
 #' @note Uses `diff-pdf-visually` and `diff-pdf` under the hood, you may need to adjust your $PATH.
