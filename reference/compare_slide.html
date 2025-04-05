@@ -67,7 +67,8 @@ an assumed to be accepted / known good version at <code>slides-pdf/slides-gp-bay
 
 
 <dt id="arg-create-comparison-pdf">create_comparison_pdf<a class="anchor" aria-label="anchor" href="#arg-create-comparison-pdf"></a></dt>
-<dd><p><code>[FALSE]</code>: Use <code>diff-pdf</code> to create a comparison PDF at <code>./comparison/&lt;slide-name&gt;.pdf</code></p></dd>
+<dd><p><code>[FALSE]</code>: Use <code>diff-pdf</code> to create a comparison PDF at <code>./comparison/&lt;slide-name&gt;.pdf</code>.
+The PDF contains only the slide pages with detected differences, highlighted in red/blue.</p></dd>
 
 
 <dt id="arg-thresh-psnr">thresh_psnr<a class="anchor" aria-label="anchor" href="#arg-thresh-psnr"></a></dt>
@@ -90,7 +91,7 @@ Lower values will lead to very pixelated diff PDFs.</p></dd>
 
 
 <dt id="arg-view">view<a class="anchor" aria-label="anchor" href="#arg-view"></a></dt>
-<dd><p>`<a href="https://rdrr.io/r/base/logical.html" class="external-link">FALSE</a> For interactive use: Opens window showing comparison diff.</p></dd>
+<dd><p><code>[FALSE]</code> For interactive use: Opens window showing comparison diff.</p></dd>
 
 
 <dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>
@@ -99,11 +100,13 @@ Lower values will lead to very pixelated diff PDFs.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Invisibly: A list of results:</p><ul><li><p>passed: TRUE indicates a successful comparison, FALSE a failure.</p></li>
-<li><p>reason: Shorthand reason for a failing comparison.</p></li>
-<li><p>pages: Vector of pages with differences.</p></li>
-<li><p>output: Full output produced by diff-pdf-visually.</p></li>
-</ul></div>
+    <p>Invisibly: A list of results:</p><ul><li><p><code>passed</code>: TRUE indicates a successful comparison, FALSE a failure.</p></li>
+<li><p><code>reason</code>: Shorthand reason for a failing comparison.</p></li>
+<li><p><code>pages</code>: Vector of pages with differences.</p></li>
+<li><p><code>output</code>: Full output produced by diff-pdf-visually.</p></li>
+</ul><p>Also prints a summary, e.g.:</p>
+<p>"! slides-cart-computationalaspects: Changes detected in pages: 11 and 12 (signif.: 0 and 0)"</p>
+    </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>First uses <code>diff-pdf-visually</code> to check slides for differences based on the PSNR of rasterised versions
