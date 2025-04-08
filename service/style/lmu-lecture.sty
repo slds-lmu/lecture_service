@@ -415,6 +415,7 @@
     \begin{column}{#1\textwidth}% Left column with specified width
       #2
     \end{column}%
+    \hspace{1em}%
     \begin{column}{\dimexpr\textwidth-#1\textwidth\relax}% Right column taking remaining space
       #3
     \end{column}%
@@ -431,6 +432,7 @@
         #2
         \vfill}% 
     \end{column}%
+    \hspace{1em}%
     \begin{column}{%
         \dimexpr\textwidth-#1\textwidth\relax% Take remaining space
       }%
@@ -451,7 +453,7 @@
   \begin{minipage}{#1\textwidth}
     #3
   \end{minipage}%
-  \hspace{1em}
+  \hspace{1em}%
   \begin{minipage}{#2\textwidth}
     #4
   \end{minipage}
@@ -509,6 +511,7 @@
     \begin{column}{0.33\textwidth}% First column
       #1
     \end{column}%
+    \hspace{1em}%
     \begin{column}{0.33\textwidth}% Second column
       #2
     \end{column}%
@@ -546,6 +549,7 @@
     \begin{column}{#1\textwidth}% First column
       #4
     \end{column}%
+    \hspace{1em}%
     \begin{column}{\secondcolwidth\textwidth}% Second column
       #5
     \end{column}%
