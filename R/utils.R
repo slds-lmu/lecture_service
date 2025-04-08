@@ -8,6 +8,7 @@
 #'
 #' @return `TRUE` if the tool is find, `FALSE` otherwise, and an error if `strict` and the tool is not found.
 #' @export
+#' @examples
 #' check_system_tool("diff-pdf", strictness = "none")
 check_system_tool <- function(x, strictness = c("warning", "error", "none")) {
   checkmate::assert_character(x, len = 1)

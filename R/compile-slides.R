@@ -1,6 +1,8 @@
 #' Clean output for a single .tex file
 #'
-#' @param slide_file `character(1)`: A single slide .tex file (see examples).
+#' Uses `latexmk -C <slide_file>`
+#'
+#' @inheritParams find_slide_tex
 #' @param verbose `[TRUE]`: Print additional output to the console.
 #'
 #' @return Invisibly: A list with entries
@@ -48,7 +50,7 @@ clean_slide <- function(slide_file, verbose = FALSE) {
 
 #' Compile a single .tex file
 #'
-#' @param slide_file `character(1)`: A single slide .tex file (see examples).
+#' @inheritParams find_slide_tex
 #' @param pre_clean `[TRUE]`: Run `clean_slide()` beforehand, ensuring a clean slate.
 #' @param margin `[TRUE]` By default renders slides with margin. Otherwise a 4:3 slide is
 #'   rendered.
@@ -140,11 +142,12 @@ compile_slide <- function(
 
 #' Compile a .tex file using TinyTex's latexmk emulation
 #'
-#' Automatically installs missing LaTeX packages. Neat.
+#' TinyTex's [tinytex::latexmk()] automatically installs missing LaTeX packages,
+#' making it very useful.
 #' This is just a thin wrapper run the command with
 #' a changed working directory, as relative paths used in `preamble.tex` etc. require.
 #'
-#' @param tex `character(1)` Full path to a `.tex` file to render.
+#' @inheritParams find_slide_tex
 #' @inheritParams compile_slide
 #' @param ... Arguments passed to [`tinytex::latexmk()`].
 #'
@@ -155,8 +158,8 @@ compile_slide <- function(
 #' \dontrun{
 #' compile_slide_tinytex("lecture_advml/slides/gaussian-processes/slides-gp-basic-3.tex")
 #' }
-compile_slide_tinytex <- function(tex, margin, ...) {
-  tex <- find_slide_tex(slide_file = tex)[["tex"]]
+compile_slide_tinytex <- function(slide_file, margin, ...) {
+  tex <- find_slide_tex(slide_file = slide_file)[["tex"]]
 
   newwd <- fs::path_dir(tex)
   oldwd <- setwd(dir = newwd)
@@ -171,5 +174,5 @@ compile_slide_tinytex <- function(tex, margin, ...) {
     ...
   ))
 
-  file.exists(res)
+  fs::file_exists(res)
 }

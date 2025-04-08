@@ -7,7 +7,7 @@
 clean_slide(slide_file, verbose = FALSE)
 }
 \arguments{
-\item{slide_file}{\code{character(1)}: A single slide .tex file (see examples).}
+\item{slide_file}{\verb{[character(1)]} Name of a (single) slide, with or without \code{.tex} extension. See examples of \code{\link[=find_slide_tex]{find_slide_tex()}}.}
 
 \item{verbose}{\verb{[TRUE]}: Print additional output to the console.}
 }
@@ -19,7 +19,7 @@ Invisibly: A list with entries
 }
 }
 \description{
-Clean output for a single .tex file
+Uses \verb{latexmk -C <slide_file>}
 }
 \examples{
 \dontrun{

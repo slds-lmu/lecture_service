@@ -4,10 +4,10 @@
 \alias{compile_slide_tinytex}
 \title{Compile a .tex file using TinyTex's latexmk emulation}
 \usage{
-compile_slide_tinytex(tex, margin, ...)
+compile_slide_tinytex(slide_file, margin, ...)
 }
 \arguments{
-\item{tex}{\code{character(1)} Full path to a \code{.tex} file to render.}
+\item{slide_file}{\verb{[character(1)]} Name of a (single) slide, with or without \code{.tex} extension. See examples of \code{\link[=find_slide_tex]{find_slide_tex()}}.}
 
 \item{margin}{\verb{[TRUE]} By default renders slides with margin. Otherwise a 4:3 slide is
 rendered.}
@@ -18,7 +18,8 @@ rendered.}
 \code{TRUE} if an output PDF file exists, \code{FALSE} otherwise.
 }
 \description{
-Automatically installs missing LaTeX packages. Neat.
+TinyTex's \code{\link[tinytex:latexmk]{tinytex::latexmk()}} automatically installs missing LaTeX packages,
+making it very useful.
 This is just a thin wrapper run the command with
 a changed working directory, as relative paths used in \code{preamble.tex} etc. require.
 }

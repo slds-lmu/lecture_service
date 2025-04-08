@@ -18,3 +18,6 @@ check_system_tool(x, strictness = c("warning", "error", "none"))
 Can be used to verify if a tool (e.g. \code{convert}) is in \verb{$PATH} and findable from within R.
 Sometimes a tool is in \verb{$PATH} in regular shell sessions but not within R.
 }
+\examples{
+check_system_tool("diff-pdf", strictness = "none")
+}

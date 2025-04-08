@@ -30,7 +30,7 @@ A \code{data.frame} with columns
 \itemize{
 \item \code{tex}: Same as \code{slide_file} argument.
 \item \code{compile_check}: \code{logical} indicating whether \code{\link[=compile_slide]{compile_slide()}} passed
-\item \code{compare_check}: \code{logical} indicating whether \code{\link[=compare_slide]{compare_slide()}} passed ( \code{NA} if \code{compare_slides = FALSE} or \code{\link[=compile_check]{compile_check()}} did not pass)
+\item \code{compare_check}: \code{logical} indicating whether \code{\link[=compare_slide]{compare_slide()}} passed ( \code{NA} if \code{compare_slides = FALSE} or \code{\link[=compile_slide]{compile_slide()}} did not pass)
 \item \code{compare_check_note}: Note from \code{\link[=compare_slide]{compare_slide()}} indicating number and nature of differences.
 \item \code{compare_check_raw}: More verbose form of \code{compare_check_note}.
 \item \code{compile_note}: If there are compilation errors, the error messages from \code{\link[=compile_slide]{compile_slide()}} are included (see also \code{\link[=check_log]{check_log()}}).
@@ -40,6 +40,7 @@ A \code{data.frame} with columns
 Use \code{\link[=check_slides_many]{check_slides_many()}} to check many slides.
 }
 \examples{
+\dontrun{
 check_slides_single(slide_file = "slides-basics-whatisml", pre_clean = TRUE, compare_slides = TRUE)
-
+}
 }

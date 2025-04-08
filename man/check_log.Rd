@@ -24,7 +24,7 @@ Uses regular expressions to search log files for common errors:
 \item "^! Undefined control sequence": Typo, missing package or preamble (including \code{latex-math}), or command not defined.
 \item "not found": Implying a missing figure or other included file, maybe due to misspecified filename via Overleafs
 autocompletion (\verb{slides/<topic>/figure/} path instead of \verb{figure/}) or file not committed to git.
-\item "^! Missing \\$ inserted": Missing `$`` delimiter for math
+\item "^! Missing \\$ inserted": Missing \verb{\\$} delimiter for math
 \item "! LaTeX Error:": A generic error
 }
 }

@@ -11,14 +11,15 @@
 #' @return A `data.frame` with columns
 #' - `tex`: Same as `slide_file` argument.
 #' - `compile_check`: `logical` indicating whether [compile_slide()] passed
-#' - `compare_check`: `logical` indicating whether [compare_slide()] passed ( `NA` if `compare_slides = FALSE` or [compile_check()] did not pass)
+#' - `compare_check`: `logical` indicating whether [compare_slide()] passed ( `NA` if `compare_slides = FALSE` or [compile_slide()] did not pass)
 #' - `compare_check_note`: Note from [compare_slide()] indicating number and nature of differences.
 #' - `compare_check_raw`: More verbose form of `compare_check_note`.
 #' - `compile_note`: If there are compilation errors, the error messages from [compile_slide()] are included (see also [check_log()]).
 #'
 #' @examples
+#' \dontrun{
 #' check_slides_single(slide_file = "slides-basics-whatisml", pre_clean = TRUE, compare_slides = TRUE)
-#'
+#' }
 check_slides_single <- function(
   slide_file,
   pre_clean = FALSE,

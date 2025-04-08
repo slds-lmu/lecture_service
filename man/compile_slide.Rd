@@ -14,7 +14,7 @@ compile_slide(
 )
 }
 \arguments{
-\item{slide_file}{\code{character(1)}: A single slide .tex file (see examples).}
+\item{slide_file}{\verb{[character(1)]} Name of a (single) slide, with or without \code{.tex} extension. See examples of \code{\link[=find_slide_tex]{find_slide_tex()}}.}
 
 \item{pre_clean}{\verb{[TRUE]}: Run \code{clean_slide()} beforehand, ensuring a clean slate.}
 
