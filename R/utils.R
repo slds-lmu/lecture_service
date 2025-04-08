@@ -4,19 +4,20 @@
 #' Sometimes a tool is in `$PATH` in regular shell sessions but not within R.
 #'
 #' @param x Name of a binary, e.g. `convert` for ImageMagick or `brew` for Homebrew on macOS.
-#' @param strict `[FALSE]` Whether to `stop()` if the tool is not found or return `FALSE` with a warning.
-#' @param warn `[TRUE]` Whether to show a warning if the tool is no found. Only has an effect if `!strict`.
+#' @param strictness `["warning"]` Wether to emit a warning, `"error"`, or nothing (`"none"`) if the tool is not found.
 #'
-#' @return `TRUE` if the tool is find, `FALSE` otherwise, and an error if `strict == TRUE` and the tool is not found.
+#' @return `TRUE` if the tool is find, `FALSE` otherwise, and an error if `strict` and the tool is not found.
 #' @export
-check_system_tool <- function(x, strict = FALSE, warn = TRUE) {
+#' check_system_tool("diff-pdf", strictness = "none")
+check_system_tool <- function(x, strictness = c("warning", "error", "none")) {
   checkmate::assert_character(x, len = 1)
+  strictness <- match.arg(strictness)
   which <- Sys.which(x)
 
   if (which == "") {
     msg <- "Could not find {x} in $PATH"
-    if (strict) cli::cli_abort(msg)
-    if (warn) cli::cli_alert_warning(msg)
+    if (strictness == "error") cli::cli_abort(msg)
+    if (strictness == "warning") cli::cli_alert_warning(msg)
     return(FALSE)
   }
 
@@ -99,9 +100,9 @@ lecture_status_local <- function(lectures = lectures()) {
 }
 
 #' Status of the service repo checkout
-#' Same as `lecture_status_local()` but for this service repo
+#' Same as [lecture_status_local()] but for this service repo
 #'
-#' @return A `data.frame` similar to `lecture_status_local()`.
+#' @return A `data.frame` similar to [lecture_status_local()].
 #' @export
 #' @keywords internal
 this_repo_status <- function() {
@@ -112,17 +113,17 @@ this_repo_status <- function() {
 }
 
 
-#' Auto-set the with/without margin dummy file
+#' Manage the with/without margin dummy file
 #'
 #' See `style/lmu-lecture.sty` where depending on the presence of an empty `.tex` file with a
 #' specific name certain layout options are set to compile slides either in 16:9 with margins or
 #' in 4:3 without a margin for the speaker.
 #'
 #' @param wd Working directory (relative or absolute) where the file needs to be created.
-#'   This is the directory were the `.tex` file to be compiles is located.
-#' @param margin `[TRUE]` Whether to enable (`TRUE`, default) or disable (`FALSE`) the margin.
+#'   This is the directory were the `.tex` file to be compiled is located.
+#' @param margin `[TRUE]` Whether to enable or disable the margin.
 #' @param token_name `"nospeakermargin.tex"` If the name changes or needs to be flexible for testing
-#'  it can be adjusted, but typically the default is set in stone.
+#'  it can be adjusted, but typically the name is set in stone via `lmu-lecture.sty`.
 #'
 #' @return Nothing
 #' @export
@@ -149,10 +150,9 @@ set_margin_token_file <- function(
   }
 }
 
-
 #' Install the lecheck cli tool
 #'
-#' `path` should be in the user's `$PATH` to make the tool usable in shell sessions.
+#' `path` should be in `$PATH` to make the tool usable in shell sessions.
 #'
 #' @param path `["~/.local/bin"]` Path to symlink the tool to. Must exist and be writable.
 #' @param overwrite `[TRUE]` Overwrite any existing symlink.
@@ -177,19 +177,24 @@ install_lecheck <- function(path = "~/.local/bin", overwrite = TRUE) {
 
   lecheck_bin_path <- fs::path(path, "lecheck")
 
+  if (!fs::link_exists(lecheck_bin_path)) {
+    cli::cli_alert_info("Creating symlink at {.file {lecheck_bin_path}}...")
+    fs::link_create(lecheck_script, lecheck_bin_path)
+  }
+
   if (fs::link_exists(lecheck_bin_path)) {
     if (overwrite) {
-      cli::cli_alert_info("{lecheck_bin_path} already exists, overwriting...")
+      cli::cli_alert_info(
+        "{.file {lecheck_bin_path}} already exists, overwriting..."
+      )
       fs::link_delete(lecheck_bin_path)
     } else {
       cli::cli_alert_warning(
-        "{lecheck_bin_path} already exists, doing nothing."
+        "{.file {lecheck_bin_path}} already exists, doing nothing."
       )
       return(FALSE)
     }
   }
-
-  fs::link_create(lecheck_script, lecheck_bin_path)
 }
 
 #' Default value for `NULL`

@@ -4,26 +4,29 @@
 \alias{find_slide_tex}
 \title{Find a slide set across all lectures}
 \usage{
-find_slide_tex(lectures_tbl = collect_lectures(), slide_file)
+find_slide_tex(slide_file, lectures_tbl = collect_lectures())
 }
 \arguments{
-\item{lectures_tbl}{Must contain \code{tex} column. Defaults to \code{collect_lectures()}.}
+\item{slide_file}{\verb{[character(1)]} Name of a (single) slide, with or without \code{.tex} extension. See examples of \code{\link[=find_slide_tex]{find_slide_tex()}}.}
 
-\item{slide_file}{Name of a (single) slide, with or without \code{.tex} extension. See examples.}
+\item{lectures_tbl}{Must contain \code{tex} column. Defaults to \code{collect_lectures()}.}
 }
 \description{
 Lectures need to be stored locally in the current directory with regular names like  \code{lecture_i2ml}.
 It is strongly assumed that slide names such as \code{slides-cart-predictions.tex} are unique across all lectures.
 }
 \examples{
-\dontrun{
+\dontshow{if (fs::dir_exists(here::here("lecture_i2ml"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # The "normal" way: A .tex file name
-find_slide_tex(slide_file = "slides-cart-computationalaspects.tex")
+str(find_slide_tex(slide_file = "slides-cart-computationalaspects.tex"))
 
 # Also acceptable: A full path (absolute or relative), convenient for scripts
-find_slide_tex(slide_file = "lecture_advml/slides/gaussian-processes/slides-gp-bayes-lm.tex")
+str(find_slide_tex(slide_file = "lecture_i2ml/slides/cart/slides-cart-predictions.tex"))
 
 # Lazy way: No extension, just a name
-find_slide_tex(slide_file = "slides-cart-predictions")
-}
+str(find_slide_tex(slide_file = "slides-cart-predictions"))
+
+# Can also ge tthe .tex file for a .pdf
+str(find_slide_tex(slide_file = "slides-cart-predictions.pdf"))
+\dontshow{\}) # examplesIf}
 }

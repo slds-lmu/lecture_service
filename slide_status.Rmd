@@ -39,7 +39,7 @@ if (!file.exists("slide_check_cache.rds")) {
   stop(paste(
     "slide_check_cache.rds does not exists.",
     "Run `make` and get a coffee, or",
-    "Rscript -e 'lese::check_all_slides()", sep = "\n "
+    "Rscript -e 'lese::check_slides_many()", sep = "\n "
   ))
 }
 
@@ -55,7 +55,10 @@ lectures <- lectures[match(included_lectures, lectures, nomatch = 0)]
 all_slide_check <- all_slide_check[all_slide_check$lecture %in% included_lectures, ]
 ```
 
-This document tabulates the state of the slides in `lecture*/slides/<topic>/` in terms of a) compilability and b) comparison with presumably "known good" versions of the slides located in `lecture_*/slides-pdf/`.
+This document tabulates the state of the slides in `lecture_*/slides/<topic>/` based on
+
+a) compilation checks (does it compile,and if not, is there a salient error message?) and 
+b) (optionally and rarely) comparison with presumably "known good" versions of the slides located in `lecture_*/slides-pdf/`
 
 # Latest Commits
 
@@ -92,7 +95,7 @@ lecture_status_local(lectures) |>
   kableExtra::column_spec(5, width = "40%")
 ```
 
-If you're missing a lecture here, you might have to add them to or ensure they are downloaded correctly.
+If you're missing a lecture here after rendering this site interactively, you might have to add them to the `included_lectures` files or ensure they are downloaded correctly.
 
 # Slide status
 

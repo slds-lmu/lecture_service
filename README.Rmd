@@ -39,9 +39,10 @@ lecture_service
 ├── lecture_i2ml
 ├── lecture_sl
 ├── [...]
-├── helpers.R
 ├── Makefile
+├── R
 ├── scripts
+├── service
 └── [...]
 ```
 

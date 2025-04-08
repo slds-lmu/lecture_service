@@ -170,7 +170,7 @@ It is still experimental and features can and will change.
     ## Options:
     ##   -h --help             Show this screen.
     ##   --version             Show version.
-    ##   everything            Runs check_all_slides(), which saves results to a file rather than displaying them.
+    ##   everything            Runs check_slides_many(), which saves results to a file rather than displaying them.
     ##   list                  List all lectures and topics found in this directory.
     ##   -l --lecture=<lc>     Lecture repository, e.g. "lecture_i2ml".
     ##                         Can be abbreviated (dropping "lecture_" prefix) [default: NULL].

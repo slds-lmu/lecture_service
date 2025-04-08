@@ -16,7 +16,7 @@ collect_lectures(
 \arguments{
 \item{lectures_path}{Path containing lecture_* directories. Defaulting to \code{here::here()}.}
 
-\item{filter_lectures}{(\code{character()}): Vector of lecture repo names to filter table by, e.g. \code{"lecture_i2ml"}.
+\item{filter_lectures}{\code{\link[=character]{character()}}: Vector of lecture repo names to filter table by, e.g. \code{"lecture_i2ml"}.
 Defaults to \code{\link[=lectures]{lectures()}} to respect \code{include_lectures}.}
 
 \item{exclude_slide_subdirs}{Exclude slides/ subfolders, e.g. \code{c("attic", "rsrc", "all")}.}
@@ -24,7 +24,7 @@ Defaults to \code{\link[=lectures]{lectures()}} to respect \code{include_lecture
 \item{exclude_slide_names}{Exclude slides matching these names exactly, e.g. \code{"chapter-order"} (default).}
 }
 \value{
-A data.frame with one row per slide .tex file.
+A \verb{data.frame`` with one row per slide }.tex` file.
 }
 \description{
 Assemble table of lecture slides

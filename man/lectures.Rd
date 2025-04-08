@@ -16,7 +16,5 @@ If neither the environment variable nor the file exists, it defaults to listing
 all lectures.
 }
 \examples{
-\dontrun{
 lectures()
-}
 }

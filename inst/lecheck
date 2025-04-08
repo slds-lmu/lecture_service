@@ -31,7 +31,7 @@ Example:
 Options:
   -h --help             Show this screen.
   --version             Show version.
-  everything            Runs check_all_slides(), which saves results to a file rather than displaying them.
+  everything            Runs check_slides_many(), which saves results to a file rather than displaying them.
   list                  List all lectures and topics found in this directory.
   -l --lecture=<lc>     Lecture repository, e.g. "lecture_i2ml".
                         Can be abbreviated (dropping "lecture_" prefix) [default: NULL].
@@ -51,10 +51,15 @@ Options:
 '
 
 # Wrap in tryCatch to make --help default behavior when there's an argument error
-arguments <- tryCatch(docopt::docopt(doc, version = version), error = function(e) {
-  cli::cli_alert_danger("Argument error: docopt does not understand your commands")
-  cat(doc)
-  })
+arguments <- tryCatch(
+  docopt::docopt(doc, version = version),
+  error = function(e) {
+    cli::cli_alert_danger(
+      "Argument error: docopt does not understand your commands"
+    )
+    cat(doc)
+  }
+)
 if (is.null(arguments)) quit(save = "no", status = 1)
 
 if (interactive()) {
@@ -63,7 +68,11 @@ if (interactive()) {
   #arguments <- docopt::docopt(doc, version = version, args = c("compile", "-t cart", "--no-margin"))
   #arguments <- docopt::docopt(doc, version = version, args = c("compile", "-t cart", "--pdf-copy"))
   #arguments <- tryCatch(docopt::docopt(doc, version = version, args = c("list", "compile")), error = function(e) cat(doc))
-  arguments <- docopt::docopt(doc, version = version, args = c("compile", "-l i2ml", "-t cart", "--background"))
+  arguments <- docopt::docopt(
+    doc,
+    version = version,
+    args = c("compile", "-l i2ml", "-t cart", "--background")
+  )
 
   print(arguments)
 }
@@ -76,7 +85,10 @@ arguments$slide <- gsub("^\\s*", "", arguments$slide)
 # Subset to only currently relevant lecture
 # if (arguments$path == "here") arguments$path <- here::here()
 
-lectures_tbl <- collect_lectures(lectures_path = here::here(), filter_lectures = lectures())
+lectures_tbl <- collect_lectures(
+  lectures_path = here::here(),
+  filter_lectures = lectures()
+)
 
 # If slide is specified, takes highest precedence. Then topic, then lecture.
 # Ensures that if e.g. slide from advml is set but lecture is i2ml, slide "wins"
@@ -89,14 +101,19 @@ if (!(arguments$slide == "NULL")) {
     arguments$lecture <- paste0("lecture_", arguments$lecture)
   }
 
-  lectures_tbl <- lectures_tbl[which(lectures_tbl$lecture == arguments$lecture), ]
+  lectures_tbl <- lectures_tbl[
+    which(lectures_tbl$lecture == arguments$lecture),
+  ]
 }
 
 stopifnot("No matching slides found." = nrow(lectures_tbl) >= 1)
 
 if (arguments$everything) {
-  check_all_slides(lectures_tbl, pre_clean = arguments$preclean,
-                   create_comparison_pdf = !arguments$no_comparison_pdf)
+  check_slides_many(
+    lectures_tbl,
+    pre_clean = arguments$preclean,
+    create_comparison_pdf = !arguments$no_comparison_pdf
+  )
   quit(save = "no", status = 0)
 }
 
@@ -108,9 +125,9 @@ if (!(arguments$compile | arguments$compare | arguments$clean)) {
 if (arguments$list) {
   cli::cli_inform("Found:")
   cli::cli_ul(.close = FALSE)
-  cli::cli_li("{length(unique(lectures_tbl$lecture))} lectures")
-  cli::cli_li("{length(unique(lectures_tbl$topic))} topics")
-  cli::cli_li("{length(unique(lectures_tbl$tex))} slide sets")
+  cli::cli_li("{.val {length(unique(lectures_tbl$lecture))}} lectures")
+  cli::cli_li("{.val {length(unique(lectures_tbl$topic))}} topics")
+  cli::cli_li("{.val {length(unique(lectures_tbl$tex))}} slide sets")
   cli::cli_end()
 
   for (current_lecture in unique(lectures_tbl$lecture)) {
@@ -120,7 +137,9 @@ if (arguments$list) {
     n_topics <- length(unique(current_lecture_tbl$topic))
     n_slidesets <- nrow(current_lecture_tbl)
 
-    cli::cli_h1("{current_lecture}: {n_topics} topic{?s}, {n_slidesets} slide set{?s}")
+    cli::cli_h1(
+      "{current_lecture}: {n_topics} topic{?s}, {n_slidesets} slide set{?s}"
+    )
 
     cli::cli_ul(.close = FALSE)
     for (current_topic in unique(current_lecture_tbl$topic)) {
@@ -140,23 +159,38 @@ if (arguments$list) {
 # Can still smartify this.
 for (current_lecture in unique(lectures_tbl$lecture)) {
   cli::cli_h1("{current_lecture}")
-  current_lecture_tbl <- lectures_tbl[lectures_tbl[["lecture"]] == current_lecture, ]
+  current_lecture_tbl <- lectures_tbl[
+    lectures_tbl[["lecture"]] == current_lecture,
+  ]
 
   for (current_topic in unique(current_lecture_tbl$topic)) {
     cli::cli_h2("{current_topic}")
-    current_topic_tbl <- current_lecture_tbl[current_lecture_tbl[["topic"]] == current_topic, ]
+    current_topic_tbl <- current_lecture_tbl[
+      current_lecture_tbl[["topic"]] == current_topic,
+    ]
 
     for (current_slide in unique(current_topic_tbl$slide_name)) {
-      current_slide_tbl <- current_topic_tbl[current_topic_tbl[["slide_name"]] == current_slide, ]
+      current_slide_tbl <- current_topic_tbl[
+        current_topic_tbl[["slide_name"]] == current_slide,
+      ]
 
       if (arguments$clean) {
-        cli::cli_alert_info("Cleaning {current_slide_tbl[['slide_name']]}", id = current_topic)
-        clean_slide(slide_file = current_slide_tbl[["slide_name"]], verbose = arguments$verbose)
+        cli::cli_alert_info(
+          "Cleaning {current_slide_tbl[['slide_name']]}",
+          id = current_topic
+        )
+        clean_slide(
+          slide_file = current_slide_tbl[["slide_name"]],
+          verbose = arguments$verbose
+        )
       }
 
       if (arguments$compile) {
         if (arguments$tinytex) {
-          compile_slide_tinytex(current_slide_tbl[["slide_name"]], margin = !arguments$no_margin)
+          compile_slide_tinytex(
+            current_slide_tbl[["slide_name"]],
+            margin = !arguments$no_margin
+          )
         }
 
         res <- compile_slide(
@@ -169,7 +203,10 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
 
         if (!arguments$background & !res$passed) {
           cli::cli_alert("Checking log for common errors:")
-          found_errors <- check_log(current_slide_tbl[["slide_name"]], after = 2)
+          found_errors <- check_log(
+            current_slide_tbl[["slide_name"]],
+            after = 2
+          )
           cli::cli_ul("{found_errors}")
         }
       }
@@ -182,14 +219,17 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
             overwrite = TRUE
           )
         } else {
-          cli::cli_alert_warning("Can't copy {fs::path_file(current_slide_tbl[[\"pdf\"]])} to slides-pdf/: Does not exist.")
+          cli::cli_alert_warning(
+            "Can't copy {fs::path_file(current_slide_tbl[[\"pdf\"]])} to slides-pdf/: Does not exist."
+          )
         }
       }
 
       if (arguments$compare) {
         compare_slide(
           current_slide_tbl[["slide_name"]],
-          create_comparison_pdf = !arguments$no_comparison_pdf, verbose = TRUE # arguments$verbose
+          create_comparison_pdf = !arguments$no_comparison_pdf,
+          verbose = TRUE # arguments$verbose
         )
       }
     }

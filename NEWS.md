@@ -1,3 +1,13 @@
+# lese 0.3.0
+
+* Rename `check_all_slides` to `check_slides_many()`, which in turn is a wrapper around `check_slides_single()`
+* Make documentation more consistent, e.g. by inheriting the `slide_file` parameter doc from `find_slide_tex()`.
+* `slide_status_pr.Rmd` and `slide_status.Rmd`: Only show slide comparison column in output if comparison has been conducted (no longer the case by default)
+* Remove `make_slides()` as it was effectively superseded by either
+    * Running `compile_slide()` on a file of itnerest directly, or
+    * Using the `lecheck` cli for more control and better error messages, or
+    * Running `make` in selected topic directories in a shell as needed
+
 # lese 0.2.2
 
 * Ignore  `chapter-order-slides-all.tex` slide name in `collect_lectures()`

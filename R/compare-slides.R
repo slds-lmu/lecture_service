@@ -91,7 +91,7 @@ compare_slide <- function(
     return(result)
   }
 
-  if (!check_system_tool("diff-pdf-visually")) {
+  if (!check_system_tool("diff-pdf-visually", strictness = "none")) {
     return(result)
   }
 
@@ -182,7 +182,11 @@ compare_slide <- function(
     result$signif <- pages_signif
   }
 
-  if (create_comparison_pdf & !result$passed & check_system_tool("diff-pdf")) {
+  if (
+    create_comparison_pdf &
+      !result$passed &
+      check_system_tool("diff-pdf", strictness = "none")
+  ) {
     if (!dir.exists(here::here("comparison")))
       dir.create(here::here("comparison"))
     out_path <- fs::path_ext_set(

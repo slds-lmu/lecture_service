@@ -1,12 +1,45 @@
+#' Get included lectures
+#'
+#' Uses central file `./include_lectures`, ignoring commented out lines.
+#' Can be overridden with environment variable `$include_lectures`.
+#' If neither the environment variable nor the file exists, it defaults to listing
+#' all lectures.
+#' @export
+#' @return A character vector, e.g. `c("lecture_i2ml", "lecture_advml")`, depending on `./include_lectures`
+#' @examples
+#' lectures()
+lectures <- function() {
+  lectures <- Sys.getenv("include_lectures", unset = NA)
+
+  if (is.na(lectures) & file.exists(here::here("include_lectures"))) {
+    lectures <- grep(
+      pattern = "^#",
+      readLines(here::here("include_lectures")),
+      value = TRUE,
+      invert = TRUE
+    )
+  } else {
+    lectures <- c(
+      "lecture_i2ml",
+      "lecture_advml",
+      "lecture_sl",
+      "lecture_iml",
+      "lecture_optimization"
+    )
+  }
+
+  lectures
+}
+
 #' Assemble table of lecture slides
 #'
 #' @param lectures_path Path containing lecture_* directories. Defaulting to `here::here()`.
-#' @param filter_lectures (`character()`): Vector of lecture repo names to filter table by, e.g. `"lecture_i2ml"`.
-#'   Defaults to [`lectures()`] to respect `include_lectures`.
+#' @param filter_lectures [`character()`]: Vector of lecture repo names to filter table by, e.g. `"lecture_i2ml"`.
+#'   Defaults to [lectures()] to respect `include_lectures`.
 #' @param exclude_slide_subdirs Exclude slides/ subfolders, e.g. `c("attic", "rsrc", "all")`.
 #' @param exclude_slide_names Exclude slides matching these names exactly, e.g. `"chapter-order"` (default).
 #'
-#' @return A data.frame with one row per slide .tex file.
+#' @return A `data.frame`` with one row per slide `.tex` file.
 #' @export
 #'
 #' @examples
@@ -122,62 +155,30 @@ collect_lectures <- function(
   )]
 }
 
-#' Get included lectures
-#'
-#' Uses central file `./include_lectures`, ignoring commented out lines.
-#' Can be overridden with environment variable `$include_lectures`.
-#' If neither the environment variable nor the file exists, it defaults to listing
-#' all lectures.
-#' @export
-#' @return A character vector, e.g. `c("lecture_i2ml", "lecture_advml")`, depending on `./include_lectures`
-#' @examples
-#' \dontrun{
-#' lectures()
-#' }
-lectures <- function() {
-  lectures <- Sys.getenv("include_lectures", unset = NA)
-
-  if (is.na(lectures) & file.exists(here::here("include_lectures"))) {
-    lectures <- grep(
-      pattern = "^#",
-      readLines(here::here("include_lectures")),
-      value = TRUE,
-      invert = TRUE
-    )
-  } else {
-    lectures <- c(
-      "lecture_i2ml",
-      "lecture_advml",
-      "lecture_sl",
-      "lecture_iml",
-      "lecture_optimization"
-    )
-  }
-
-  lectures
-}
-
 #' Find a slide set across all lectures
 #'
 #' Lectures need to be stored locally in the current directory with regular names like  `lecture_i2ml`.
 #' It is strongly assumed that slide names such as `slides-cart-predictions.tex` are unique across all lectures.
 #'
+#' @param slide_file `[character(1)]` Name of a (single) slide, with or without `.tex` extension. See examples of [find_slide_tex()].
 #' @param lectures_tbl Must contain `tex` column. Defaults to `collect_lectures()`.
-#' @param slide_file  Name of a (single) slide, with or without `.tex` extension. See examples.
 #'
 #' @export
-#' @examples
-#' \dontrun{
+#' @examplesIf fs::dir_exists(here::here("lecture_i2ml"))
 #' # The "normal" way: A .tex file name
-#' find_slide_tex(slide_file = "slides-cart-computationalaspects.tex")
+#' str(find_slide_tex(slide_file = "slides-cart-computationalaspects.tex"))
 #'
 #' # Also acceptable: A full path (absolute or relative), convenient for scripts
-#' find_slide_tex(slide_file = "lecture_advml/slides/gaussian-processes/slides-gp-bayes-lm.tex")
+#' str(find_slide_tex(slide_file = "lecture_i2ml/slides/cart/slides-cart-predictions.tex"))
 #'
 #' # Lazy way: No extension, just a name
-#' find_slide_tex(slide_file = "slides-cart-predictions")
-#' }
-find_slide_tex <- function(lectures_tbl = collect_lectures(), slide_file) {
+#' str(find_slide_tex(slide_file = "slides-cart-predictions"))
+#'
+#' # Can also ge tthe .tex file for a .pdf
+#' str(find_slide_tex(slide_file = "slides-cart-predictions.pdf"))
+find_slide_tex <- function(slide_file, lectures_tbl = collect_lectures()) {
+  checkmate::assert_string(slide_file, na.ok = FALSE, min.chars = 1)
+
   # Allow both "slides-cart-predictions.tex" and lazy "slides-cart-predictions"
   # and "slides-cart-predictions.pdf" because why not.
   if (identical(fs::path_ext(slide_file), ""))

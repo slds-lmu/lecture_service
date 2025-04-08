@@ -1,17 +1,97 @@
-#' Compile and compare all the slides
+#' Compile and compare a slide chunk
 #'
-#' @param lectures_tbl Must contain `tex` column. Defaults to [collect_lectures()].
+#' Use [check_slides_many()] to check many slides.
+#'
+#' @inheritParams find_slide_tex
 #' @param pre_clean `[FALSE]`: Passed to [compile_slide()].
-#' @param parallel `[TRUE]` Whether to parallelize.
-#'   Uses [future.apply::future_lapply] with `future::plan("multisession")`.
 #' @param compare_slides `[FALSE]` If `TRUE`, run [compare_slide()] on the slide iff the compile check passed.
 #' @param create_comparison_pdf,thresh_psnr,dpi_check,dpi_out,pixel_tol,overwrite Passed to [compare_slide()].
-#' @return Invisibly: An expanded `lectures_tbl` with check results
-#' Also saves output at `slide_check_cache.rds`.
 #'
 #' @export
-check_all_slides <- function(
-  lectures_tbl = collect_lectures(filter_lectures = lectures()),
+#' @return A `data.frame` with columns
+#' - `tex`: Same as `slide_file` argument.
+#' - `compile_check`: `logical` indicating whether [compile_slide()] passed
+#' - `compare_check`: `logical` indicating whether [compare_slide()] passed ( `NA` if `compare_slides = FALSE` or [compile_check()] did not pass)
+#' - `compare_check_note`: Note from [compare_slide()] indicating number and nature of differences.
+#' - `compare_check_raw`: More verbose form of `compare_check_note`.
+#' - `compile_note`: If there are compilation errors, the error messages from [compile_slide()] are included (see also [check_log()]).
+#'
+#' @examples
+#' check_slides_single(slide_file = "slides-basics-whatisml", pre_clean = TRUE, compare_slides = TRUE)
+#'
+check_slides_single <- function(
+  slide_file,
+  pre_clean = FALSE,
+  compare_slides = FALSE,
+  create_comparison_pdf = FALSE,
+  thresh_psnr = 40,
+  dpi_check = 50,
+  dpi_out = 100,
+  pixel_tol = 20,
+  overwrite = FALSE
+) {
+  result <- data.frame(
+    slide_file = find_slide_tex(slide_file = slide_file),
+    compile_check = NA,
+    compare_check = NA,
+    compare_check_note = "",
+    compare_check_raw = ""
+  )
+
+  compile_status <- compile_slide(
+    slide_file,
+    pre_clean = pre_clean,
+    verbose = FALSE
+  )
+
+  result$compile_check <- compile_status$passed
+  result$compile_note <- paste0(compile_status$note, collapse = "\n")
+
+  if (compile_status$passed & compare_slides) {
+    compare_status <- compare_slide(
+      slide_file,
+      verbose = FALSE,
+      create_comparison_pdf = create_comparison_pdf,
+      thresh_psnr = thresh_psnr,
+      dpi_check = dpi_check,
+      dpi_out = dpi_out,
+      pixel_tol = pixel_tol,
+      overwrite = overwrite
+    )
+
+    result$compare_check <- compare_status$passed
+    result$compare_check_raw <- compare_status$output
+
+    if (isFALSE(compare_status$passed)) {
+      if (compare_status$pages == "") {
+        result$compare_check_note <- compare_status$reason
+      } else {
+        result$compare_check_note <- sprintf(
+          "%s: %s",
+          compare_status$reason,
+          compare_status$pages
+        )
+      }
+    }
+  }
+
+  result
+}
+
+
+#' Compile and compare many slides
+#'
+#' Wrapper for [check_slides_single()].
+#'
+#' @param lectures_tbl Must contain `tex` column. Defaults to [collect_lectures()].
+#' @inheritParams check_slides_single
+#' @param parallel `[TRUE]` Whether to parallelize.
+#'   Uses [future.apply::future_lapply] with `future::plan("multisession")`.
+#' @export
+#' @return Invisibly: An expanded `lectures_tbl` with check results
+#' Also saves output at `slide_check_cache.rds`.
+check_slides_many <- function(
+  lectures_tbl = collect_lectures(),
   pre_clean = FALSE,
   compare_slides = FALSE,
   create_comparison_pdf = FALSE,
@@ -22,72 +102,32 @@ check_all_slides <- function(
   pixel_tol = 20,
   overwrite = FALSE
 ) {
-  check_tex <- function(tex) {
-    result <- data.frame(
-      tex = tex,
-      compile_check = NA,
-      compare_check = NA,
-      compare_check_note = "",
-      compare_check_raw = ""
-    )
-
-    compile_status <- compile_slide(tex, pre_clean = pre_clean, verbose = FALSE)
-
-    result$compile_check <- compile_status$passed
-    result$compile_note <- paste0(compile_status$note, collapse = "\n")
-
-    if (compile_status$passed & compare_slides) {
-      compare_status <- compare_slide(
-        tex,
-        verbose = FALSE,
-        create_comparison_pdf = create_comparison_pdf,
-        thresh_psnr = thresh_psnr,
-        dpi_check = dpi_check,
-        dpi_out = dpi_out,
-        pixel_tol = pixel_tol,
-        overwrite = overwrite
-      )
-
-      result$compare_check <- compare_status$passed
-      result$compare_check_raw <- compare_status$output
-
-      if (isFALSE(compare_status$passed)) {
-        if (compare_status$pages == "") {
-          result$compare_check_note <- compare_status$reason
-        } else {
-          result$compare_check_note <- sprintf(
-            "%s: %s",
-            compare_status$reason,
-            compare_status$pages
-          )
-        }
-      }
-    }
-    result
-  }
-
   tictoc::tic()
   if (parallel) {
-    future::plan("multisession")
+    future::plan("multisession", workers = min(1, future::availableCores() - 2))
     check_out <- future.apply::future_lapply(
       lectures_tbl$tex,
-      check_tex,
+      check_slides_single,
       future.seed = NULL
     )
     # future.seed silences future warning about RNG stuff not relevant in this context
   } else {
-    check_out <- lapply(lectures_tbl$tex, check_tex)
+    check_out <- lapply(lectures_tbl$tex, check_slides_single)
   }
 
   check_out <- do.call(rbind, check_out)
 
   # Merge with main slide table
-  check_table_result <- merge(lectures_tbl, check_out, by = "tex")
+  check_table_result <- dplyr::left_join(
+    lectures_tbl,
+    check_out,
+    by = c("tex" = "slide_file")
+  )
 
   took <- tictoc::toc()
 
   cli::cli_alert_info(
-    "{took$callback_msg}. Saving results to \"slide_check_cache.rds\"."
+    "{took$callback_msg}. Saving results to {.file {slide_check_cache.rds}}."
   )
   saveRDS(check_table_result, file = "slide_check_cache.rds")
   invisible(check_table_result)

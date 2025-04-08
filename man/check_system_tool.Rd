@@ -4,17 +4,15 @@
 \alias{check_system_tool}
 \title{Simple check for availability of system tools}
 \usage{
-check_system_tool(x, strict = FALSE, warn = TRUE)
+check_system_tool(x, strictness = c("warning", "error", "none"))
 }
 \arguments{
 \item{x}{Name of a binary, e.g. \code{convert} for ImageMagick or \code{brew} for Homebrew on macOS.}
 
-\item{strict}{\verb{[FALSE]} Whether to \code{stop()} if the tool is not found or return \code{FALSE} with a warning.}
-
-\item{warn}{\verb{[TRUE]} Whether to show a warning if the tool is no found. Only has an effect if \code{!strict}.}
+\item{strictness}{\verb{["warning"]} Wether to emit a warning, \code{"error"}, or nothing (\code{"none"}) if the tool is not found.}
 }
 \value{
-\code{TRUE} if the tool is find, \code{FALSE} otherwise, and an error if \code{strict == TRUE} and the tool is not found.
+\code{TRUE} if the tool is find, \code{FALSE} otherwise, and an error if \code{strict} and the tool is not found.
 }
 \description{
 Can be used to verify if a tool (e.g. \code{convert}) is in \verb{$PATH} and findable from within R.

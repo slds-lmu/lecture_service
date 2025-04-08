@@ -9,7 +9,7 @@ TPDFS=$(shell find lecture_*/slides/* -maxdepth 1 -iname "*.pdf")
 # This unfortunately means that e.g. lecture_i2ml/ slides will recompile if preamble changes in lecture_sl/
 PREAMBLES=$(shell find lecture_*/style -maxdepth 1 -type f -name "common.tex" -o -name "preamble.tex" -o -name "lmu-lecture.sty")
 
-# data.frame of all slides and compile/comparison status checks created by check_all_slides()
+# data.frame of all slides and compile/comparison status checks created by check_slides_many()
 CACHETBL=slide_check_cache.rds
 
 # Rmd file that reads CACHETBL and outputs a neato table in HTML and stuff
@@ -33,8 +33,8 @@ all: help
 
 # This runs latexmk internally, but it's fast if there's nothing new to do for most slides (unless you clean up)
 ${CACHETBL}: $(TSLIDES) $(PREAMBLES)
-	@# Rscript --quiet -e 'source("helpers.R"); check_all_slides()'
-	Rscript --quiet -e 'lese::check_all_slides()'
+	@# Rscript --quiet -e 'source("helpers.R"); check_slides_many()'
+	Rscript --quiet -e 'lese::check_slides_many()'
 
 
 .PHONY: help

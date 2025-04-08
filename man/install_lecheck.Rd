@@ -16,7 +16,7 @@ install_lecheck(path = "~/.local/bin", overwrite = TRUE)
 Otherwise: The path to the symlink is returned.
 }
 \description{
-\code{path} should be in the user's \verb{$PATH} to make the tool usable in shell sessions.
+\code{path} should be in \verb{$PATH} to make the tool usable in shell sessions.
 }
 \examples{
 if (FALSE) {

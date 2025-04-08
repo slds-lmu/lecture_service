@@ -27,7 +27,7 @@ if (!file.exists("slide_check_cache.rds")) {
   stop(paste(
     "slide_check_cache.rds does not exists.",
     "Run `make` and get a coffee, or",
-    "Rscript -e 'lese::check_all_slides()", sep = "\n "
+    "Rscript -e 'lese::check_slides_many()", sep = "\n "
   ))
 }
 

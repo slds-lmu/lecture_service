@@ -2,18 +2,18 @@
 % Please edit documentation in R/utils.R
 \name{set_margin_token_file}
 \alias{set_margin_token_file}
-\title{Auto-set the with/without margin dummy file}
+\title{Manage the with/without margin dummy file}
 \usage{
 set_margin_token_file(wd, margin = TRUE, token_name = "nospeakermargin.tex")
 }
 \arguments{
 \item{wd}{Working directory (relative or absolute) where the file needs to be created.
-This is the directory were the \code{.tex} file to be compiles is located.}
+This is the directory were the \code{.tex} file to be compiled is located.}
 
-\item{margin}{\verb{[TRUE]} Whether to enable (\code{TRUE}, default) or disable (\code{FALSE}) the margin.}
+\item{margin}{\verb{[TRUE]} Whether to enable or disable the margin.}
 
 \item{token_name}{\code{"nospeakermargin.tex"} If the name changes or needs to be flexible for testing
-it can be adjusted, but typically the default is set in stone.}
+it can be adjusted, but typically the name is set in stone via \code{lmu-lecture.sty}.}
 }
 \value{
 Nothing

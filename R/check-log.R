@@ -1,24 +1,33 @@
 #' Check latexmk logs for common errors
 #'
-#' @param slide_file Name of a slide file, e.g. `"slides-gp-basic-3"`, with optional file extension.
-#' @param before,after `[integer(1)]` Number of log lines to display before and after the line found via regex.
-#'   Defaults to 0 lines before, 1 line after.
+#' Uses regular expressions to search log files for common errors:
 #'
-#' @return A `character` with one element per match, with individual lines separated by `\\n` within each element.
+#' - "^! Undefined control sequence": Typo, missing package or preamble (including `latex-math`), or command not defined.
+#' - "not found": Implying a missing figure or other included file, maybe due to misspecified filename via Overleafs
+#'    autocompletion (`slides/<topic>/figure/` path instead of `figure/`) or file not committed to git.
+#' - "^! Missing \\$ inserted": Missing `$`` delimiter for math
+#' - "! LaTeX Error:": A generic error
+#'
+#' @inheritParams find_slide_tex
+#' @param before,after `[integer(1)]` Number of log lines to display `before` and `after` the line found via regex.
+#'   Defaults to 0 lines `before`, 1 line `after.`
+#'
+#' @return A `character` vector with one element per match, with individual lines separated by `\\n` within each element.
+#' If no errors are detected, an empty `character(0)` is returned.
 #' @export
 #'
 #' @examples
 #' \dontrun{
+#' # Example where compilation failed due to simple typo / syntax error:
 #' check_log("slides-gp-basic-3")
 #' # "976: ! Undefined control sequence.\n976: l.9 \\newcommandiscrete\n"
 #' }
 check_log <- function(slide_file, before = 0, after = 1) {
   tmp <- find_slide_tex(slide_file = slide_file)
 
-  log_file <- fs::path_ext_set(tmp$tex, "log")
-  checkmate::assert_file_exists(log_file)
+  checkmate::assert_file_exists(tmp$tex_log)
 
-  loglines <- readLines(log_file, warn = FALSE)
+  loglines <- readLines(tmp$tex_log, warn = FALSE)
   loglines <- stringr::str_squish(loglines)
 
   # Trim out empty lines (^$) and comments (^%)
@@ -33,26 +42,29 @@ check_log <- function(slide_file, before = 0, after = 1) {
     "^! Undefined control sequence",
     # Misspecified filename, file not committed to git, or `slides/<topic>/figure/` path instead of `figure/`
     # The latter happens via overleaf autocompletion, should be checked in .tex files via regex explicitly.
-    "not found",
+    "^LaTeX Warning: File `.*' not found",
     # Missing $ delimiter for math
     "^! Missing \\$ inserted",
     # Generic error
-    "! LaTeX Error:"
+    "^! LaTeX Error:"
   )
 
   # Not sure how to output this yet. A single string with \n can be useful, but for cli and HTML contexts
   # there'd need to be some post-processing.
-  ret <- unlist(sapply(
+  ret <- vapply(
     error_anchors,
-    \(e) extract_log_match(loglines, e, before = before, after = after)
-  ))
-  unname(ret[which(lengths(ret) > 0)])
+    \(e) extract_log_match(loglines, e, before = before, after = after),
+    USE.NAMES = FALSE,
+    FUN.VALUE = character(1)
+  )
+
+  ret[which(nchar(ret) > 0)]
 }
 
 extract_log_match <- function(text, pattern, before = 0, after = 1) {
   matchnum <- which(stringr::str_detect(text, pattern))
 
-  if (length(matchnum) == 0) return(NULL)
+  if (length(matchnum) == 0) return("")
 
   vapply(
     matchnum,

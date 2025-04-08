@@ -7,19 +7,30 @@
 check_log(slide_file, before = 0, after = 1)
 }
 \arguments{
-\item{slide_file}{Name of a slide file, e.g. \code{"slides-gp-basic-3"}, with optional file extension.}
+\item{slide_file}{\verb{[character(1)]} Name of a (single) slide, with or without \code{.tex} extension. See examples of \code{\link[=find_slide_tex]{find_slide_tex()}}.}
 
-\item{before, after}{\verb{[integer(1)]} Number of log lines to display before and after the line found via regex.
-Defaults to 0 lines before, 1 line after.}
+\item{before, after}{\verb{[integer(1)]} Number of log lines to display \code{before} and \code{after} the line found via regex.
+Defaults to 0 lines \code{before}, 1 line \code{after.}}
 }
 \value{
-A \code{character} with one element per match, with individual lines separated by \verb{\\\\n} within each element.
+A \code{character} vector with one element per match, with individual lines separated by \verb{\\\\n} within each element.
+If no errors are detected, an empty \code{character(0)} is returned.
 }
 \description{
-Check latexmk logs for common errors
+Uses regular expressions to search log files for common errors:
+}
+\details{
+\itemize{
+\item "^! Undefined control sequence": Typo, missing package or preamble (including \code{latex-math}), or command not defined.
+\item "not found": Implying a missing figure or other included file, maybe due to misspecified filename via Overleafs
+autocompletion (\verb{slides/<topic>/figure/} path instead of \verb{figure/}) or file not committed to git.
+\item "^! Missing \\$ inserted": Missing `$`` delimiter for math
+\item "! LaTeX Error:": A generic error
+}
 }
 \examples{
 \dontrun{
+# Example where compilation failed due to simple typo / syntax error:
 check_log("slides-gp-basic-3")
 # "976: ! Undefined control sequence.\n976: l.9 \\newcommandiscrete\n"
 }

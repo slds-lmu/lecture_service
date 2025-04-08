@@ -22,17 +22,18 @@ reference:
       Compile slides with either latexmk or TinyTeX, and check
       them against the reference files in slides-pdf.
     contents:
-      - check_all_slides
+      - check_slides_single
+      - check_slides_many
       - compile_slide
       - compile_slide_tinytex
       - compare_slide
       - clean_slide
-      - make_slides
   - title: "Utilities"
     desc: "Useful"
     contents:
       - check_log
       - install_lecheck
       - set_margin_token_file
+      - check_system_tool
       - "%||%"
       - "%|0|%"
