@@ -9,7 +9,7 @@ Sometimes a tool is in $PATH in regular shell sessions but not within R."></head
 
     <a class="navbar-brand me-2" href="../index.html">lese</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,7 +41,7 @@ Sometimes a tool is in <code>$PATH</code> in regular shell sessions but not with
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_system_tool</span><span class="op">(</span><span class="va">x</span>, strict <span class="op">=</span> <span class="cn">FALSE</span>, warn <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_system_tool</span><span class="op">(</span><span class="va">x</span>, strictness <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"warning"</span>, <span class="st">"error"</span>, <span class="st">"none"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -52,19 +52,21 @@ Sometimes a tool is in <code>$PATH</code> in regular shell sessions but not with
 <dd><p>Name of a binary, e.g. <code>convert</code> for ImageMagick or <code>brew</code> for Homebrew on macOS.</p></dd>
 
 
-<dt id="arg-strict">strict<a class="anchor" aria-label="anchor" href="#arg-strict"></a></dt>
-<dd><p><code>[FALSE]</code> Whether to <code><a href="https://rdrr.io/r/base/stop.html" class="external-link">stop()</a></code> if the tool is not found or return <code>FALSE</code> with a warning.</p></dd>
-
-
-<dt id="arg-warn">warn<a class="anchor" aria-label="anchor" href="#arg-warn"></a></dt>
-<dd><p><code>[TRUE]</code> Whether to show a warning if the tool is no found. Only has an effect if <code>!strict</code>.</p></dd>
+<dt id="arg-strictness">strictness<a class="anchor" aria-label="anchor" href="#arg-strictness"></a></dt>
+<dd><p><code>["warning"]</code> Wether to emit a warning, <code>"error"</code>, or nothing (<code>"none"</code>) if the tool is not found.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p><code>TRUE</code> if the tool is find, <code>FALSE</code> otherwise, and an error if <code>strict == TRUE</code> and the tool is not found.</p>
+    <p><code>TRUE</code> if the tool is find, <code>FALSE</code> otherwise, and an error if <code>strict</code> and the tool is not found.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">check_system_tool</span><span class="op">(</span><span class="st">"diff-pdf"</span>, strictness <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

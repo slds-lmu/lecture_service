@@ -4,8 +4,9 @@
 <url><loc>https://slds-lmu.github.io/lecture_service/authors.html</loc></url>
 <url><loc>https://slds-lmu.github.io/lecture_service/index.html</loc></url>
 <url><loc>https://slds-lmu.github.io/lecture_service/news/index.html</loc></url>
-<url><loc>https://slds-lmu.github.io/lecture_service/reference/check_all_slides.html</loc></url>
 <url><loc>https://slds-lmu.github.io/lecture_service/reference/check_log.html</loc></url>
+<url><loc>https://slds-lmu.github.io/lecture_service/reference/check_slides_many.html</loc></url>
+<url><loc>https://slds-lmu.github.io/lecture_service/reference/check_slides_single.html</loc></url>
 <url><loc>https://slds-lmu.github.io/lecture_service/reference/check_system_tool.html</loc></url>
 <url><loc>https://slds-lmu.github.io/lecture_service/reference/clean_slide.html</loc></url>
 <url><loc>https://slds-lmu.github.io/lecture_service/reference/collect_lectures.html</loc></url>
@@ -17,7 +18,6 @@
 <url><loc>https://slds-lmu.github.io/lecture_service/reference/install_lecheck.html</loc></url>
 <url><loc>https://slds-lmu.github.io/lecture_service/reference/lectures.html</loc></url>
 <url><loc>https://slds-lmu.github.io/lecture_service/reference/lese-package.html</loc></url>
-<url><loc>https://slds-lmu.github.io/lecture_service/reference/make_slides.html</loc></url>
 <url><loc>https://slds-lmu.github.io/lecture_service/reference/op-null-default.html</loc></url>
 <url><loc>https://slds-lmu.github.io/lecture_service/reference/set_margin_token_file.html</loc></url>
 <url><loc>https://slds-lmu.github.io/lecture_service/reference/this_repo_status.html</loc></url>

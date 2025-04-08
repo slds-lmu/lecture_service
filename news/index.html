@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">lese</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,6 +31,19 @@
 
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.3.0" id="lese-030">lese 0.3.0<a class="anchor" aria-label="anchor" href="#lese-030"></a></h2>
+<ul><li>Rename <code>check_all_slides</code> to <code><a href="../reference/check_slides_many.html">check_slides_many()</a></code>, which in turn is a wrapper around <code><a href="../reference/check_slides_single.html">check_slides_single()</a></code>
+</li>
+<li>Make documentation more consistent, e.g. by inheriting the <code>slide_file</code> parameter doc from <code><a href="../reference/find_slide_tex.html">find_slide_tex()</a></code>.</li>
+<li>
+<code>slide_status_pr.Rmd</code> and <code>slide_status.Rmd</code>: Only show slide comparison column in output if comparison has been conducted (no longer the case by default)</li>
+<li>Remove <code>make_slides()</code> as it was effectively superseded by either
+<ul><li>Running <code><a href="../reference/compile_slide.html">compile_slide()</a></code> on a file of itnerest directly, or</li>
+<li>Using the <code>lecheck</code> cli for more control and better error messages, or</li>
+<li>Running <code>make</code> in selected topic directories in a shell as needed</li>
+</ul></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.2" id="lese-022">lese 0.2.2<a class="anchor" aria-label="anchor" href="#lese-022"></a></h2>
 <ul><li>Ignore <code>chapter-order-slides-all.tex</code> slide name in <code><a href="../reference/collect_lectures.html">collect_lectures()</a></code>

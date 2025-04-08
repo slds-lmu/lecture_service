@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">lese</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,7 +65,8 @@
 </ul>
 </li>
 </ul>
-<!-- README.md is generated from README.Rmd. Please edit that file --><!-- badges: start --><!-- badges: end --><p>This project has two goals:</p>
+<!-- README.md is generated from README.Rmd. Please edit that file --><!-- badges: start -->
+<p>This project has two goals:</p>
 <ol style="list-style-type: decimal">
 <li>Provide common assets needed for all lectures, once, to keep them in sync.</li>
 <li>Check slides in lecture repositories (do they compile, are the PDFs up to date?).</li>
@@ -85,10 +86,11 @@
 <span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>├── lecture_i2ml</span>
 <span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>├── lecture_sl</span>
 <span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>├── [...]</span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>├── helpers.R</span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>├── Makefile</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>├── Makefile</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>├── R</span>
 <span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>├── scripts</span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>└── [...]</span></code></pre></div>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>├── service</span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>└── [...]</span></code></pre></div>
 <p>You can either manually <code>git clone</code> lecture repos or use <code>scripts/clone_lectures.sh</code> or <code>download_lectures.sh</code> respectively. The <code>Makefile</code> has targets <code>clone</code> and <code>download</code> for these purposes. Since the git repositories can be fairly large due to the included PDF files, I recommend to clone with <code>--depth 1 --single-branch</code> if done manually, which only fetches the most recent commit and the default branch.</p>
 <p>Note that the text file <code>include_lectures</code> is used to globally keep track of the relevant lecture repos, so if you only intend to work on <code>lecture_advml</code> you could set it to only contain <code>lecture_advml</code> and subsequent <code>make</code> commands and other functions will be limited on scope to this lecture. By default it contains all lectures currently hosted at <code>slds-lmu/</code>.</p>
 <p>See also the <a href="https://github.com/slds-lmu/lecture_service/wiki" class="external-link">Teaching DevOps Wiki</a> for our central documentation hub.</p>
@@ -160,7 +162,7 @@ It is still experimental and features can and will change.</p>
 <span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a><span class="do">## Options:</span></span>
 <span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a><span class="do">##   -h --help             Show this screen.</span></span>
 <span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a><span class="do">##   --version             Show version.</span></span>
-<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a><span class="do">##   everything            Runs check_all_slides(), which saves results to a file rather than displaying them.</span></span>
+<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a><span class="do">##   everything            Runs check_slides_many(), which saves results to a file rather than displaying them.</span></span>
 <span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a><span class="do">##   list                  List all lectures and topics found in this directory.</span></span>
 <span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a><span class="do">##   -l --lecture=&lt;lc&gt;     Lecture repository, e.g. "lecture_i2ml".</span></span>
 <span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a><span class="do">##                         Can be abbreviated (dropping "lecture_" prefix) [default: NULL].</span></span>
@@ -331,7 +333,12 @@ The LaTeX version expected by out setup is <strong>TeX Live 2024</strong> for sl
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://github.com/slds-lmu/lecture_service/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/slds-lmu/lecture_service/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>
