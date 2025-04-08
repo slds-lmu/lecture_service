@@ -14,6 +14,7 @@ SLDS Lecture Service
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/slds-lmu/lecture_service/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/slds-lmu/lecture_service/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 This project has two goals:
@@ -53,9 +54,10 @@ The assumed directory structure once lecture repositories where cloned
     ├── lecture_i2ml
     ├── lecture_sl
     ├── [...]
-    ├── helpers.R
     ├── Makefile
+    ├── R
     ├── scripts
+    ├── service
     └── [...]
 
 You can either manually `git clone` lecture repos or use
