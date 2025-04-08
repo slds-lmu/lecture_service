@@ -23,7 +23,7 @@ echo ""
 
 for lecture in ${lectures[@]}
 do
-  for workflow in update-latex-math.yaml render-lecture-slide-status.yaml fix-figure-paths.yaml
+  for workflow in update-latex-math.yaml render-lecture-slide-status.yaml
   do
     read -p "Do you sure you want to start workflow ${workflow} for ${lecture}? (y/n) " -n 1 -r
     echo    # (optional) move to a new line
@@ -36,5 +36,3 @@ do
     fi
   done
 done
-
-
