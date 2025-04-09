@@ -31,8 +31,10 @@ check_slides_single <- function(
   pixel_tol = 20,
   overwrite = FALSE
 ) {
+  tmp <- find_slide_tex(slide_file = slide_file)
+
   result <- data.frame(
-    slide_file = find_slide_tex(slide_file = slide_file),
+    tex = tmp$tex,
     compile_check = NA,
     compare_check = NA,
     compare_check_note = "",
@@ -40,7 +42,7 @@ check_slides_single <- function(
   )
 
   compile_status <- compile_slide(
-    slide_file,
+    tmp$tex,
     pre_clean = pre_clean,
     verbose = FALSE
   )
@@ -122,13 +124,13 @@ check_slides_many <- function(
   check_table_result <- dplyr::left_join(
     lectures_tbl,
     check_out,
-    by = c("tex" = "slide_file")
+    by = "tex"
   )
 
   took <- tictoc::toc()
 
   cli::cli_alert_info(
-    "{took$callback_msg}. Saving results to {.file {slide_check_cache.rds}}."
+    "{took$callback_msg}. Saving results to {.file slide_check_cache.rds}."
   )
   saveRDS(check_table_result, file = "slide_check_cache.rds")
   invisible(check_table_result)
