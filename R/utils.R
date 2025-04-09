@@ -101,7 +101,7 @@ lecture_status_local <- function(lectures = lectures()) {
 }
 
 #' Status of the service repo checkout
-#' Same as [lecture_status_local()] but for this service repo
+#' Same as `lecture_status_local()` but for this service repo
 #'
 #' @return A `data.frame` similar to [lecture_status_local()].
 #' @export

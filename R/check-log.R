@@ -5,7 +5,7 @@
 #' - "^! Undefined control sequence": Typo, missing package or preamble (including `latex-math`), or command not defined.
 #' - "not found": Implying a missing figure or other included file, maybe due to misspecified filename via Overleafs
 #'    autocompletion (`slides/<topic>/figure/` path instead of `figure/`) or file not committed to git.
-#' - "^! Missing \\$ inserted": Missing `\$` delimiter for math
+#' - "^! Missing \\$ inserted": Missing `\\$` delimiter for math
 #' - "! LaTeX Error:": A generic error
 #'
 #' @inheritParams find_slide_tex

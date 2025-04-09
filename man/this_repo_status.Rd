@@ -3,7 +3,7 @@
 \name{this_repo_status}
 \alias{this_repo_status}
 \title{Status of the service repo checkout
-Same as \code{\link[=lecture_status_local]{lecture_status_local()}} but for this service repo}
+Same as \code{lecture_status_local()} but for this service repo}
 \usage{
 this_repo_status()
 }
@@ -12,6 +12,6 @@ A \code{data.frame} similar to \code{\link[=lecture_status_local]{lecture_status
 }
 \description{
 Status of the service repo checkout
-Same as \code{\link[=lecture_status_local]{lecture_status_local()}} but for this service repo
+Same as \code{lecture_status_local()} but for this service repo
 }
 \keyword{internal}
