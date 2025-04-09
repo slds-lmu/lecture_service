@@ -33,7 +33,6 @@ all: help
 
 # This runs latexmk internally, but it's fast if there's nothing new to do for most slides (unless you clean up)
 ${CACHETBL}: $(TSLIDES) $(PREAMBLES)
-	@# Rscript --quiet -e 'source("helpers.R"); check_slides_many()'
 	Rscript --quiet -e 'lese::check_slides_many()'
 
 
