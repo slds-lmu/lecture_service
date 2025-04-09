@@ -49,21 +49,7 @@
 <div class="page-header"><h1 id="slds-lecture-service">SLDS Lecture Service<a class="anchor" aria-label="anchor" href="#slds-lecture-service"></a>
 </h1></div>
 <ul>
-<li>
-<a href="#overview">Overview</a>
-<ul>
-<li><a href="#quick-start">Quick Start</a></li>
-</ul>
-</li>
-<li><a href="#slide-compilation--checking">Slide Compilation &amp; Checking</a></li>
-<li><a href="#counting-files">Counting Files</a></li>
-<li>
-<a href="#prerequisites">Prerequisites</a>
-<ul>
-<li><a href="#latex-dependencies-required">LaTeX Dependencies (Required)</a></li>
-<li><a href="#tools-for-slide-checking-optional">Tools for Slide-Checking (Optional)</a></li>
-</ul>
-</li>
+<li><a href="#overview">Overview</a></li>
 </ul>
 <!-- README.md is generated from README.Rmd. Please edit that file --><!-- badges: start -->
 <p>This project has two goals:</p>
@@ -74,9 +60,8 @@
 <p>(It also happens to be an R package <code>lese</code> you can install with many convenience functions)</p>
 <p>For 1), all required files should live in <code>./service/</code> with the <strong>correct folder structure</strong> such that one can simply copy the files from this directory “on top” of an existing lecture, e.g.:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">rsync</span> <span class="at">-r</span> lecture_service/service/ lecture_i2ml/</span></code></pre></div>
-<p>This is wrapped with the script in <code>service/scripts/update-service.sh</code>, which is also synced into each lecture’s top-level <code>/scripts/</code> folder.</p>
-<p>Afterwards, <code>git status</code> can be used to check changes. Note that as of 2024-04-03 the state of the <code>service</code> folder is almost ready for action.</p>
-<p>The remainder of this document describes the steps needed for goal 2) <a href="#slide-checking">slide checking</a>.</p>
+<p>This is wrapped with the script in <code>service/scripts/update-service.sh</code>, which is also synced into each lecture’s top-level <code>./scripts/</code> folder.</p>
+<p>Afterwards, <code>git status</code> can be used to check changes.</p>
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
@@ -91,222 +76,9 @@
 <span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>├── scripts</span>
 <span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>├── service</span>
 <span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>└── [...]</span></code></pre></div>
-<p>You can either manually <code>git clone</code> lecture repos or use <code>scripts/clone_lectures.sh</code> or <code>download_lectures.sh</code> respectively. The <code>Makefile</code> has targets <code>clone</code> and <code>download</code> for these purposes. Since the git repositories can be fairly large due to the included PDF files, I recommend to clone with <code>--depth 1 --single-branch</code> if done manually, which only fetches the most recent commit and the default branch.</p>
+<p>You can either manually <code>git clone</code> lecture repos or use <code>make clone</code></p>
 <p>Note that the text file <code>include_lectures</code> is used to globally keep track of the relevant lecture repos, so if you only intend to work on <code>lecture_advml</code> you could set it to only contain <code>lecture_advml</code> and subsequent <code>make</code> commands and other functions will be limited on scope to this lecture. By default it contains all lectures currently hosted at <code>slds-lmu/</code>.</p>
-<p>See also the <a href="https://github.com/slds-lmu/lecture_service/wiki" class="external-link">Teaching DevOps Wiki</a> for our central documentation hub.</p>
-<div class="section level3">
-<h3 id="quick-start">Quick Start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
-</h3>
-<p>The remaining README goes into a little more detail, while this is the “just get me started” bit.</p>
-<p>Say you are working on <code>lecture_sl</code> and want to ensure all slides are compiling without error, then starting from scratch the workflow is as follows:</p>
-<ol style="list-style-type: decimal">
-<li>Setup the service repo, using a <code>--single-branch</code> clone to avoid pulling the <code>gh-pages</code> branch that’s not needed locally.</li>
-<li>File <code>include_lectures</code> globally determines the lecture(s) of interest, so set it to <code>lecture_sl</code>
-</li>
-<li>Install various things in R, LaTeX and the system with <code>make</code>. See also <code>make help</code> and the scripts in <code>./scripts/install_*</code>.</li>
-</ol>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">git</span> clone <span class="at">--single-branch</span> https://github.com/slds-lmu/lecture_service.git</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="bu">cd</span> lecture_service</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co"># Content in 'include_lectures' determines which lectures are cloned and otherwise considered</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="bu">echo</span> <span class="st">"lecture_sl"</span> <span class="op">&gt;</span> include_lectures</span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a></span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co"># Clone lecture_sl (uses shallow clone, main branch only)</span></span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a><span class="fu">make</span> clone</span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a><span class="co"># Install all the things</span></span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a><span class="fu">make</span> install</span></code></pre></div>
-<p>From here on out, you have various options for compilation and comparison.<br>
-The <code>Makefile</code> default target is <code>site</code>, giving you the whole comparison site:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># Renders comparison to _site/index.html incl comparison PDFs</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>make site</span></code></pre></div>
-<div class="section level4">
-<h4 id="using-the-r-package-lese">Using the R package <code>lese</code>
-<a class="anchor" aria-label="anchor" href="#using-the-r-package-lese"></a>
-</h4>
-<p>Alternatively, you can use the included R package <code>lese</code> to compile and compare slides individually:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">lese</span><span class="fu">::</span><span class="fu"><a href="reference/compile_slide.html">compile_slide</a></span><span class="op">(</span><span class="st">"lecture_sl/slides/regularization/slides-regu-early-stopping.tex"</span><span class="op">)</span></span></code></pre></div>
-<p>You can omit most parts for the slide file path to rely on the internal lookup mechanism</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">lese</span><span class="fu">::</span><span class="fu"><a href="reference/compile_slide.html">compile_slide</a></span><span class="op">(</span><span class="st">"slides-regu-early-stopping"</span><span class="op">)</span></span></code></pre></div>
-<p>Comparing slides to their <code>slides-pdf/</code> counterparts works analogously (see <a href="#tools">Tools</a> for an explanation).</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">lese</span><span class="fu">::</span><span class="fu"><a href="reference/compare_slide.html">compare_slide</a></span><span class="op">(</span><span class="st">"slides-regu-early-stopping"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level4">
-<h4 id="using-the-cli-lecheck">Using the cli <code>lecheck</code>
-<a class="anchor" aria-label="anchor" href="#using-the-cli-lecheck"></a>
-</h4>
-<p>The included command-line tool in <code>./inst/lecheck</code> can be used as well, if symlinked into your `$PATH.<br>
-It is still experimental and features can and will change.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="ex">./inst/lecheck</span> <span class="at">--help</span></span></code></pre></div>
-<div class="sourceCode" id="cb9"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="do">## SLDS Lecture Checker.</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="do">## Usage:</span></span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="do">##   lecheck [compile] [compare] [clean] [--lecture=&lt;lc&gt;] [--topic=&lt;tc&gt;] [--slide=&lt;sn&gt;] [--preclean] [--no-margin] [--background] [--pdf-copy] [--verbose]</span></span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="do">##   lecheck compile [--pdf-copy] [--tinytex] [--background]</span></span>
-<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="do">##   lecheck compare [--no-comparison-pdf] [--background]</span></span>
-<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="do">##   lecheck clean [--background]</span></span>
-<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="do">##   lecheck everything [--no-comparison-pdf] [--background]</span></span>
-<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="do">##   lecheck list [--lecture=&lt;lc&gt;] [--topic=&lt;tc&gt;]</span></span>
-<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="do">##   lecheck (-h | --help)</span></span>
-<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="do">##   lecheck --version</span></span>
-<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="do">## Example:</span></span>
-<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="do">##   lecheck compile -l i2ml</span></span>
-<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="do">##   lecheck compile -t cart</span></span>
-<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="do">##   lecheck compare -s slides-basics-riskminimization</span></span>
-<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="do">##   lecheck clean -l i2ml</span></span>
-<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="do">##   lecheck list</span></span>
-<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="do">## </span></span>
-<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a><span class="do">## Options:</span></span>
-<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a><span class="do">##   -h --help             Show this screen.</span></span>
-<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a><span class="do">##   --version             Show version.</span></span>
-<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a><span class="do">##   everything            Runs check_slides_many(), which saves results to a file rather than displaying them.</span></span>
-<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a><span class="do">##   list                  List all lectures and topics found in this directory.</span></span>
-<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a><span class="do">##   -l --lecture=&lt;lc&gt;     Lecture repository, e.g. "lecture_i2ml".</span></span>
-<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a><span class="do">##                         Can be abbreviated (dropping "lecture_" prefix) [default: NULL].</span></span>
-<span id="cb9-27"><a href="#cb9-27" tabindex="-1"></a><span class="do">##   -t --topic=&lt;tc&gt;       Lecture topic, e.g. "cart".</span></span>
-<span id="cb9-28"><a href="#cb9-28" tabindex="-1"></a><span class="do">##                         Assumed to be unique across lectures.</span></span>
-<span id="cb9-29"><a href="#cb9-29" tabindex="-1"></a><span class="do">##                         Takes precedence over --lecture [default: NULL].</span></span>
-<span id="cb9-30"><a href="#cb9-30" tabindex="-1"></a><span class="do">##   -s --slide=&lt;sn&gt;       Slide name, e.g. slides-boosting-cwb-basics.</span></span>
-<span id="cb9-31"><a href="#cb9-31" tabindex="-1"></a><span class="do">##                         No need for file extension etc. [default: NULL].</span></span>
-<span id="cb9-32"><a href="#cb9-32" tabindex="-1"></a><span class="do">##                         Takes precedence over --lecture and --topic.</span></span>
-<span id="cb9-33"><a href="#cb9-33" tabindex="-1"></a><span class="do">##   --no-margin           If set, compiles slides without speaker margin, i.e. 4:3 layout.</span></span>
-<span id="cb9-34"><a href="#cb9-34" tabindex="-1"></a><span class="do">##   --pdf-copy            Copy rendered slides to slides-pdf/&lt;slide-name&gt;.tex.</span></span>
-<span id="cb9-35"><a href="#cb9-35" tabindex="-1"></a><span class="do">##   --no-comparison-pdf   Do not render comparison PDFs to comparison/.</span></span>
-<span id="cb9-36"><a href="#cb9-36" tabindex="-1"></a><span class="do">##   --preclean            Cleans up using `latexmk -C` before compilation.</span></span>
-<span id="cb9-37"><a href="#cb9-37" tabindex="-1"></a><span class="do">##   --tinytex             Use TinyTex latexmk emulation to auto-install missing packages.</span></span>
-<span id="cb9-38"><a href="#cb9-38" tabindex="-1"></a><span class="do">##   --background          Do not wait for compilation for status checks. Not applicable if --tinytex is used.</span></span>
-<span id="cb9-39"><a href="#cb9-39" tabindex="-1"></a><span class="do">##                         Note that this still enumerates lectures and topics but omits status reports.</span></span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Compile all slides in the 'regularization' topic (in lecture_sl)</span></span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="ex">lecheck</span> compile <span class="at">-t</span> regularization</span></code></pre></div>
-<div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co"># Remove all LaTeX detritus and output PDF from all slides in the lecture.</span></span>
-<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="co"># Can also use 'sl' as 'lecture_' prefix is trimmed</span></span>
-<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a><span class="ex">lecheck</span> clean <span class="at">-l</span> lecture_sl</span></code></pre></div>
-<div class="sourceCode" id="cb12"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Compile a single slide (from i2ml in this case)</span></span>
-<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="ex">lecheck</span> compile <span class="at">-s</span> slides-regu-early-stopping</span>
-<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a></span>
-<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co"># Compare against slides in slides-pdf</span></span>
-<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a><span class="ex">lecheck</span> compare <span class="at">-s</span> slides-regu-early-stopping</span></code></pre></div>
-<p>Note that <code>lecheck</code> can only be run in the <code>lecture_service</code> directory which must contain the lecture repos.</p>
-</div>
-<div class="section level4">
-<h4 id="compile-all-slides">Compile <code>all</code> slides<a class="anchor" aria-label="anchor" href="#compile-all-slides"></a>
-</h4>
-<p>To compile all slides in a lecture in 16:9 and copy them to <code>slides-pdf</code>:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>lecheck compile <span class="sc">-</span>l sl <span class="sc">--</span>preclean <span class="sc">--</span>pdf<span class="sc">-</span>copy</span></code></pre></div>
-<p>This compiles one-by one, emitting errors if they come up. Add <code>--background</code> to skip any error reporting and speed up the process.</p>
-<p>Afterwards the special <code>slides/all</code> slide set containing all slides combined can be compiled manually using the regular <code>Makefile</code>:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>cd lecture_sl<span class="sc">/</span>slides<span class="sc">/</span>all</span>
-<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a></span>
-<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>make most</span></code></pre></div>
-<p>This does not copy the <code>lecture_sl.pdf</code> file to <code>slides-pdf</code> yet, but <code>make all</code> would.</p>
-<p><strong>Important</strong>: For lectures like I2ML and SL, the <code>all</code>-slideset produces a PDF that is too large (&gt;35MB) and breaks Overleaf integration. In these cases the PDF must be moved manually to the Google Drive SLDS folder (e.g. <code>Teaching/I2ML/slides_website</code> for I2ML and SL). Create a “view only” public share link to the course website where appropriate (see <a href="https://github.com/slds-lmu/i2ml/blob/main/content/chapters/00_all/_index.md?plain=1" class="external-link">here for I2ML and SL</a>)</p>
-<p>Alternatively, to create 4:3 slides (without margin):</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="ex">lecheck</span> compile <span class="at">-l</span> sl <span class="at">--preclean</span> <span class="at">--pdf-copy</span></span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a></span>
-<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a><span class="bu">cd</span> lecture_sl/slides/all</span>
-<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="fu">make</span> most-nomargin</span></code></pre></div>
-<p>Please note that this <code>all</code> slideset merely aggregates the existing PDFs, so if you want to change the margin setting you have to rerender <em>all</em> slides in the lecture (e.g. via <code>lecheck compile -l i2ml --preclean --no-margin</code> for all of I2ML)</p>
-</div>
-</div>
-</div>
-<div class="section level2">
-<h2 id="slide-compilation--checking">Slide Compilation &amp; Checking<a class="anchor" aria-label="anchor" href="#slide-compilation--checking"></a>
-</h2>
-<p>If all required software is installed (see next section), you can run</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">make</span> site</span></code></pre></div>
-<p>which produces a site at <code>_site/index.html</code>.</p>
-<p><code>_site/</code> also contains <code>lecture_*</code> folders which <em>do not</em> contain the entire lecture repositories, but only the rendered slide PDF files. These are used for visual comparison of PDFs produced from <code>&lt;slide&gt;.tex</code> files and the “known good” <code>slide-pdf/&lt;slide&gt;.pdf</code> file. It also contains a <code>comparison</code> folder, which contains PDF diffs produced by <a href="https://github.com/vslavik/diff-pdf" class="external-link"><code>diff-pdf</code></a>. These notably only contain the pages that actually contain some (possibly very minor) differences.</p>
-<p>For manual use in R you can also use the helper functions in <code>R/</code> directly.</p>
-<p>Or, if you prefer to work from the terminal, I experimentally wrapped most functionality in a command-line tool, see <code>./inst/lecheck --help</code>.<br>
-The following examples assume that you have added or symlinked <code>lecheck</code> into your <code>$PATH</code>:</p>
-<div class="sourceCode" id="cb17"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="co"># List topics in given lecture</span></span>
-<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="ex">lecheck</span> <span class="at">-l</span> lecture_i2ml</span>
-<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a></span>
-<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="co"># Compile and then compare all slides in i2ml, using lazy shorthand for i2ml</span></span>
-<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="ex">lecheck</span> compile <span class="at">-l</span> i2ml</span>
-<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="ex">lecheck</span> compare <span class="at">-l</span> i2ml</span>
-<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a></span>
-<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="co"># Only the forests topic (auto-detects that this is in i2ml as slide names and topics are assumed to be unique)</span></span>
-<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="ex">lecheck</span> compile <span class="at">-t</span> forests</span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="counting-files">Counting Files<a class="anchor" aria-label="anchor" href="#counting-files"></a>
-</h2>
-<p>A separate quarto file can be rendered to count all files per directories in lecture folders. If you have not set up this repository alread, run:</p>
-<div class="sourceCode" id="cb18"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="fu">git</span> clone <span class="at">--single-branch</span> https://github.com/slds-lmu/lecture_service.git</span>
-<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a><span class="bu">cd</span> lecture_service</span>
-<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a><span class="fu">make</span> download</span>
-<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a><span class="fu">make</span> install-service</span></code></pre></div>
-<p>And then render the report:</p>
-<div class="sourceCode" id="cb19"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>quarto render file_counts.qmd</span></code></pre></div>
-</div>
-<div class="section level2">
-<h2 id="prerequisites">Prerequisites<a class="anchor" aria-label="anchor" href="#prerequisites"></a>
-</h2>
-<p>Scripts to install R, LaTeX, and system dependencies are located in <code>scripts/</code>. This should work reproducibly on recent Ubuntu versions as it does on GitHub actions, but system tools will need special handling on other OSes. I have it running on macOS as well but have no test system to check a reproducible approach, and I have no idea how to make any of this work on Windows, sorry (maybe try WSL?).</p>
-<div class="sourceCode" id="cb20"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="co"># Install everything below</span></span>
-<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a><span class="fu">make</span> install</span>
-<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a></span>
-<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a><span class="co"># Install R packages</span></span>
-<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a><span class="fu">make</span> install-r</span>
-<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a></span>
-<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a><span class="co"># Install LaTeX packages via TinyTeX</span></span>
-<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a><span class="fu">make</span> install-tex</span>
-<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a></span>
-<span id="cb20-10"><a href="#cb20-10" tabindex="-1"></a><span class="co"># Attempt to install diff-pdf (from source) and diff-pdf-visually (via pip)</span></span>
-<span id="cb20-11"><a href="#cb20-11" tabindex="-1"></a><span class="fu">make</span> install-tools-ubuntu</span>
-<span id="cb20-12"><a href="#cb20-12" tabindex="-1"></a></span>
-<span id="cb20-13"><a href="#cb20-13" tabindex="-1"></a><span class="co"># Since this is also an R package, install it with e.g.</span></span>
-<span id="cb20-14"><a href="#cb20-14" tabindex="-1"></a><span class="fu">make</span> install-service</span></code></pre></div>
-<div class="section level3">
-<h3 id="latex-dependencies-required">LaTeX Dependencies (Required)<a class="anchor" aria-label="anchor" href="#latex-dependencies-required"></a>
-</h3>
-<blockquote>
-<p>[!CAUTION]<br>
-The LaTeX version expected by out setup is <strong>TeX Live 2024</strong> for slides to compile correctly, and to avoid painful updating issues in the long run we will try to continuously maintain compatibility with the latest TeX Live version. You can check this in the terminal of Linux/macOS/WSL with <code>tlmgr --version</code>, which should show e.g.</p>
-</blockquote>
-<div class="sourceCode" id="cb21"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>tlmgr revision <span class="dv">71331</span> (<span class="dv">2024-05-24</span> <span class="dv">09</span><span class="sc">:</span><span class="dv">30</span><span class="sc">:</span><span class="dv">36</span> <span class="sc">+</span><span class="dv">0200</span>)</span>
-<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>tlmgr using installation<span class="sc">:</span> <span class="er">&lt;</span>some path<span class="sc">&gt;</span><span class="er">/</span>TinyTeX</span>
-<span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>TeX <span class="fu">Live</span> (https<span class="sc">:</span><span class="er">//</span>tug.org<span class="sc">/</span>texlive) version <span class="dv">2024</span></span></code></pre></div>
-<p>LaTeX dependencies are installed via <code>scripts/install_tex_deps.R</code> or <code>make install-tex</code> via TinyTeX (recommended) or system <code>tlmgr</code>.</p>
-<p>I recommend installing <a href="https://yihui.org/tinytex/" class="external-link">TinyTeX</a> to manage TeX Live, as I found it to be easy and reliable, and you are independent from whatever your OS package manager offers.</p>
-<p>Install it in R:</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"tinytex"</span><span class="op">)</span></span>
-<span><span class="fu">tinytex</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tinytex/man/install_tinytex.html" class="external-link">install_tinytex</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
-<p>To make sure you can compile slides locally:</p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># tinytex emulates latexmk and installs missing latex packages automatically.</span></span>
-<span><span class="co"># Wrapper fun in service repo just sets working directories automatically</span></span>
-<span><span class="fu">lese</span><span class="fu">::</span><span class="fu"><a href="reference/compile_slide_tinytex.html">compile_slide_tinytex</a></span><span class="op">(</span><span class="st">"lecture_i2ml/slides/cart/slides-cart-splitcriteria-classification.tex"</span><span class="op">)</span></span></code></pre></div>
-<p>Or using <code>latexmk</code> internally instead of TinyTeX:</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">lese</span><span class="fu">::</span><span class="fu"><a href="reference/compile_slide.html">compile_slide</a></span><span class="op">(</span><span class="st">"lecture_i2ml/slides/cart/slides-cart-splitcriteria-classification.tex"</span><span class="op">)</span></span></code></pre></div>
-</div>
-<div class="section level3">
-<h3 id="tools-for-slide-checking-optional">Tools for Slide-Checking (Optional)<a class="anchor" aria-label="anchor" href="#tools-for-slide-checking-optional"></a>
-</h3>
-<p>These are installed via <code>scripts/install_tools_ubuntu.sh</code> or <code>make install-tools-ubuntu</code>.</p>
-<ul>
-<li>
-<a href="https://pypi.org/project/diff-pdf-visually/" class="external-link"><code>diff-pdf-visually</code></a>: For a simple parseable check, e.g.</li>
-</ul>
-<div class="sourceCode" id="cb25"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="ex">❯</span> diff-pdf-visually slides-forests-proximities.pdf ../../slides-pdf/slides-forests-proximities.pdf</span>
-<span id="cb25-2"><a href="#cb25-2" tabindex="-1"></a>  <span class="ex">Temporary</span> directory: /var/folders/n1/p1hxy7856nndrd0njv0lxzgw0000gn/T/diffpdfdy0681qc</span>
-<span id="cb25-3"><a href="#cb25-3" tabindex="-1"></a>  <span class="ex">Converting</span> each page of the PDFs to an image...</span>
-<span id="cb25-4"><a href="#cb25-4" tabindex="-1"></a>  <span class="ex">PDFs</span> have same number of pages. Checking each pair of converted images...</span>
-<span id="cb25-5"><a href="#cb25-5" tabindex="-1"></a><span class="ex">Min</span> sig = 14.1795, significant<span class="pp">?</span>=True. The PDFs are different. The most different pages are: page 5 <span class="er">(</span><span class="ex">sgf.</span> 14.1795<span class="kw">)</span><span class="ex">,</span> page 2 <span class="er">(</span><span class="ex">sgf.</span> 14.6277<span class="kw">)</span><span class="ex">,</span> page 4 <span class="er">(</span><span class="ex">sgf.</span> 15.1376<span class="kw">)</span><span class="ex">,</span> page 7 <span class="er">(</span><span class="ex">sgf.</span> 16.1474<span class="kw">)</span><span class="ex">,</span> page 3 <span class="er">(</span><span class="ex">sgf.</span> 16.6224<span class="kw">)</span><span class="bu">.</span></span></code></pre></div>
-<p>This needs to be installed and in your <code>$PATH</code>, such that <code><a href="http://processx.r-lib.org/reference/process.html" class="external-link">processx::process()</a></code> can run it. The output is used to automatically check if it is necessary to run <code>diff-pdf</code>.</p>
-<ul>
-<li>
-<a href="https://vslavik.github.io/diff-pdf/" class="external-link"><code>diff-pdf</code></a>, for an actual visual comparison for your eyeballs:</li>
-</ul>
-<div class="sourceCode" id="cb26"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a><span class="ex">diff-pdf</span> <span class="at">--view</span> slides-forests-proximities.pdf ../../slides-pdf/slides-forests-proximities.pdf</span></code></pre></div>
-<p>This is used to produce PDFs of only the differences at <code>comparison</code> and for the HTML table.</p>
-</div>
+<p>Refer to the <a href="https://github.com/slds-lmu/lecture_service/wiki" class="external-link">Teaching DevOps Wiki</a> for our central documentation hub.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">
