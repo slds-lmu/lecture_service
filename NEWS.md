@@ -1,3 +1,18 @@
+# lese 0.3.9000 (In development)
+
+## Style files
+
+* Removed framenumber continuation counter from `lmu-lecture.sty` to discourage the use of automatic and explicit `\framebreak`s, which cause rendering issues after some TeXLive version post 2023 cutoff.
+* The `vbframe` environment is considered deprecated and should be replace with "regular" beamer `frame`s.
+* Related: The `vframe` environment (rarely used) is now removed.
+* Added `framei` environment which automatically wraps content in standard `itemize` environment.
+
+**Breaking changes** for new macros (see https://github.com/slds-lmu/lecture_service/wiki/Slides#custom-macros-for-layout-images-citations):
+
+- `splitV` now maps to `splitVCC`, not `splitVTT`
+- `itemizefill` is renamed to `itemizeF`
+
+
 # lese 0.3.0
 
 * Rename `check_all_slides` to `check_slides_many()`, which in turn is a wrapper around `check_slides_single()`
@@ -7,6 +22,9 @@
     * Running `compile_slide()` on a file of itnerest directly, or
     * Using the `lecheck` cli for more control and better error messages, or
     * Running `make` in selected topic directories in a shell as needed
+* Add battery of new layout macros:
+  * `\image` and `\imageC` for `\includegraphics`
+  * `\splitVXY` family for predefined positioning within columns (see [the wiki](https://github.com/slds-lmu/lecture_service/wiki/Slides#custom-macros-for-layout-images-citations))
 
 # lese 0.2.2
 
