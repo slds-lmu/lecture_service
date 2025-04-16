@@ -105,6 +105,7 @@ texclean:
 	-rm -rf *.fls
 	-rm -rf *.pax
 	-rm -rf *.bbl
+	-rm -rf *.bcf-SAVE-ERROR
 	-rm -rf *.bcf
 	-rm -rf *.run.xml
 	-rm -rf *.fdb_latexmk
