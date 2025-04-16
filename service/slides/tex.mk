@@ -92,6 +92,7 @@ texclean:
 	-rm -rf *.log
 	-rm -rf *.aux
 	-rm -rf *.bbl
+	-rm -rf *.bbl-SAVE-ERROR
 	-rm -rf *.blg
 	-rm -rf *.ind
 	-rm -rf *.idx
