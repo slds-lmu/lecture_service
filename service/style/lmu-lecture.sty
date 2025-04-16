@@ -1,5 +1,5 @@
 \RequirePackage{graphicx}
-\RequirePackage{amsmath,amssymb}
+\RequirePackage{amsmath,amssymb,amsfonts}
 \RequirePackage{array}
 \DeclareSymbolFont{mysymbols}{OMS}{cmsy}{m}{n}
 \SetSymbolFont{mysymbols}{bold}{OMS}{cmsy}{b}{n}
@@ -277,7 +277,8 @@
 
 \def\beamer@fteright{\vskip0.35cm\advance\leftskip by 1.7cm\advance\rightskip by1.7cm}
 
-\setbeamertemplate{frametitle continuation}[from second][{\small/~\insertcontinuationcount}]
+% The "/ n" at the end of the title for cointinuations from framebreaks - disabled to discourage framebreaks in general.
+% \setbeamertemplate{frametitle continuation}[from second][{\small/~\insertcontinuationcount}]
 
 \setbeamertemplate{frametitle}{\expandafter\uppercase\expandafter\insertframetitle}
 
@@ -370,6 +371,7 @@
 % Should not use 'containsverbatim', see https://tex.stackexchange.com/questions/69191/can-a-beamer-frame-have-both-containsverbatim-and-hidden-shown-block-options
 % Should use 'fragile' instead, but everything breaks if fragile is used all the time
 % See https://tug.ctan.org/macros/latex/contrib/beamer/doc/beameruserguide.pdf for details
+% DEPRECATED
 \newenvironment{vbframe}
 {
   \begin{frame}[containsverbatim,allowframebreaks]
@@ -378,13 +380,14 @@
   \end{frame}
 }
 
-% Frame with verbatim without breaks (to avoid numbering one slided frames)
-% This is not used anywhere but I can see it being useful
-\newenvironment{vframe}
-{
-  \begin{frame}[containsverbatim]
-    }
-    {
+
+% Experimental wrapper to create frame that also contains itemize and nothing else
+\RequirePackage{environ}
+\NewEnviron{framei}[1]{
+  \begin{frame}{#1}
+    \begin{itemize}
+      \BODY
+    \end{itemize}
   \end{frame}
 }
 
@@ -402,24 +405,26 @@
 %    Layout macros                                                       %
 % ------------------------------------------------------------------------
 
-% Create an alias so splitV calls splitVTT
-\NewDocumentCommand{\splitV}{O{0.5} m m}{%
-  \splitVTT[#1]{#2}{#3}%
-}
-
 % Define the adjustment length for vertical spacing
 \newlength{\splitVadjust}
-\setlength{\splitVadjust}{-0.7\baselineskip} % Adjustable value
+\setlength{\splitVadjust}{-0.5\baselineskip} % Adjustable value
+
+% Define column separation
+\newlength{\splitVsep}
+\setlength{\splitVsep}{1em} % Horizontal separation between columns
 
 % Base macro that others will call with different alignment parameters
+% See https://texdoc.org/serve/beamer/0
+% [left width]{left alignment}{global alignment}{left content}{right alignment}}{right content}
 \NewDocumentCommand{\splitVBase}{O{0.5} m m m m m}{%
   \par\vspace{\splitVadjust}%
+  % Calculate actual column widths accounting for separation
   \begin{columns}[#3,totalwidth=\textwidth]%
-    \begin{column}[#2]{#1\textwidth}% Left column
+    \begin{column}[#2]{#1\textwidth-0.5\splitVsep}% Left column
       #4
     \end{column}%
-    \hspace{1em}%
-    \begin{column}[#5]{\dimexpr\textwidth-#1\textwidth-1em\relax}% Right column
+    \hspace{\splitVsep}%
+    \begin{column}[#5]{\textwidth-#1\textwidth-0.5\splitVsep}% Right column
       #6
     \end{column}%
   \end{columns}
@@ -427,14 +432,20 @@
 }
 
 % Define specific alignment variants calling the base macro
-% CC: Both columns centered
-\NewDocumentCommand{\splitVCC}{O{0.5} m m}{%
-  \splitVBase[#1]{c}{c}{#2}{c}{#3}%
+
+% Create an alias so splitV to splitVCC
+\NewDocumentCommand{\splitV}{O{0.5} m m}{%
+  \splitVCC[#1]{#2}{#3}%
 }
 
 % TT: Both columns top-aligned
 \NewDocumentCommand{\splitVTT}{O{0.5} m m}{%
-  \splitVBase[#1]{T}{T}{#2}{T}{#3}%
+  \splitVBase[#1]{t}{T}{#2}{t}{#3}%
+}
+
+% CC: Both columns centered
+\NewDocumentCommand{\splitVCC}{O{0.5} m m}{%
+  \splitVBase[#1]{c}{c}{#2}{c}{#3}%
 }
 
 % BB: Both columns bottom-aligned
@@ -444,34 +455,33 @@
 
 % TC: Left column top-aligned, Right column centered
 \NewDocumentCommand{\splitVTC}{O{0.5} m m}{%
-  \splitVBase[#1]{T}{t}{#2}{c}{#3}%
+  \splitVBase[#1]{t}{T}{#2}{c}{#3}%
 }
 
 % CT: Left column centered, Right column top-aligned
 \NewDocumentCommand{\splitVCT}{O{0.5} m m}{%
-  \splitVBase[#1]{c}{t}{#2}{T}{#3}%
+  \splitVBase[#1]{c}{c}{#2}{t}{#3}%
 }
 
 % TB: Left column top-aligned, Right column bottom-aligned
 \NewDocumentCommand{\splitVTB}{O{0.5} m m}{%
-  \splitVBase[#1]{T}{t}{#2}{b}{#3}%
+  \splitVBase[#1]{t}{T}{#2}{b}{#3}%
 }
 
 % BT: Left column bottom-aligned, Right column top-aligned
 \NewDocumentCommand{\splitVBT}{O{0.5} m m}{%
-  \splitVBase[#1]{b}{t}{#2}{T}{#3}%
+  \splitVBase[#1]{b}{b}{#2}{t}{#3}%
 }
 
 % CB: Left column centered, Right column bottom-aligned
 \NewDocumentCommand{\splitVCB}{O{0.5} m m}{%
-  \splitVBase[#1]{c}{t}{#2}{b}{#3}%
+  \splitVBase[#1]{c}{c}{#2}{b}{#3}%
 }
 
 % BC: Left column bottom-aligned, Right column centered
 \NewDocumentCommand{\splitVBC}{O{0.5} m m}{%
-  \splitVBase[#1]{b}{t}{#2}{c}{#3}%
+  \splitVBase[#1]{b}{b}{#2}{c}{#3}%
 }
-
 
 
 
@@ -653,7 +663,7 @@
 % Stretching itemize wrapper that fills vertical space
 % Note that this might break if enumitem is used instead of enumerate
 % See also https://github.com/slds-lmu/teaching_devops_issues/issues/20
-\newenvironment{itemizefill}{%
+\newenvironment{itemizeF}{%
   \begin{itemize}%
     \vspace{0pt}%
     \setlength{\itemsep}{\fill}%
@@ -683,7 +693,6 @@
     }{%
   \end{itemize}%
 }
-
 
 % ------------------------------------------------------------------------
 \endinput
