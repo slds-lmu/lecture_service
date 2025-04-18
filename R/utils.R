@@ -29,7 +29,7 @@ check_system_tool <- function(x, strictness = c("warning", "error", "none")) {
 #'
 #' Show latest changes to locally available lectures.
 #'
-#' @param lectures Character vector of lecture repo names, defaults to `lectures()`.
+#' @param lecture Character vector of lecture repo names, defaults to `lectures()`.
 #'    E.g. `c("lecture_advml", "lecture_i2ml")`.
 #'
 #' @return A `data.frame` suitable for display via `kable` in RMarkdown.
@@ -39,16 +39,14 @@ check_system_tool <- function(x, strictness = c("warning", "error", "none")) {
 #' \dontrun{
 #' lecture_status_local()
 #' }
-lecture_status_local <- function(lectures = lectures()) {
+lecture_status_local <- function(lecture = lectures()) {
   do.call(
     rbind,
-    lapply(lectures, \(lecture) {
-      if (fs::dir_exists(fs::path(lecture, ".git"))) {
-        # git2r::repository(lecture)
-
-        lastcommit <- git2r::last_commit(lecture)
+    lapply(lecture, \(this_lecture) {
+      if (fs::dir_exists(fs::path(this_lecture, ".git"))) {
+        lastcommit <- git2r::last_commit(this_lecture)
         # Get name of GitHub org, take remot url, select for github (rather than overleaf), and extract
-        org <- git2r::remote_url(lecture) |>
+        org <- git2r::remote_url(this_lecture) |>
           stringr::str_subset("github") |>
           # SSH vs HTTP clone URLs differ but basic idea is the same
           stringr::str_extract(
@@ -56,12 +54,12 @@ lecture_status_local <- function(lectures = lectures()) {
             group = 2
           )
 
-        branch <- git2r::repository_head(lecture)[["name"]]
+        branch <- git2r::repository_head(this_lecture)[["name"]]
         if (is.null(branch)) branch <- "?"
 
         data.frame(
           # Using path_file like `basename`, to enable using other paths
-          lecture = fs::path_file(lecture),
+          lecture = fs::path_file(this_lecture),
           org = org,
           branch = branch,
           last_commit_time = as.POSIXct(lastcommit$author$when, tz = "UTC"),
@@ -101,7 +99,7 @@ lecture_status_local <- function(lectures = lectures()) {
 }
 
 #' Status of the service repo checkout
-#' Same as `lecture_status_local` but for this service repo
+#' Same as `lecture_status_local()` but for this service repo
 #'
 #' @export
 #' @examples

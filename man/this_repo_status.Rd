@@ -3,13 +3,13 @@
 \name{this_repo_status}
 \alias{this_repo_status}
 \title{Status of the service repo checkout
-Same as \code{lecture_status_local} but for this service repo}
+Same as \code{lecture_status_local()} but for this service repo}
 \usage{
 this_repo_status()
 }
 \description{
 Status of the service repo checkout
-Same as \code{lecture_status_local} but for this service repo
+Same as \code{lecture_status_local()} but for this service repo
 }
 \examples{
 \dontrun{
