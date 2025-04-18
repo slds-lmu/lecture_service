@@ -16,4 +16,3 @@ Same as \code{lecture_status_local} but for this service repo
 this_repo_status()
 }
 }
-\keyword{internal}

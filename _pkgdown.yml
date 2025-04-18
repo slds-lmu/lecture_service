@@ -14,8 +14,6 @@ reference:
       - lectures
       - collect_lectures
       - find_slide_tex
-      # - lecture_status_local
-      # - this_repo_status
       - check_system_tool
   - title: "Compilation and checking"
     desc: |
@@ -34,4 +32,5 @@ reference:
       - check_log
       - install_lecheck
       - set_margin_token_file
-      - check_system_tool
+      - lecture_status_local
+      - this_repo_status

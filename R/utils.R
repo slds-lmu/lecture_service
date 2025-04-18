@@ -34,7 +34,6 @@ check_system_tool <- function(x, strictness = c("warning", "error", "none")) {
 #'
 #' @return A `data.frame` suitable for display via `kable` in RMarkdown.
 #' @export
-#' @keywords internal
 #' @importFrom stringi stri_escape_unicode
 #' @examples
 #' \dontrun{
@@ -105,7 +104,6 @@ lecture_status_local <- function(lectures = lectures()) {
 #' Same as `lecture_status_local` but for this service repo
 #'
 #' @export
-#' @keywords internal
 #' @examples
 #' \dontrun{
 #' this_repo_status()
