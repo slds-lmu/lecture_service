@@ -362,10 +362,10 @@
   \NoCaseChange{\resizebox{!}{9pt}{\protect\beamergotobutton{\href{#2}{#1}}}}%
 }
 
-
 %-------------------------------------------------------------------%
 %   Environments                                                    %
 %-------------------------------------------------------------------%
+% Newly developed suites of macros may be factor out into their own .sty files.
 
 % Frame with breaks and verbatim // this is used very often
 % Should not use 'containsverbatim', see https://tex.stackexchange.com/questions/69191/can-a-beamer-frame-have-both-containsverbatim-and-hidden-shown-block-options
@@ -380,7 +380,7 @@
   \end{frame}
 }
 
-% Itemize block
+% Itemize block, rarely used
 \newenvironment{blocki}[1]
 {
   \begin{block}{#1}\begin{itemize}
