@@ -2,11 +2,11 @@
 #'
 #' Uses regular expressions to search log files for common errors:
 #'
-#' - "^! Undefined control sequence": Typo, missing package or preamble (including `latex-math`), or command not defined.
-#' - "not found": Implying a missing figure or other included file, maybe due to misspecified filename via Overleafs
+#' - `"^! Undefined control sequence"`: Typo, missing package or preamble (including `latex-math`), or command not defined.
+#' - `"not found"`: Implying a missing figure or other included file, maybe due to misspecified filename via Overleafs
 #'    autocompletion (`slides/<topic>/figure/` path instead of `figure/`) or file not committed to git.
-#' - "^! Missing \\$ inserted": Missing `\\$` delimiter for math
-#' - "! LaTeX Error:": A generic error
+#' - `"^! Missing $ inserted"`: Missing `$` delimiter for math
+#' - `"! LaTeX Error:"`: A generic error
 #'
 #' @inheritParams find_slide_tex
 #' @param before,after `[integer(1)]` Number of log lines to display `before` and `after` the line found via regex.

@@ -11,4 +11,9 @@ this_repo_status()
 Status of the service repo checkout
 Same as \code{lecture_status_local} but for this service repo
 }
+\examples{
+\dontrun{
+this_repo_status()
+}
+}
 \keyword{internal}

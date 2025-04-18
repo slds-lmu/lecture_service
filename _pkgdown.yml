@@ -35,5 +35,3 @@ reference:
       - install_lecheck
       - set_margin_token_file
       - check_system_tool
-      - "%||%"
-      - "%|0|%"
