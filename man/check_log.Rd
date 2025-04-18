@@ -26,6 +26,7 @@ Uses regular expressions to search log files for common errors:
 autocompletion (\verb{slides/<topic>/figure/} path instead of \verb{figure/}) or file not committed to git.
 \item \code{"^! Missing $ inserted"}: Missing \code{$} delimiter for math
 \item \code{"! LaTeX Error:"}: A generic error
+\item \verb{Runaway argument}: Often caused by missing closing parantheses.
 }
 }
 \examples{

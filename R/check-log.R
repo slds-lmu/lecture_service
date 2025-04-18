@@ -7,6 +7,7 @@
 #'    autocompletion (`slides/<topic>/figure/` path instead of `figure/`) or file not committed to git.
 #' - `"^! Missing $ inserted"`: Missing `$` delimiter for math
 #' - `"! LaTeX Error:"`: A generic error
+#' - `Runaway argument`: Often caused by missing closing parantheses.
 #'
 #' @inheritParams find_slide_tex
 #' @param before,after `[integer(1)]` Number of log lines to display `before` and `after` the line found via regex.
@@ -45,6 +46,8 @@ check_log <- function(slide_file, before = 0, after = 1) {
     "^LaTeX Warning: File `.*' not found",
     # Missing $ delimiter for math
     "^! Missing \\$ inserted",
+    "Runaway argument",
+    "^! Extra \\}, or forgotten \\$",
     # Generic error
     "^! LaTeX Error:"
   )
