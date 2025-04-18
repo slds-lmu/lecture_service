@@ -1,16 +1,33 @@
 # lese 0.3.9000 (In development)
 
-## Style files
+## R package
 
-* Removed framenumber continuation counter from `lmu-lecture.sty` to discourage the use of automatic and explicit `\framebreak`s, which cause rendering issues after some TeXLive version post 2023 cutoff.
-* The `vbframe` environment is considered deprecated and should be replace with "regular" beamer `frame`s.
+* Add experimental `latexmk_docker()` to run `latexmk` wrapped in a docker image with a fixed TeXLive version
+* `compile_slide()` gains `method` argument, defaulting to `"system"` to use local `ltexmk`. Can be `"docker"` to use the new `latexmk_docker()` instead.
+* `clean_slide` gains `keep_pdf` option, defaulting to `FALSE` for previous behavior. 
+
+## `lecheck` cli:
+
+- Gains `--docker` argument, passed to `compile_slide()` to use `latexmk_docker()`
+- Gains `--postclean` argument to run `latexmk -c` after compilation, removing all detritus but keeping the `.pdf` file.
+
+## LaTeX
+
+* Discourageing the use of automatic and explicit `\framebreak`s, which cause rendering issues after some TeXLive version post 2023 cutoff:
+  * The `vbframe` environment is considered **deprecated** and should be replace with "regular" beamer `frame`s.
+  * Removed framenumber continuation counter from `lmu-lecture.sty` for simplification
 * Related: The `vframe` environment (rarely used) is now removed.
-* Added `framei` environment which automatically wraps content in standard `itemize` environment.
 
-**Breaking changes** for new macros (see https://github.com/slds-lmu/lecture_service/wiki/Slides#custom-macros-for-layout-images-citations):
+**Breaking changes** for recently introduced macros (see [the wiki](https://github.com/slds-lmu/lecture_service/wiki/Slides#custom-macros-for-layout-images-citations)):
 
-- `splitV` now maps to `splitVCC`, not `splitVTT`
-- `itemizefill` is renamed to `itemizeF`
+* `splitV` now maps to `splitVCC`, not `splitVTT`
+* `itemizefill` is renamed to `itemizeF`
+
+**New macros** (see [the wiki](https://github.com/slds-lmu/lecture_service/wiki/Slides#custom-macros-for-layout-images-citations) for usage instructions)
+
+* Extended `itemizeS`, `itemizeM` etc. to take argument for font size control, e.g. `\begin{itemizeM}[small]`.
+  * Built upon modular `kitemize` environment.
+* Added `framei` environment which automatically wraps content in flexible `itemize` environments with font size and spacing controls.
 
 
 # lese 0.3.0
