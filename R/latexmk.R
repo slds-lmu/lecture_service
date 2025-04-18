@@ -21,6 +21,10 @@
 #'
 #' @inheritParams find_slide_tex
 #' @param verbose `[TRUE]`: Print output from `docker`/`latexmk` to console.
+#' @param tag `["TL2023-historic"]`: Tag of `texlive` docker image to use.
+#' @param log_stdout,log_stderr `[""]`: Path to write stdout/stderr log to. Discared if `NULL` or inherited from main R process if `""`. `stderr` can be redirected to `stdout` with `"2>&1"`.
+#' @param supervise `[TRUE]`: Passed to [processx::process()]'s `$new()`.
+#'
 #' @examples
 #' \dontrun{
 #' latexmk_docker("slides-advriskmin-bias-variance-decomposition.tex")
@@ -29,7 +33,10 @@
 latexmk_docker <- function(
   slide_file,
   verbose = TRUE,
-  tag = "TL2023-historic"
+  tag = "TL2023-historic",
+  log_stdout = "",
+  log_stderr = "",
+  supervise = TRUE
 ) {
   tmp <- find_slide_tex(slide_file = slide_file)
 
@@ -45,7 +52,7 @@ latexmk_docker <- function(
   # Otherwise created files are owned by root:root which is inconvenient
   uid <- system("id -u", intern = TRUE)
 
-  p <- processx::process$new(
+  processx::process$new(
     command = "docker",
     args = c(
       "run",
@@ -66,13 +73,35 @@ latexmk_docker <- function(
       fs::path_file(tmp$tex)
     ),
     wd = tmp$slides_dir,
-    stderr = "",
-    stdout = "",
+    stderr = log_stderr,
+    stdout = log_stdout,
     echo_cmd = verbose,
-    supervise = TRUE
+    supervise = supervise
   )
-
-  p$get_exit_status()
 }
 
-# slide_file <- "/Users/Lukas/repos/github/slds-lmu/lecture_service/lecture_sl/slides/advriskmin/"
+#' Run latexmk
+#'
+#' @inheritParams latexmk_docker
+latexmk_system <- function(
+  slide_file,
+  verbose = TRUE,
+  log_stdout = "",
+  log_stderr = "",
+  supervise = TRUE
+) {
+  tmp <- find_slide_tex(slide_file = slide_file)
+
+  check_system_tool("latexmk", strictness = "error")
+
+  processx::process$new(
+    command = "latexmk",
+    args = c("-pdf", tmp$slide_name),
+    # Need to change to directory of slide, could also use  "--cd" option for latexmk probably
+    wd = tmp$slides_dir,
+    stderr = log_stderr,
+    stdout = log_stdout,
+    echo_cmd = verbose,
+    supervise = supervise
+  )
+}

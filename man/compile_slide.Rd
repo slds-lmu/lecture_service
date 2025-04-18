@@ -10,7 +10,8 @@ compile_slide(
   margin = TRUE,
   check_status = TRUE,
   verbose = TRUE,
-  log = FALSE
+  log = FALSE,
+  method = c("system", "docker")
 )
 }
 \arguments{
@@ -26,6 +27,8 @@ rendered.}
 \item{verbose}{\verb{[TRUE]}: Print additional output to the console.}
 
 \item{log}{\verb{[FALSE]}: Write stdout and stderr logs to \verb{./logs/}.}
+
+\item{method}{\verb{["system"]}: Either "system" or "docker". Of the latter, uses \code{\link[=latexmk_docker]{latexmk_docker()}} for rendering.}
 }
 \value{
 Invisibly: A list with entries

@@ -57,6 +57,7 @@ clean_slide <- function(slide_file, verbose = FALSE) {
 #' @param check_status `[TRUE]`: Wait for `latexmk` to finish and return the exit status.
 #' @param verbose `[TRUE]`: Print additional output to the console.
 #' @param log `[FALSE]`: Write stdout and stderr logs to `./logs/`.
+#' @param method `["system"]`: Either "system" or "docker". Of the latter, uses [latexmk_docker()] for rendering.
 #'
 #' @return Invisibly: A list with entries
 #'  - passed: TRUE indicates a successful compilation, FALSE a failure.
@@ -80,9 +81,11 @@ compile_slide <- function(
   margin = TRUE,
   check_status = TRUE,
   verbose = TRUE,
-  log = FALSE
+  log = FALSE,
+  method = c("system", "docker")
 ) {
   tmp <- find_slide_tex(slide_file = slide_file)
+  method <- match.arg(system)
 
   if (pre_clean) clean_slide(slide_file)
 
@@ -104,15 +107,22 @@ compile_slide <- function(
 
   set_margin_token_file(tmp$slides_dir, margin = margin)
 
-  p <- processx::process$new(
-    command = "latexmk",
-    args = c("-pdf", tmp$slide_name),
-    # Need to change to directory of slide, could also use  "--cd" option for latexmk probably
-    wd = tmp$slides_dir,
-    stderr = log_stderr,
-    stdout = log_stdout,
-    echo_cmd = verbose,
-    supervise = TRUE
+  p <- switch(
+    method,
+    system = lartexmk_system(
+      slide_file = slide_file,
+      verbose = verbose,
+      log_stdout = log_stdout,
+      log_stderr = log_stderr,
+      ...
+    ),
+    docker = latexmk_docker(
+      slide_file = slide_file,
+      verbose = verbose,
+      log_stdout = log_stdout,
+      log_stderr = log_stderr,
+      ...
+    )
   )
 
   result <- list(passed = NA, log = log_stdout, note = "")

@@ -1,19 +1,30 @@
 #! /usr/bin/env -S Rscript --quiet
 # All-in-one slide checker
 
-if (!("docopt" %in% installed.packages())) install.packages("docopt")
+if (!("docopt" %in% installed.packages())) {
+  if (!("pak" %in% installed.packages())) {
+    install.packages("docopt")
+  } else {
+    pak::pak("docopt")
+  }
+}
 if (!("lese" %in% installed.packages())) {
-  stop("Run make install first to install the service package")
+  stop("Run 'make install' first to install the service package")
 }
 
 library(lese)
 
-version <- "SLDS Lecture Checker 0.3\n"
+version <- paste0(
+  "SLDS Lecture Checker 0.4\n",
+  "lese v",
+  packageVersion("lese"),
+  "\n"
+)
 doc <- 'SLDS Lecture Checker.
 
 Usage:
-  lecheck [compile] [compare] [clean] [--lecture=<lc>] [--topic=<tc>] [--slide=<sn>] [--preclean] [--no-margin] [--background] [--pdf-copy] [--verbose]
-  lecheck compile [--pdf-copy] [--tinytex] [--background]
+  lecheck [compile] [compare] [clean] [--lecture=<lc>] [--topic=<tc>] [--slide=<sn>] [--preclean] [--no-margin] [--background] [--pdf-copy] [--verbose] [--tinytex] [--docker]
+  lecheck compile [--pdf-copy] [--tinytex] [--docker] [--background]
   lecheck compare [--no-comparison-pdf] [--background]
   lecheck clean [--background]
   lecheck everything [--no-comparison-pdf] [--background]
@@ -46,6 +57,7 @@ Options:
   --no-comparison-pdf   Do not render comparison PDFs to comparison/.
   --preclean            Cleans up using `latexmk -C` before compilation.
   --tinytex             Use TinyTex latexmk emulation to auto-install missing packages.
+  --docker              Use dockerized latexmk for compilation. See ?latexmk_docker().
   --background          Do not wait for compilation for status checks. Not applicable if --tinytex is used.
                         Note that this still enumerates lectures and topics but omits status reports.
 '
@@ -193,12 +205,19 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
           )
         }
 
+        if (arguments$docker) {
+          method <- "docker"
+        } else {
+          method = "system"
+        }
+
         res <- compile_slide(
           current_slide_tbl[["slide_name"]],
           margin = !arguments$no_margin,
           check_status = !arguments$background,
           pre_clean = arguments$preclean,
-          verbose = arguments$verbose
+          verbose = arguments$verbose,
+          method = method
         )
 
         if (!arguments$background & !res$passed) {
