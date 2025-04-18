@@ -1,0 +1,78 @@
+#' Run dockerized latexmk
+#'
+#' This uses the docker image from <https://gitlab.com/islandoftex/images/texlive>.
+#' The defautl uses tag `TL2023-historic` for TeXLive 2023.
+#'
+#' You will need to install docker or podman or some other compatible runtime on your system beforehand.
+#'
+#' The docker command run by this is equivalent to something like
+#' ```sh
+#' cd path/to/lecture_i2ml/slides/ml-basics
+#'
+#' CWD=$(basename ${PWD})
+#' LECTURE=$(dirname $(dirname ${PWD}))
+#'
+#' docker run -i --rm --user $(id -u) --name latex \
+#'   -v "${LECTURE}":/usr/src/app:z \
+#'   -w "/usr/src/app/slides/${CWD}" \
+#'   registry.gitlab.com/islandoftex/images/texlive:TL2023-historic \
+#'   latexmk -pdf -halt-on-error slides-basics-data.tex
+#' ```
+#'
+#' @inheritParams find_slide_tex
+#' @param verbose `[TRUE]`: Print output from `docker`/`latexmk` to console.
+#' @examples
+#' \dontrun{
+#' latexmk_docker("slides-advriskmin-bias-variance-decomposition.tex")
+#' }
+#'
+latexmk_docker <- function(
+  slide_file,
+  verbose = TRUE,
+  tag = "TL2023-historic"
+) {
+  tmp <- find_slide_tex(slide_file = slide_file)
+
+  check_system_tool("docker", strictness = "error")
+
+  # Get absolute path up to "lecture_XYZ" bit for mounting into docker container
+  lecture_dir <- fs::path_dir(tmp$slides_dir) |>
+    fs::path_dir()
+  # Get relative path to topic directory, ust "advriskmin" for example, to set working directory within container
+  topic_dir_rel <- fs::path_file(tmp$slides_dir)
+
+  # Need numeric user ID to start docker container
+  # Otherwise created files are owned by root:root which is inconvenient
+  uid <- system("id -u", intern = TRUE)
+
+  p <- processx::process$new(
+    command = "docker",
+    args = c(
+      "run",
+      "-i",
+      "--rm",
+      "--user",
+      uid,
+      "--name",
+      "slds-latex",
+      "-v",
+      glue::glue("{lecture_dir}:/usr/src/app:z"),
+      "-w",
+      glue::glue("/usr/src/app/slides/{topic_dir_rel}"),
+      glue::glue("registry.gitlab.com/islandoftex/images/texlive:{tag}"),
+      "latexmk",
+      "-pdf",
+      "-halt-on-error",
+      fs::path_file(tmp$tex)
+    ),
+    wd = tmp$slides_dir,
+    stderr = "",
+    stdout = "",
+    echo_cmd = verbose,
+    supervise = TRUE
+  )
+
+  p$get_exit_status()
+}
+
+# slide_file <- "/Users/Lukas/repos/github/slds-lmu/lecture_service/lecture_sl/slides/advriskmin/"

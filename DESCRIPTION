@@ -8,6 +8,8 @@ Description: Provides infrastructure around SLDS lectures for maintenance
     and development.
 License: MIT + file LICENSE
 URL: https://slds-lmu.github.io/lecture_service/
+Depends:
+    R (>= 4.1.0)
 Imports: 
     checkmate,
     cli,
@@ -15,6 +17,7 @@ Imports:
     future,
     future.apply,
     git2r,
+    glue,
     here,
     jsonlite,
     processx,
