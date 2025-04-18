@@ -60,6 +60,7 @@ manually_selected_deps <- c(
   "subfig",
   "caption",
   "bbm-macros",
+  "enumitem", # Supersedes 'enumerate', still WIP, used in custom itemize envs
   # Below are packages specifically added in iml or optim
   "transparent", # lecture_sl/slides/boosting/slides-boosting-cwb-basics2.tex
   "adjustbox", # optim and iml, lecture_optimization/slides/01-mathematical-concepts/slides-concepts-3-convexity.tex and cheatsheets
