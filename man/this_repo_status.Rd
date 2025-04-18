@@ -2,17 +2,13 @@
 % Please edit documentation in R/utils.R
 \name{this_repo_status}
 \alias{this_repo_status}
-\title{Status of the service repo checkout
-Same as \code{lecture_status_local()} but for this service repo}
+\title{Service repo checkout status}
 \usage{
 this_repo_status()
 }
 \description{
-Status of the service repo checkout
 Same as \code{lecture_status_local()} but for this service repo
 }
 \examples{
-\dontrun{
-this_repo_status()
-}
+if (FALSE) this_repo_status()
 }

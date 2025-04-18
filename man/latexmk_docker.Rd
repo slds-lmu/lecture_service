@@ -20,7 +20,9 @@ latexmk_docker(
 
 \item{tag}{\verb{["TL2023-historic"]}: Tag of \code{texlive} docker image to use.}
 
-\item{log_stdout, log_stderr}{\verb{[""]}: Path to write stdout/stderr log to. Discared if \code{NULL} or inherited from main R process if \code{""}. \code{stderr} can be redirected to \code{stdout} with \code{"2>&1"}.}
+\item{log_stdout, log_stderr}{\verb{[""]}: Path to write stdout/stderr log to.
+Discared if \code{NULL} or inherited from main R process if \code{""}.
+\code{stderr} can be redirected to \code{stdout} with \code{"2>&1"}.}
 
 \item{supervise}{\verb{[TRUE]}: Passed to \code{\link[processx:process]{processx::process()}}'s \verb{$new()}.}
 }
@@ -52,7 +54,4 @@ docker run -i --rm --user $(id -u) --name latex \\
 \dontrun{
 latexmk_docker("slides-advriskmin-bias-variance-decomposition.tex")
 }
-}
-\seealso{
-\code{\link[=latexmk_system]{latexmk_system()}} \code{\link[=compile_slide]{compile_slide()}}
 }

@@ -25,7 +25,7 @@ check_system_tool <- function(x, strictness = c("warning", "error", "none")) {
   TRUE
 }
 
-#' Collect the git status of lectures
+#' Lecture repo status
 #'
 #' Show latest changes to locally available lectures.
 #'
@@ -33,12 +33,12 @@ check_system_tool <- function(x, strictness = c("warning", "error", "none")) {
 #'    E.g. `c("lecture_advml", "lecture_i2ml")`.
 #'
 #' @return A `data.frame` suitable for display via `kable` in RMarkdown.
-#' @export
+#'
 #' @importFrom stringi stri_escape_unicode
+#' @export
+#'
 #' @examples
-#' \dontrun{
-#' lecture_status_local()
-#' }
+#' if (FALSE) lecture_status_local()
 lecture_status_local <- function(lecture = lectures()) {
   do.call(
     rbind,
@@ -98,14 +98,13 @@ lecture_status_local <- function(lecture = lectures()) {
   )
 }
 
-#' Status of the service repo checkout
+#' Service repo checkout status
+#'
 #' Same as `lecture_status_local()` but for this service repo
 #'
 #' @export
 #' @examples
-#' \dontrun{
-#' this_repo_status()
-#' }
+#' if (FALSE) this_repo_status()
 this_repo_status <- function() {
   ret <- lecture_status_local(".")
   ret[["lecture"]] <- "lecture_service"

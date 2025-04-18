@@ -79,7 +79,7 @@ this_repo_status() |>
 
 
 ```{r lecture-repo-status}
-lecture_status_local(lectures) |>
+lecture_status_local(lecture = lectures) |>
   arrange(desc(last_commit_time)) |>
   mutate(
     lecture_link = sprintf("<a href='https://%s.github.io/%s'>%s</a>", org, lecture, lecture),

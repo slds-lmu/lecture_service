@@ -19,7 +19,7 @@ compile_slide(
 \arguments{
 \item{slide_file}{\verb{[character(1)]} Name of a (single) slide, with or without \code{.tex} extension. See examples of \code{\link[=find_slide_tex]{find_slide_tex()}}.}
 
-\item{pre_clean, post_clean}{\verb{[TRUE]}: Run \code{clean_slide()} before / after compilation, ensuring a clean slate.}
+\item{pre_clean, post_clean}{\verb{[TRUE]}: Run \code{\link[=clean_slide]{clean_slide()}} before / after compilation, ensuring a clean slate.}
 
 \item{margin}{\verb{[TRUE]} By default renders slides with margin. Otherwise a 4:3 slide is
 rendered.}
@@ -32,7 +32,7 @@ rendered.}
 
 \item{method}{\verb{["system"]}: Either "system" or "docker". Of the latter, uses \code{\link[=latexmk_docker]{latexmk_docker()}} for rendering.}
 
-\item{...}{For future extension. CUrrently passed to \code{\link[=latexmk_docker]{latexmk_docker()}} or \code{\link[=latexmk_system]{latexmk_system()}}.}
+\item{...}{For future extension. Currently passed to \code{\link[=latexmk_docker]{latexmk_docker()}} or \code{\link[=latexmk_system]{latexmk_system()}}.}
 }
 \value{
 Invisibly: A list with entries
@@ -57,5 +57,5 @@ compile_slide("slides-cart-predictions")
 }
 }
 \seealso{
-\code{\link[=latemk_docker]{latemk_docker()}} \code{\link[=latexmk_system]{latexmk_system()}}
+\code{\link[=latexmk_docker]{latexmk_docker()}} and \code{\link[=latexmk_system]{latexmk_system()}} for internal compilation methods.
 }

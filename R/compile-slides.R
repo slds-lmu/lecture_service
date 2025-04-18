@@ -54,19 +54,19 @@ clean_slide <- function(slide_file, keep_pdf = FALSE, verbose = FALSE) {
 #' Compile a single .tex file
 #'
 #' @inheritParams find_slide_tex
-#' @param pre_clean,post_clean `[TRUE]`: Run `clean_slide()` before / after compilation, ensuring a clean slate.
+#' @param pre_clean,post_clean `[TRUE]`: Run [clean_slide()] before / after compilation, ensuring a clean slate.
 #' @param margin `[TRUE]` By default renders slides with margin. Otherwise a 4:3 slide is
 #'   rendered.
 #' @param check_status `[TRUE]`: Wait for `latexmk` to finish and return the exit status.
 #' @param verbose `[TRUE]`: Print additional output to the console.
 #' @param log `[FALSE]`: Write stdout and stderr logs to `./logs/`.
 #' @param method `["system"]`: Either "system" or "docker". Of the latter, uses [latexmk_docker()] for rendering.
-#' @param ... For future extension. CUrrently passed to [latexmk_docker()] or [latexmk_system()].
+#' @param ... For future extension. Currently passed to [latexmk_docker()] or [latexmk_system()].
 #' @return Invisibly: A list with entries
 #'  - passed: TRUE indicates a successful compilation, FALSE a failure.
 #'  - log: Absolute path to the log file in case of a non-zero exit status.
 #' @export
-#' @seealso [latemk_docker()] [latexmk_system()]
+#' @seealso [latexmk_docker()] and [latexmk_system()] for internal compilation methods.
 
 #' @examples
 #' \dontrun{
