@@ -1,15 +1,16 @@
 #' Clean output for a single .tex file
 #'
-#' Uses `latexmk -C <slide_file>`
+#' Uses `latexmk -C <slide_file>`, also removing the PDF file.
+#' Uses `latexmk -c <slide_file>` to keep the PDF file.
 #'
 #' @inheritParams find_slide_tex
+#' @param keep_pdf `[FALSE]`: Keep the PDF file.
 #' @param verbose `[TRUE]`: Print additional output to the console.
 #'
 #' @return Invisibly: A list with entries
 #'  - passed: TRUE indicates a successful compilation, FALSE a failure.
 #'  - log: Absolute path to the log file in case of a non-zero exit status.
 #' @export
-#'
 #' @examples
 #' \dontrun{
 #' # Create the PDF
@@ -18,7 +19,7 @@
 #'# Remove the PDF and other output
 #' clean_slide("slides-cart-computationalaspects.tex")
 #' }
-clean_slide <- function(slide_file, verbose = FALSE) {
+clean_slide <- function(slide_file, keep_pdf = FALSE, verbose = FALSE) {
   tmp <- find_slide_tex(slide_file = slide_file)
 
   # .nav ,.snm, ... are not covered by latexmk -C
@@ -30,9 +31,11 @@ clean_slide <- function(slide_file, verbose = FALSE) {
     }
   })
 
+  clean_arg <- if (keep_pdf) "-c" else "-C"
+
   pc <- processx::process$new(
     command = "latexmk",
-    args = c("-C", tmp$slide_name),
+    args = c(clean_arg, tmp$slide_name),
     wd = tmp$slides_dir,
     echo_cmd = verbose
   )
@@ -51,19 +54,20 @@ clean_slide <- function(slide_file, verbose = FALSE) {
 #' Compile a single .tex file
 #'
 #' @inheritParams find_slide_tex
-#' @param pre_clean `[TRUE]`: Run `clean_slide()` beforehand, ensuring a clean slate.
+#' @param pre_clean,post_clean `[TRUE]`: Run `clean_slide()` before / after compilation, ensuring a clean slate.
 #' @param margin `[TRUE]` By default renders slides with margin. Otherwise a 4:3 slide is
 #'   rendered.
 #' @param check_status `[TRUE]`: Wait for `latexmk` to finish and return the exit status.
 #' @param verbose `[TRUE]`: Print additional output to the console.
 #' @param log `[FALSE]`: Write stdout and stderr logs to `./logs/`.
 #' @param method `["system"]`: Either "system" or "docker". Of the latter, uses [latexmk_docker()] for rendering.
-#'
+#' @param ... For future extension. CUrrently passed to [latexmk_docker()] or [latexmk_system()].
 #' @return Invisibly: A list with entries
 #'  - passed: TRUE indicates a successful compilation, FALSE a failure.
 #'  - log: Absolute path to the log file in case of a non-zero exit status.
 #' @export
-#'
+#' @seealso [latemk_docker()] [latexmk_system()]
+
 #' @examples
 #' \dontrun{
 #' # The "normal" way: A .tex file name
@@ -78,14 +82,16 @@ clean_slide <- function(slide_file, verbose = FALSE) {
 compile_slide <- function(
   slide_file,
   pre_clean = TRUE,
+  post_clean = TRUE,
   margin = TRUE,
   check_status = TRUE,
   verbose = TRUE,
   log = FALSE,
-  method = c("system", "docker")
+  method = c("system", "docker"),
+  ...
 ) {
   tmp <- find_slide_tex(slide_file = slide_file)
-  method <- match.arg(system)
+  method <- match.arg(method)
 
   if (pre_clean) clean_slide(slide_file)
 
@@ -107,13 +113,16 @@ compile_slide <- function(
 
   set_margin_token_file(tmp$slides_dir, margin = margin)
 
+  # Picking the latexmk to use, system or docker
+  # When I made this a switch statement I assumed less redundancy than I actually built.
   p <- switch(
     method,
-    system = lartexmk_system(
+    system = latexmk_system(
       slide_file = slide_file,
       verbose = verbose,
       log_stdout = log_stdout,
       log_stderr = log_stderr,
+      supervise = check_status,
       ...
     ),
     docker = latexmk_docker(
@@ -121,6 +130,7 @@ compile_slide <- function(
       verbose = verbose,
       log_stdout = log_stdout,
       log_stderr = log_stderr,
+      supervise = check_status,
       ...
     )
   )
@@ -146,6 +156,8 @@ compile_slide <- function(
       result$note <- check_log(slide_file, before = 0, after = 2)
     }
   }
+
+  if (post_clean) clean_slide(slide_file, keep_pdf = TRUE)
 
   invisible(result)
 }

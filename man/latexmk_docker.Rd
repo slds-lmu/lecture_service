@@ -24,6 +24,9 @@ latexmk_docker(
 
 \item{supervise}{\verb{[TRUE]}: Passed to \code{\link[processx:process]{processx::process()}}'s \verb{$new()}.}
 }
+\value{
+A \code{\link[processx:process]{processx::process()}} object.
+}
 \description{
 This uses the docker image from \url{https://gitlab.com/islandoftex/images/texlive}.
 The defautl uses tag \code{TL2023-historic} for TeXLive 2023.
@@ -49,5 +52,7 @@ docker run -i --rm --user $(id -u) --name latex \\
 \dontrun{
 latexmk_docker("slides-advriskmin-bias-variance-decomposition.tex")
 }
-
+}
+\seealso{
+\code{\link[=latexmk_system]{latexmk_system()}} \code{\link[=compile_slide]{compile_slide()}}
 }

@@ -21,6 +21,18 @@ latexmk_system(
 
 \item{supervise}{\verb{[TRUE]}: Passed to \code{\link[processx:process]{processx::process()}}'s \verb{$new()}.}
 }
+\value{
+A \code{\link[processx:process]{processx::process()}} object.
+\dontrun{
+latexmk_system("slides-advriskmin-bias-variance-decomposition.tex")
+}
+}
 \description{
-Run latexmk
+This utility is usaully invoked by \code{\link[=compile_slide]{compile_slide()}}.
+}
+\details{
+\code{latexmk} needs to be in \verb{$PATH} for this to work.
+}
+\seealso{
+\code{\link[=latexmk_docker]{latexmk_docker()}} \code{\link[=compile_slide]{compile_slide()}}
 }

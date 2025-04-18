@@ -26,6 +26,7 @@ reference:
       - compile_slide_tinytex
       - compare_slide
       - clean_slide
+      - starts_with("latexmk")
   - title: "Utilities"
     desc: "Useful"
     contents:

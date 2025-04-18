@@ -6,6 +6,7 @@
 #' You will need to install docker or podman or some other compatible runtime on your system beforehand.
 #'
 #' The docker command run by this is equivalent to something like
+#'
 #' ```sh
 #' cd path/to/lecture_i2ml/slides/ml-basics
 #'
@@ -24,12 +25,12 @@
 #' @param tag `["TL2023-historic"]`: Tag of `texlive` docker image to use.
 #' @param log_stdout,log_stderr `[""]`: Path to write stdout/stderr log to. Discared if `NULL` or inherited from main R process if `""`. `stderr` can be redirected to `stdout` with `"2>&1"`.
 #' @param supervise `[TRUE]`: Passed to [processx::process()]'s `$new()`.
-#'
+#' @return A [processx::process()] object.
+#' @seealso [latexmk_system()] [compile_slide()]
 #' @examples
 #' \dontrun{
 #' latexmk_docker("slides-advriskmin-bias-variance-decomposition.tex")
 #' }
-#'
 latexmk_docker <- function(
   slide_file,
   verbose = TRUE,
@@ -82,7 +83,17 @@ latexmk_docker <- function(
 
 #' Run latexmk
 #'
+#' This utility is usaully invoked by [compile_slide()].
+#'
+#' `latexmk` needs to be in `$PATH` for this to work.
+#'
 #' @inheritParams latexmk_docker
+#' @seealso [latexmk_docker()] [compile_slide()]
+#' @return A [processx::process()] object.
+## @examples
+#' \dontrun{
+#' latexmk_system("slides-advriskmin-bias-variance-decomposition.tex")
+#' }
 latexmk_system <- function(
   slide_file,
   verbose = TRUE,

@@ -23,7 +23,7 @@ version <- paste0(
 doc <- 'SLDS Lecture Checker.
 
 Usage:
-  lecheck [compile] [compare] [clean] [--lecture=<lc>] [--topic=<tc>] [--slide=<sn>] [--preclean] [--no-margin] [--background] [--pdf-copy] [--verbose] [--tinytex] [--docker]
+  lecheck [compile] [compare] [clean] [--lecture=<lc>] [--topic=<tc>] [--slide=<sn>] [--preclean] [--postclean] [--no-margin] [--background] [--pdf-copy] [--verbose] [--tinytex] [--docker]
   lecheck compile [--pdf-copy] [--tinytex] [--docker] [--background]
   lecheck compare [--no-comparison-pdf] [--background]
   lecheck clean [--background]
@@ -56,7 +56,9 @@ Options:
   --pdf-copy            Copy rendered slides to slides-pdf/<slide-name>.tex.
   --no-comparison-pdf   Do not render comparison PDFs to comparison/.
   --preclean            Cleans up using `latexmk -C` before compilation.
+  --postclean           Cleans up using `latexmk -c` after compilation.
   --tinytex             Use TinyTex latexmk emulation to auto-install missing packages.
+                        Mutually exclusive with `--docker`.
   --docker              Use dockerized latexmk for compilation. See ?latexmk_docker().
   --background          Do not wait for compilation for status checks. Not applicable if --tinytex is used.
                         Note that this still enumerates lectures and topics but omits status reports.
@@ -83,7 +85,7 @@ if (interactive()) {
   arguments <- docopt::docopt(
     doc,
     version = version,
-    args = c("compile", "-l i2ml", "-t cart", "--background")
+    args = c("compile", "-l i2ml", "-t cart")
   )
 
   print(arguments)
@@ -208,7 +210,7 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
         if (arguments$docker) {
           method <- "docker"
         } else {
-          method = "system"
+          method <- "system"
         }
 
         res <- compile_slide(
@@ -216,6 +218,7 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
           margin = !arguments$no_margin,
           check_status = !arguments$background,
           pre_clean = arguments$preclean,
+          post_clean = arguments$postclean,
           verbose = arguments$verbose,
           method = method
         )
@@ -226,7 +229,11 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
             current_slide_tbl[["slide_name"]],
             after = 2
           )
-          cli::cli_ul("{found_errors}")
+          if (length(found_errors) > 0) {
+            cli::cli_ul("{found_errors}")
+          } else {
+            cli::cli_alert_warning("Errors did not match known pattern")
+          }
         }
       }
 
