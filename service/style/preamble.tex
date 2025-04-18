@@ -192,10 +192,22 @@
     shorten >=2pt,}
 }
 
-% Defines macros and environments
-\usepackage{../../style/lmu-lecture}
+%--------------------------------------------------------%
+%       Beamer setup and custom macros & environments
+%--------------------------------------------------------%
 
-\let\code=\texttt     % Used regularly
+% Main sty file for beamer setup (layout, style, lecture page numbering, etc.)
+% For long-term maintenance, this may me refactored into a more modular set of .sty files
+\usepackage{../../style/lmu-lecture}
+% Custom itemize wrappers, itemizeS, itemizeL, etc
+\usepackage{../../style/customitemize}
+% Custom framei environment, uses custom itemize!
+\usepackage{../../style/framei} 
+% Column layout macros
+\usepackage{../../style/splitV} 
+
+% Used regularly
+\let\code=\texttt
 
 % Not sure what/why this does
 \setkeys{Gin}{width=0.9\textwidth}

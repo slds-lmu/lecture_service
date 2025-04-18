@@ -1,0 +1,69 @@
+\NeedsTeXFormat{LaTeX2e}
+% !! This requires the customitemize.sty
+
+% \ProvidesPackage{framei}[2025/04/17 Beamer Frame with Itemize Environment]
+% Would be proper to have that \ProvidePackage line but since we load this from a relative path in `preamble.tex',
+% latex complains that the filename.sty and the path in `\usepackage{../../filename.sty}' don't match
+
+\RequirePackage{environ}
+\RequirePackage{keyval}
+\RequirePackage{customitemize}
+
+% Define keys for framei
+\define@key{framei}{fs}{\def\framei@fs{#1}}
+\define@key{framei}{sep}{\def\framei@sep{#1}}
+
+% Set default values
+\newcommand{\framei@setup}{%
+  \def\framei@fs{normalsize}%
+  \def\framei@sep{M}%
+}
+
+% Define a command to choose the right environment
+\newcommand{\framei@choose}{%
+  \def\framei@begin{}%
+  \def\framei@end{}%
+  \edef\@tempa{\framei@sep}%
+  \edef\@tempb{S}%
+  \ifx\@tempa\@tempb
+    \def\framei@begin{\begin{itemizeS}[\framei@fs]}%
+    \def\framei@end{\end{itemizeS}}%
+  \else
+    \edef\@tempb{L}%
+    \ifx\@tempa\@tempb
+      \def\framei@begin{\begin{itemizeL}[\framei@fs]}%
+      \def\framei@end{\end{itemizeL}}%
+    \else
+      \edef\@tempb{F}%
+      \ifx\@tempa\@tempb
+        \def\framei@begin{\begin{itemizeF}[\framei@fs]}%
+        \def\framei@end{\end{itemizeF}}%
+      \else
+        \def\framei@begin{\begin{itemizeM}[\framei@fs]}%
+        \def\framei@end{\end{itemizeM}}%
+      \fi
+    \fi
+  \fi
+}
+
+% The framei environment with key-value options
+\NewEnviron{framei}[2][]{%
+  % Initialize defaults
+  \framei@setup%
+  
+  % Process options if given
+  \ifx\relax#1\relax\else%
+    \setkeys{framei}{#1}%
+  \fi%
+  
+  % Choose the appropriate environment
+  \framei@choose%
+  
+  % Begin frame with title
+  \begin{frame}{#2}%
+    % Use the chosen environment
+    \framei@begin%
+      \BODY
+    \framei@end%
+  \end{frame}%
+}
