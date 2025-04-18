@@ -41,10 +41,13 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">compile_slide</span><span class="op">(</span></span>
 <span>  <span class="va">slide_file</span>,</span>
 <span>  pre_clean <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  post_clean <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  margin <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  check_status <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  log <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  log <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"system"</span>, <span class="st">"docker"</span><span class="op">)</span>,</span>
+<span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -56,8 +59,8 @@
 <dd><p><code>[character(1)]</code> Name of a (single) slide, with or without <code>.tex</code> extension. See examples of <code><a href="find_slide_tex.html">find_slide_tex()</a></code>.</p></dd>
 
 
-<dt id="arg-pre-clean">pre_clean<a class="anchor" aria-label="anchor" href="#arg-pre-clean"></a></dt>
-<dd><p><code>[TRUE]</code>: Run <code><a href="clean_slide.html">clean_slide()</a></code> beforehand, ensuring a clean slate.</p></dd>
+<dt id="arg-pre-clean-post-clean">pre_clean, post_clean<a class="anchor" aria-label="anchor" href="#arg-pre-clean-post-clean"></a></dt>
+<dd><p><code>[TRUE]</code>: Run <code><a href="clean_slide.html">clean_slide()</a></code> before / after compilation, ensuring a clean slate.</p></dd>
 
 
 <dt id="arg-margin">margin<a class="anchor" aria-label="anchor" href="#arg-margin"></a></dt>
@@ -76,12 +79,24 @@ rendered.</p></dd>
 <dt id="arg-log">log<a class="anchor" aria-label="anchor" href="#arg-log"></a></dt>
 <dd><p><code>[FALSE]</code>: Write stdout and stderr logs to <code>./logs/</code>.</p></dd>
 
+
+<dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
+<dd><p><code>["system"]</code>: Either "system" or "docker". Of the latter, uses <code><a href="latexmk_docker.html">latexmk_docker()</a></code> for rendering.</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>For future extension. Currently passed to <code><a href="latexmk_docker.html">latexmk_docker()</a></code> or <code><a href="latexmk_system.html">latexmk_system()</a></code>.</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Invisibly: A list with entries</p><ul><li><p>passed: TRUE indicates a successful compilation, FALSE a failure.</p></li>
 <li><p>log: Absolute path to the log file in case of a non-zero exit status.</p></li>
 </ul></div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="latexmk_docker.html">latexmk_docker()</a></code> and <code><a href="latexmk_system.html">latexmk_system()</a></code> for internal compilation methods.</p></div>
+    </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>

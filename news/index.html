@@ -34,18 +34,39 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.9000" id="lese-039000-in-development">lese 0.3.9000 (In development)<a class="anchor" aria-label="anchor" href="#lese-039000-in-development"></a></h2>
 <div class="section level3">
-<h3 id="style-files-0-3-9000">Style files<a class="anchor" aria-label="anchor" href="#style-files-0-3-9000"></a></h3>
-<ul><li>Removed framenumber continuation counter from <code>lmu-lecture.sty</code> to discourage the use of automatic and explicit <code>\framebreak</code>s, which cause rendering issues after some TeXLive version post 2023 cutoff.</li>
-<li>The <code>vbframe</code> environment is considered deprecated and should be replace with “regular” beamer <code>frame</code>s.</li>
+<h3 id="r-package-0-3-9000">R package<a class="anchor" aria-label="anchor" href="#r-package-0-3-9000"></a></h3>
+<ul><li>Add experimental <code><a href="../reference/latexmk_docker.html">latexmk_docker()</a></code> to run <code>latexmk</code> wrapped in a docker image with a fixed TeXLive version</li>
+<li>
+<code><a href="../reference/compile_slide.html">compile_slide()</a></code> gains <code>method</code> argument, defaulting to <code>"system"</code> to use local <code>ltexmk</code>. Can be <code>"docker"</code> to use the new <code><a href="../reference/latexmk_docker.html">latexmk_docker()</a></code> instead.</li>
+<li>
+<code>clean_slide</code> gains <code>keep_pdf</code> option, defaulting to <code>FALSE</code> for previous behavior.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="lecheck-cli-0-3-9000">
+<code>lecheck</code> cli:<a class="anchor" aria-label="anchor" href="#lecheck-cli-0-3-9000"></a></h3>
+<ul><li>Gains <code>--docker</code> argument, passed to <code><a href="../reference/compile_slide.html">compile_slide()</a></code> to use <code><a href="../reference/latexmk_docker.html">latexmk_docker()</a></code>
+</li>
+<li>Gains <code>--postclean</code> argument to run <code>latexmk -c</code> after compilation, removing all detritus but keeping the <code>.pdf</code> file.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="latex-0-3-9000">LaTeX<a class="anchor" aria-label="anchor" href="#latex-0-3-9000"></a></h3>
+<ul><li>Discourageing the use of automatic and explicit <code>\framebreak</code>s, which cause rendering issues after some TeXLive version post 2023 cutoff:
+<ul><li>The <code>vbframe</code> environment is considered <strong>deprecated</strong> and should be replace with “regular” beamer <code>frame</code>s.</li>
+<li>Removed framenumber continuation counter from <code>lmu-lecture.sty</code> for simplification</li>
+</ul></li>
 <li>Related: The <code>vframe</code> environment (rarely used) is now removed.</li>
-<li>Added <code>framei</code> environment which automatically wraps content in standard <code>itemize</code> environment.</li>
-</ul><p><strong>Breaking changes</strong> for new macros (see <a href="https://github.com/slds-lmu/lecture_service/wiki/Slides#custom-macros-for-layout-images-citations" class="external-link uri">https://github.com/slds-lmu/lecture_service/wiki/Slides#custom-macros-for-layout-images-citations</a>):</p>
+</ul><p><strong>Breaking changes</strong> for recently introduced macros (see <a href="https://github.com/slds-lmu/lecture_service/wiki/Slides#custom-macros-for-layout-images-citations" class="external-link">the wiki</a>):</p>
 <ul><li>
 <code>splitV</code> now maps to <code>splitVCC</code>, not <code>splitVTT</code>
 </li>
 <li>
 <code>itemizefill</code> is renamed to <code>itemizeF</code>
 </li>
+</ul><p><strong>New macros</strong> (see <a href="https://github.com/slds-lmu/lecture_service/wiki/Slides#custom-macros-for-layout-images-citations" class="external-link">the wiki</a> for usage instructions)</p>
+<ul><li>Extended <code>itemizeS</code>, <code>itemizeM</code> etc. to take argument for font size control, e.g. <code>\begin{itemizeM}[small]</code>.
+<ul><li>Built upon modular <code>kitemize</code> environment.</li>
+</ul></li>
+<li>Added <code>framei</code> environment which automatically wraps content in flexible <code>itemize</code> environments with font size and spacing controls.</li>
 </ul></div>
 </div>
     <div class="section level2">
