@@ -33,5 +33,5 @@ reference:
       - check_log
       - install_lecheck
       - set_margin_token_file
-      - lecture_status_local
+      - repo_status
       - this_repo_status
