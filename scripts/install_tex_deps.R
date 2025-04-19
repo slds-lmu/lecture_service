@@ -22,13 +22,22 @@ if (tl_check$status != 0) {
   cli::cli_abort("Re-run once TeX Live is installed")
 }
 
-tl_version <- stringr::str_extract(tl_check$stdout, "20\\d{2}")
+tl_version <- as.integer(stringr::str_extract(tl_check$stdout, "20\\d{2}"))
 cli::cli_alert_info("Found TeX Live version {tl_version}")
-if (tl_version != "2024") {
+if (tl_version != 2025) {
   cli::cli_alert_danger(
-    "Slides assume TeX Live 2024, please update to avoid issues:"
+    "Slides assume TeX Live 2025!"
   )
-  cli::cli_inform("{.fun tinytex::reinstall_tinytex}")
+}
+if (tl_version < 2025) {
+  cli::cli_inform(
+    "Please update if you run into issues: {.fun tinytex::reinstall_tinytex}"
+  )
+}
+if (tl_version > 2025) {
+  cli::cli_inform(
+    "Please try to downgrade or contact your local devops person if you run into issues"
+  )
 }
 
 # Script to extract packages didn't work on GH so I ran tinytex::latexmk()
