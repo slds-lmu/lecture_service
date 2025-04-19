@@ -49,6 +49,7 @@ check_log <- function(slide_file, before = 0, after = 1) {
     "Runaway argument",
     "^! Extra \\}, or forgotten \\$",
     "! TeX capacity exceeded",
+    "! Incomplete",
     # Generic error
     "^! LaTeX Error:"
   )
