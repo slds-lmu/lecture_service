@@ -1,56 +1,3 @@
-#' Clean output for a single .tex file
-#'
-#' Uses `latexmk -C <slide_file>`, also removing the PDF file.
-#' Uses `latexmk -c <slide_file>` to keep the PDF file.
-#'
-#' @inheritParams find_slide_tex
-#' @param keep_pdf `[FALSE]`: Keep the PDF file.
-#' @param verbose `[TRUE]`: Print additional output to the console.
-#'
-#' @return Invisibly: A list with entries
-#'  - passed: TRUE indicates a successful compilation, FALSE a failure.
-#'  - log: Absolute path to the log file in case of a non-zero exit status.
-#' @export
-#' @examples
-#' \dontrun{
-#' # Create the PDF
-#' compile_slide("slides-cart-computationalaspects.tex")
-#'
-#'# Remove the PDF and other output
-#' clean_slide("slides-cart-computationalaspects.tex")
-#' }
-clean_slide <- function(slide_file, keep_pdf = FALSE, verbose = FALSE) {
-  tmp <- find_slide_tex(slide_file = slide_file)
-
-  # .nav ,.snm, ... are not covered by latexmk -C
-  check = sapply(c("nav", "snm", "bbl"), \(ext) {
-    detritus <- fs::path_ext_set(tmp$tex, ext)
-    if (fs::file_exists(detritus)) {
-      # if (verbose) cli::cli_alert("Deleting {detritus}")
-      fs::file_delete(detritus)
-    }
-  })
-
-  clean_arg <- if (keep_pdf) "-c" else "-C"
-
-  pc <- processx::process$new(
-    command = "latexmk",
-    args = c(clean_arg, tmp$slide_name),
-    wd = tmp$slides_dir,
-    echo_cmd = verbose
-  )
-  pc$wait()
-  exit <- pc$get_exit_status()
-  # I don't see how this should fail, so if it does you dun goof'd
-  if (exit != 0) {
-    cli::cli_alert_danger(
-      "latexmk -C failed for some unholy reason for {slide_file}"
-    )
-  }
-
-  exit == 0
-}
-
 #' Compile a single .tex file
 #'
 #' @inheritParams find_slide_tex
@@ -93,7 +40,7 @@ compile_slide <- function(
   tmp <- find_slide_tex(slide_file = slide_file)
   method <- match.arg(method)
 
-  if (pre_clean) clean_slide(slide_file)
+  if (pre_clean) clean_slide(slide_file, check_status = check_status)
 
   log_stderr <- NULL
   log_stdout <- NULL
@@ -157,7 +104,8 @@ compile_slide <- function(
     }
   }
 
-  if (post_clean) clean_slide(slide_file, keep_pdf = TRUE)
+  if (post_clean)
+    clean_slide(slide_file, keep_pdf = TRUE, check_status = check_status)
 
   invisible(result)
 }

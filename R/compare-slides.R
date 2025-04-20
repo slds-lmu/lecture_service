@@ -11,17 +11,18 @@
 #' output file under `./comparison/<slide-name>.pdf` is more recent than both of the input PDF files.
 #' That way you can safely re-run this function repeatedly without worrying about computational overhead.
 #'
-#' @param slide_file `character(1)`: A single slide .tex file (see examples).
+#' @inheritParams find_slide_tex
 #' @param verbose `[TRUE]`: Print additional output to the console.
 #' @param create_comparison_pdf `[FALSE]`: Use `diff-pdf` to create a comparison PDF at `./comparison/<slide-name>.pdf`.
 #'   The PDF contains only the slide pages with detected differences, highlighted in red/blue.
-#' @param thresh_psnr `[40]`: PSNR threshold for difference detection in `diff-pdf-visually`.
+#' @param thresh_psnr `[20]`: PSNR threshold for difference detection in `diff-pdf-visually`.
 #'   Higher is more sensitive.
 #' @param dpi_check `[50]` Resolution for rasterised files used by both `diff-pdf-visually`.
 #'   Lower is more coarse.
+#' @param eps_signif `[0.5]` Significance threshold for difference detection in `diff-pdf-visually` to force fewer false-positives.
 #' @param dpi_out `[100]` Resolution for output PDF produced by `diff-pdf`.
 #'   Lower values will lead to very pixelated diff PDFs.
-#' @param pixel_tol `[20]` Per-page pixel tolerance for comparison used by `diff-pdf`.
+#' @param pixel_tol `[50]` Per-page pixel tolerance for comparison used by `diff-pdf`.
 #' @param view `[FALSE]` For interactive use: Opens window showing comparison diff.
 #' @param overwrite `[FALSE]` Re-creates output diff PDF even if it already exists and appears up to date.
 #' @return Invisibly: A list of results:
@@ -58,10 +59,11 @@ compare_slide <- function(
   slide_file,
   verbose = TRUE,
   create_comparison_pdf = FALSE,
-  thresh_psnr = 40,
+  thresh_psnr = 20,
   dpi_check = 50,
+  eps_signif = 0.5,
   dpi_out = 100,
-  pixel_tol = 20,
+  pixel_tol = 50,
   view = FALSE,
   overwrite = FALSE
 ) {
@@ -91,7 +93,9 @@ compare_slide <- function(
     return(result)
   }
 
-  if (!check_system_tool("diff-pdf-visually", strictness = "none")) {
+  if (!check_system_tool("diff-pdf-visually", strictness = "warning")) {
+    result$passed <- FALSE
+    result$reason <- "diff-pdf-visually not found"
     return(result)
   }
 
@@ -169,17 +173,27 @@ compare_slide <- function(
     pages_signif <- pages_string |>
       stringr::str_extract(" \\d+\\.\\d+") |>
       stringr::str_trim() |>
-      as.numeric() |>
-      round(1)
+      as.numeric()
 
-    if (verbose)
-      cli::cli_alert_warning(
-        "{tmp$slide_name}: Changes detected in pages: {different_pages} (signif.: {pages_signif})"
-      )
-    result$passed <- FALSE
-    result$reason <- "Dissimilar pages"
-    result$pages <- paste(sort(different_pages), collapse = ", ")
-    result$signif <- pages_signif
+    pages_signif <- pages_signif[pages_signif > eps_signif]
+
+    if (length(pages_signif) == 0) {
+      result$passed <- TRUE
+      result$reason <- "Changes considered insignificant"
+      result$pages <- paste(sort(different_pages), collapse = ", ")
+      result$signif <- paste0("< ", eps_signif)
+    } else {
+      different_pages <- different_pages[different_pages > eps_signif]
+
+      if (verbose)
+        cli::cli_alert_warning(
+          "{tmp$slide_name}: Changes detected in pages: {different_pages} (signif.: {pages_signif})"
+        )
+      result$passed <- FALSE
+      result$reason <- "Dissimilar pages"
+      result$pages <- paste(sort(different_pages), collapse = ", ")
+      result$signif <- pages_signif
+    }
   }
 
   if (

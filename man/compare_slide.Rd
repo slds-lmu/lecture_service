@@ -8,32 +8,35 @@ compare_slide(
   slide_file,
   verbose = TRUE,
   create_comparison_pdf = FALSE,
-  thresh_psnr = 40,
+  thresh_psnr = 20,
   dpi_check = 50,
+  eps_signif = 0.5,
   dpi_out = 100,
-  pixel_tol = 20,
+  pixel_tol = 50,
   view = FALSE,
   overwrite = FALSE
 )
 }
 \arguments{
-\item{slide_file}{\code{character(1)}: A single slide .tex file (see examples).}
+\item{slide_file}{\verb{[character(1)]} Name of a (single) slide, with or without \code{.tex} extension. See examples of \code{\link[=find_slide_tex]{find_slide_tex()}}.}
 
 \item{verbose}{\verb{[TRUE]}: Print additional output to the console.}
 
 \item{create_comparison_pdf}{\verb{[FALSE]}: Use \code{diff-pdf} to create a comparison PDF at \verb{./comparison/<slide-name>.pdf}.
 The PDF contains only the slide pages with detected differences, highlighted in red/blue.}
 
-\item{thresh_psnr}{\verb{[40]}: PSNR threshold for difference detection in \code{diff-pdf-visually}.
+\item{thresh_psnr}{\verb{[20]}: PSNR threshold for difference detection in \code{diff-pdf-visually}.
 Higher is more sensitive.}
 
 \item{dpi_check}{\verb{[50]} Resolution for rasterised files used by both \code{diff-pdf-visually}.
 Lower is more coarse.}
 
+\item{eps_signif}{\verb{[0.5]} Significance threshold for difference detection in \code{diff-pdf-visually} to force fewer false-positives.}
+
 \item{dpi_out}{\verb{[100]} Resolution for output PDF produced by \code{diff-pdf}.
 Lower values will lead to very pixelated diff PDFs.}
 
-\item{pixel_tol}{\verb{[20]} Per-page pixel tolerance for comparison used by \code{diff-pdf}.}
+\item{pixel_tol}{\verb{[50]} Per-page pixel tolerance for comparison used by \code{diff-pdf}.}
 
 \item{view}{\verb{[FALSE]} For interactive use: Opens window showing comparison diff.}
 

@@ -195,6 +195,7 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
         )
         clean_slide(
           slide_file = current_slide_tbl[["slide_name"]],
+          check_status = !arguments$background,
           verbose = arguments$verbose
         )
       }
