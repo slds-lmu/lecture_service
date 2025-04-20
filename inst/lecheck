@@ -24,7 +24,7 @@ doc <- 'SLDS Lecture Checker.
 
 Usage:
   lecheck [compile] [compare] [clean] [--lecture=<lc>] [--topic=<tc>] [--slide=<sn>] [--preclean] [--postclean] [--no-margin] [--background] [--pdf-copy] [--verbose] [--tinytex | --docker]
-  lecheck compile [--pdf-copy] [--tinytex] [--docker] [--background]
+  lecheck compile [--pdf-copy] [--tinytex | --docker] [--background]
   lecheck compare [--no-comparison-pdf] [--background]
   lecheck clean [--background]
   lecheck everything [--no-comparison-pdf] [--background]
@@ -215,7 +215,7 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
           method = method
         )
 
-        if (!arguments$background & !res$passed) {
+        if (!arguments$background & !res$passed & method != "tinytex") {
           cli::cli_alert("Checking log for common errors:")
           found_errors <- check_log(
             current_slide_tbl[["slide_name"]],
