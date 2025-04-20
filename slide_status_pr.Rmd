@@ -131,7 +131,7 @@ for (current_lecture in lectures) {
     cat()
   
   tmp |>
-    count(across(any_of(check_columns))) |>
+    count(across(any_of(check_cols))) |>
     kable(
       format = "html"
     ) |>
@@ -145,7 +145,7 @@ for (current_lecture in lectures) {
     
     tmp |>
       select(
-        slide_name, any_of(check_columns), check_note
+        slide_name, any_of(check_cols), check_note
       ) |>
       kable(
         # Needs to be HTML even for markdown output, tables don't render properly otherwise
