@@ -38,8 +38,14 @@
 <ul><li>Add experimental <code><a href="../reference/latexmk_docker.html">latexmk_docker()</a></code> to run <code>latexmk</code> wrapped in a docker image with a fixed TeXLive version</li>
 <li>
 <code><a href="../reference/compile_slide.html">compile_slide()</a></code> gains <code>method</code> argument, defaulting to <code>"system"</code> to use local <code>ltexmk</code>. Can be <code>"docker"</code> to use the new <code><a href="../reference/latexmk_docker.html">latexmk_docker()</a></code> instead.</li>
+<li>Remove <code>compile_slide_tinytex()</code> and convert it to the somewhat simpler <code><a href="../reference/latexmk_tinytex.html">latexmk_tinytex()</a></code> for use with <code><a href="../reference/compile_slide.html">compile_slide()</a></code>
+</li>
 <li>
-<code>clean_slide</code> gains <code>keep_pdf</code> option, defaulting to <code>FALSE</code> for previous behavior.</li>
+<code><a href="../reference/clean_slide.html">clean_slide()</a></code> gains <code>keep_pdf</code> option, defaulting to <code>FALSE</code> for previous behavior.</li>
+<li>
+<code><a href="../reference/clean_slide.html">clean_slide()</a></code> gens <code>check_status</code> option, analogous to that in <code><a href="../reference/compile_slide.html">compile_slide()</a></code>. The same argument in <code><a href="../reference/compile_slide.html">compile_slide()</a></code> is passed to <code><a href="../reference/clean_slide.html">clean_slide()</a></code>.</li>
+<li>
+<code><a href="../reference/compare_slide.html">compare_slide()</a></code> gains additional option <code>eps_signif</code> (<code>[0.5]</code>) to manually filter output from <code>diff-pdf-visually</code> to decrease number of false-positives.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="lecheck-cli-0-3-9000">

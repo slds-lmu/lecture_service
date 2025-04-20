@@ -46,7 +46,7 @@
 <span>  check_status <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  log <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"system"</span>, <span class="st">"docker"</span><span class="op">)</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"system"</span>, <span class="st">"docker"</span>, <span class="st">"tinytex"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -69,7 +69,7 @@ rendered.</p></dd>
 
 
 <dt id="arg-check-status">check_status<a class="anchor" aria-label="anchor" href="#arg-check-status"></a></dt>
-<dd><p><code>[TRUE]</code>: Wait for <code>latexmk</code> to finish and return the exit status.</p></dd>
+<dd><p><code>[TRUE]</code>: Wait for <code>latexmk</code> to finish and return the exit status. Not supported for <code>method = "tinytex"</code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -77,15 +77,16 @@ rendered.</p></dd>
 
 
 <dt id="arg-log">log<a class="anchor" aria-label="anchor" href="#arg-log"></a></dt>
-<dd><p><code>[FALSE]</code>: Write stdout and stderr logs to <code>./logs/</code>.</p></dd>
+<dd><p><code>[FALSE]</code>: Write stdout and stderr logs to <code>./logs/</code>. Not supported for <code>method = "tinytex"</code>.</p></dd>
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
-<dd><p><code>["system"]</code>: Either "system" or "docker". Of the latter, uses <code><a href="latexmk_docker.html">latexmk_docker()</a></code> for rendering.</p></dd>
+<dd><p><code>["system"]</code>: <code>"system"</code> uses <code><a href="latexmk_system.html">latexmk_system()</a></code>, "docker" uses <code><a href="latexmk_docker.html">latexmk_docker()</a></code>,
+and <code>"tinytex"</code> uses <code><a href="latexmk_tinytex.html">latexmk_tinytex()</a></code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>For future extension. Currently passed to <code><a href="latexmk_docker.html">latexmk_docker()</a></code> or <code><a href="latexmk_system.html">latexmk_system()</a></code>.</p></dd>
+<dd><p>For future extension. Currently passed to function invoked via <code>method</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

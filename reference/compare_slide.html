@@ -45,10 +45,11 @@ an assumed to be accepted / known good version at <code>slides-pdf/slides-gp-bay
 <span>  <span class="va">slide_file</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  create_comparison_pdf <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  thresh_psnr <span class="op">=</span> <span class="fl">40</span>,</span>
+<span>  thresh_psnr <span class="op">=</span> <span class="fl">20</span>,</span>
 <span>  dpi_check <span class="op">=</span> <span class="fl">50</span>,</span>
+<span>  eps_signif <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  dpi_out <span class="op">=</span> <span class="fl">100</span>,</span>
-<span>  pixel_tol <span class="op">=</span> <span class="fl">20</span>,</span>
+<span>  pixel_tol <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  view <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -59,7 +60,7 @@ an assumed to be accepted / known good version at <code>slides-pdf/slides-gp-bay
 
 
 <dl><dt id="arg-slide-file">slide_file<a class="anchor" aria-label="anchor" href="#arg-slide-file"></a></dt>
-<dd><p><code>character(1)</code>: A single slide .tex file (see examples).</p></dd>
+<dd><p><code>[character(1)]</code> Name of a (single) slide, with or without <code>.tex</code> extension. See examples of <code><a href="find_slide_tex.html">find_slide_tex()</a></code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -72,7 +73,7 @@ The PDF contains only the slide pages with detected differences, highlighted in 
 
 
 <dt id="arg-thresh-psnr">thresh_psnr<a class="anchor" aria-label="anchor" href="#arg-thresh-psnr"></a></dt>
-<dd><p><code>[40]</code>: PSNR threshold for difference detection in <code>diff-pdf-visually</code>.
+<dd><p><code>[20]</code>: PSNR threshold for difference detection in <code>diff-pdf-visually</code>.
 Higher is more sensitive.</p></dd>
 
 
@@ -81,13 +82,17 @@ Higher is more sensitive.</p></dd>
 Lower is more coarse.</p></dd>
 
 
+<dt id="arg-eps-signif">eps_signif<a class="anchor" aria-label="anchor" href="#arg-eps-signif"></a></dt>
+<dd><p><code>[0.5]</code> Significance threshold for difference detection in <code>diff-pdf-visually</code> to force fewer false-positives.</p></dd>
+
+
 <dt id="arg-dpi-out">dpi_out<a class="anchor" aria-label="anchor" href="#arg-dpi-out"></a></dt>
 <dd><p><code>[100]</code> Resolution for output PDF produced by <code>diff-pdf</code>.
 Lower values will lead to very pixelated diff PDFs.</p></dd>
 
 
 <dt id="arg-pixel-tol">pixel_tol<a class="anchor" aria-label="anchor" href="#arg-pixel-tol"></a></dt>
-<dd><p><code>[20]</code> Per-page pixel tolerance for comparison used by <code>diff-pdf</code>.</p></dd>
+<dd><p><code>[50]</code> Per-page pixel tolerance for comparison used by <code>diff-pdf</code>.</p></dd>
 
 
 <dt id="arg-view">view<a class="anchor" aria-label="anchor" href="#arg-view"></a></dt>
