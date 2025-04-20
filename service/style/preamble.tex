@@ -61,6 +61,9 @@
 % Adds arg to enumerate env, technically superseded by enumitem according
 % to https://ctan.org/pkg/enumerate
 % Replace with https://ctan.org/pkg/enumitem ?
+% Even better: enumitem is not really compatible with beamer and breaks all sorts of things
+% particularly the enumerate environment. The enumerate package also just isn't required
+% from what I can tell so... don't re-add it I guess?
 % \usepackage{enumerate}
 
 % Line spacing - provides \singlespacing \doublespacing \onehalfspacing
@@ -105,7 +108,7 @@
   \usepackage{usebib}
   \usepackage[backend=biber, style=authoryear]{biblatex}
 
-  \addbibresource{references.bib}
+  \addbibresource{./references.bib}
   \bibinput{references}
 }
 
