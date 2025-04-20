@@ -1,7 +1,7 @@
 #' Run dockerized latexmk
 #'
 #' This uses the docker image from <https://gitlab.com/islandoftex/images/texlive>.
-#' The defautl uses tag `TL2023-historic` for TeXLive 2023.
+#' The default uses tag `TL2023-historic` for TeXLive 2023.
 #'
 #' You will need to install docker or podman or some other compatible runtime on your system beforehand.
 #'
@@ -28,6 +28,7 @@
 #'   `stderr` can be redirected to `stdout` with `"2>&1"`.
 #' @param supervise `[TRUE]`: Passed to [processx::process()]'s `$new()`.
 #' @return A [processx::process()] object.
+#' @note This utility is usually invoked by [compile_slide()].
 #' @examples
 #' \dontrun{
 #' latexmk_docker("slides-advriskmin-bias-variance-decomposition.tex")
@@ -84,12 +85,11 @@ latexmk_docker <- function(
 
 #' Run latexmk
 #'
-#' This utility is usaully invoked by [compile_slide()].
-#'
 #' `latexmk` needs to be in `$PATH` for this to work.
 #'
 #' @inheritParams latexmk_docker
 #' @return A [processx::process()] object.
+#' @note This utility is usually invoked by [compile_slide()].
 #' @examples
 #' \dontrun{
 #' latexmk_system("slides-advriskmin-bias-variance-decomposition.tex")
@@ -115,4 +115,40 @@ latexmk_system <- function(
     echo_cmd = verbose,
     supervise = supervise
   )
+}
+
+#' Run TinyTex's latexmk
+#'
+#' A thin wrapper around [tinytex::latexmk()].
+#'
+#' TinyTex's [tinytex::latexmk()] automatically installs missing LaTeX packages,
+#' making it very useful.
+#' This is just a thin wrapper run the command with
+#' a changed working directory, as relative paths used in `preamble.tex` etc. require.
+#'
+#' @inheritParams latexmk_docker
+#' @inheritParams find_slide_tex
+#' @param ... Arguments passed to [tinytex::latexmk()].
+#' @return `TRUE` if the output PDF exists, `FALSE` otherwise.
+#' @note This utility is usually invoked by [compile_slide()].
+#' @examples
+#' \dontrun{
+#' latexmk_tinytex("slides-advriskmin-bias-variance-decomposition.tex")
+#' }
+latexmk_tinytex <- function(slide_file, ...) {
+  tex <- find_slide_tex(slide_file = slide_file)[["tex"]]
+
+  newwd <- fs::path_dir(tex)
+  oldwd <- setwd(dir = newwd)
+  on.exit(setwd(oldwd))
+
+  res <- try(tinytex::latexmk(
+    file = tex,
+    emulation = TRUE,
+    install_packages = TRUE,
+    clean = FALSE, # cleaning is handled by compile_slide()
+    ...
+  ))
+
+  fs::file_exists(res)
 }

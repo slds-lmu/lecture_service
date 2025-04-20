@@ -31,7 +31,7 @@ A \code{\link[processx:process]{processx::process()}} object.
 }
 \description{
 This uses the docker image from \url{https://gitlab.com/islandoftex/images/texlive}.
-The defautl uses tag \code{TL2023-historic} for TeXLive 2023.
+The default uses tag \code{TL2023-historic} for TeXLive 2023.
 }
 \details{
 You will need to install docker or podman or some other compatible runtime on your system beforehand.
@@ -49,6 +49,9 @@ docker run -i --rm --user $(id -u) --name latex \\
   registry.gitlab.com/islandoftex/images/texlive:TL2023-historic \\
   latexmk -pdf -halt-on-error slides-basics-data.tex
 }\if{html}{\out{</div>}}
+}
+\note{
+This utility is usually invoked by \code{\link[=compile_slide]{compile_slide()}}.
 }
 \examples{
 \dontrun{

@@ -13,7 +13,7 @@ clean_slide(slide_file, keep_pdf = FALSE, verbose = FALSE, check_status = TRUE)
 
 \item{verbose}{\verb{[TRUE]}: Print additional output to the console.}
 
-\item{check_status}{\verb{[TRUE]}: Wait for \code{latexmk} to finish and return the exit status.}
+\item{check_status}{\verb{[TRUE]}: Wait for \code{latexmk} to finish and return the exit status. Not supported for \code{method = "tinytex"}.}
 }
 \value{
 Invisibly:

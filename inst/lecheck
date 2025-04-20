@@ -23,7 +23,7 @@ version <- paste0(
 doc <- 'SLDS Lecture Checker.
 
 Usage:
-  lecheck [compile] [compare] [clean] [--lecture=<lc>] [--topic=<tc>] [--slide=<sn>] [--preclean] [--postclean] [--no-margin] [--background] [--pdf-copy] [--verbose] [--tinytex] [--docker]
+  lecheck [compile] [compare] [clean] [--lecture=<lc>] [--topic=<tc>] [--slide=<sn>] [--preclean] [--postclean] [--no-margin] [--background] [--pdf-copy] [--verbose] [--tinytex | --docker]
   lecheck compile [--pdf-copy] [--tinytex] [--docker] [--background]
   lecheck compare [--no-comparison-pdf] [--background]
   lecheck clean [--background]
@@ -201,18 +201,9 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
       }
 
       if (arguments$compile) {
-        if (arguments$tinytex) {
-          compile_slide_tinytex(
-            current_slide_tbl[["slide_name"]],
-            margin = !arguments$no_margin
-          )
-        }
-
-        if (arguments$docker) {
-          method <- "docker"
-        } else {
-          method <- "system"
-        }
+        method <- "system"
+        if (arguments$tinytex) method <- "tinytex"
+        if (arguments$docker) method <- "docker"
 
         res <- compile_slide(
           current_slide_tbl[["slide_name"]],

@@ -12,7 +12,7 @@ compile_slide(
   check_status = TRUE,
   verbose = TRUE,
   log = FALSE,
-  method = c("system", "docker"),
+  method = c("system", "docker", "tinytex"),
   ...
 )
 }
@@ -24,15 +24,16 @@ compile_slide(
 \item{margin}{\verb{[TRUE]} By default renders slides with margin. Otherwise a 4:3 slide is
 rendered.}
 
-\item{check_status}{\verb{[TRUE]}: Wait for \code{latexmk} to finish and return the exit status.}
+\item{check_status}{\verb{[TRUE]}: Wait for \code{latexmk} to finish and return the exit status. Not supported for \code{method = "tinytex"}.}
 
 \item{verbose}{\verb{[TRUE]}: Print additional output to the console.}
 
-\item{log}{\verb{[FALSE]}: Write stdout and stderr logs to \verb{./logs/}.}
+\item{log}{\verb{[FALSE]}: Write stdout and stderr logs to \verb{./logs/}. Not supported for \code{method = "tinytex"}.}
 
-\item{method}{\verb{["system"]}: Either "system" or "docker". Of the latter, uses \code{\link[=latexmk_docker]{latexmk_docker()}} for rendering.}
+\item{method}{\verb{["system"]}: \code{"system"} uses \code{\link[=latexmk_system]{latexmk_system()}}, "docker" uses \code{\link[=latexmk_docker]{latexmk_docker()}},
+and \code{"tinytex"} uses \code{\link[=latexmk_tinytex]{latexmk_tinytex()}}.}
 
-\item{...}{For future extension. Currently passed to \code{\link[=latexmk_docker]{latexmk_docker()}} or \code{\link[=latexmk_system]{latexmk_system()}}.}
+\item{...}{For future extension. Currently passed to function invoked via \code{method}.}
 }
 \value{
 Invisibly: A list with entries

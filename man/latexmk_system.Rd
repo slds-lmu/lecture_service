@@ -27,10 +27,10 @@ Discared if \code{NULL} or inherited from main R process if \code{""}.
 A \code{\link[processx:process]{processx::process()}} object.
 }
 \description{
-This utility is usaully invoked by \code{\link[=compile_slide]{compile_slide()}}.
-}
-\details{
 \code{latexmk} needs to be in \verb{$PATH} for this to work.
+}
+\note{
+This utility is usually invoked by \code{\link[=compile_slide]{compile_slide()}}.
 }
 \examples{
 \dontrun{

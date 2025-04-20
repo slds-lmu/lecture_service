@@ -4,11 +4,12 @@
 #' @param pre_clean,post_clean `[TRUE]`: Run [clean_slide()] before / after compilation, ensuring a clean slate.
 #' @param margin `[TRUE]` By default renders slides with margin. Otherwise a 4:3 slide is
 #'   rendered.
-#' @param check_status `[TRUE]`: Wait for `latexmk` to finish and return the exit status.
+#' @param check_status `[TRUE]`: Wait for `latexmk` to finish and return the exit status. Not supported for `method = "tinytex"`.
 #' @param verbose `[TRUE]`: Print additional output to the console.
-#' @param log `[FALSE]`: Write stdout and stderr logs to `./logs/`.
-#' @param method `["system"]`: Either "system" or "docker". Of the latter, uses [latexmk_docker()] for rendering.
-#' @param ... For future extension. Currently passed to [latexmk_docker()] or [latexmk_system()].
+#' @param log `[FALSE]`: Write stdout and stderr logs to `./logs/`. Not supported for `method = "tinytex"`.
+#' @param method `["system"]`: `"system"` uses [latexmk_system()], "docker" uses [latexmk_docker()],
+#'   and `"tinytex"` uses [latexmk_tinytex()].
+#' @param ... For future extension. Currently passed to function invoked via `method`.
 #' @return Invisibly: A list with entries
 #'  - passed: TRUE indicates a successful compilation, FALSE a failure.
 #'  - log: Absolute path to the log file in case of a non-zero exit status.
@@ -34,7 +35,7 @@ compile_slide <- function(
   check_status = TRUE,
   verbose = TRUE,
   log = FALSE,
-  method = c("system", "docker"),
+  method = c("system", "docker", "tinytex"),
   ...
 ) {
   tmp <- find_slide_tex(slide_file = slide_file)
@@ -79,12 +80,14 @@ compile_slide <- function(
       log_stderr = log_stderr,
       supervise = check_status,
       ...
-    )
+    ),
+    tinytex = latexmk_tinytex(slide_file = slide_file, ...)
   )
 
   result <- list(passed = NA, log = log_stdout, note = "")
 
-  if (check_status) {
+  # tinytex's result is just boolean, can't do any fancy checking
+  if (check_status & method != "tinytex") {
     p$wait()
 
     if (p$get_exit_status() == 0) {
@@ -108,41 +111,4 @@ compile_slide <- function(
     clean_slide(slide_file, keep_pdf = TRUE, check_status = check_status)
 
   invisible(result)
-}
-
-#' Compile a .tex file using TinyTex's latexmk emulation
-#'
-#' TinyTex's [tinytex::latexmk()] automatically installs missing LaTeX packages,
-#' making it very useful.
-#' This is just a thin wrapper run the command with
-#' a changed working directory, as relative paths used in `preamble.tex` etc. require.
-#'
-#' @inheritParams find_slide_tex
-#' @inheritParams compile_slide
-#' @param ... Arguments passed to [`tinytex::latexmk()`].
-#'
-#' @return `TRUE` if an output PDF file exists, `FALSE` otherwise.
-#' @export
-#'
-#' @examples
-#' \dontrun{
-#' compile_slide_tinytex("lecture_advml/slides/gaussian-processes/slides-gp-basic-3.tex")
-#' }
-compile_slide_tinytex <- function(slide_file, margin, ...) {
-  tex <- find_slide_tex(slide_file = slide_file)[["tex"]]
-
-  newwd <- fs::path_dir(tex)
-  oldwd <- setwd(dir = newwd)
-  on.exit(setwd(oldwd))
-
-  set_margin_token_file(newwd, margin = margin)
-
-  res <- try(tinytex::latexmk(
-    file = tex,
-    emulation = TRUE,
-    install_packages = TRUE,
-    ...
-  ))
-
-  fs::file_exists(res)
 }

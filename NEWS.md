@@ -4,6 +4,7 @@
 
 * Add experimental `latexmk_docker()` to run `latexmk` wrapped in a docker image with a fixed TeXLive version
 * `compile_slide()` gains `method` argument, defaulting to `"system"` to use local `ltexmk`. Can be `"docker"` to use the new `latexmk_docker()` instead.
+* Remove `compile_slide_tinytex()` and convert it to the somewhat simpler `latexmk_tinytex()` for use with `compile_slide()`
 * `clean_slide()` gains `keep_pdf` option, defaulting to `FALSE` for previous behavior.
 * `clean_slide()` gens `check_status` option, analogous to that in `compile_slide()`. The same argument in `compile_slide()` is passed to `clean_slide()`.
 * `compare_slide()` gains additional option `eps_signif` (`[0.5]`) to manually filter output from `diff-pdf-visually` to decrease number of false-positives.
