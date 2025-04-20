@@ -1,117 +1,171 @@
 \NeedsTeXFormat{LaTeX2e}
-% \ProvidesPackage{customitemize}[2025/04/17 Custom Itemize Environments]
-% Would be proper to have that \ProvidePackage line but since we load this from a relative path in `preamble.tex',
-% latex complains that the filename.sty and the path in `\usepackage{../../filename.sty}' don't match
+% \ProvidesPackage{customitemize}[2025/04/18 Custom Itemize Environments]
 
-% Load required packages
-\RequirePackage{enumitem}
+% Define item spacing variables
+\newlength{\custitemizeitems}
+\newlength{\custitemizeparss}
+\newlength{\custitemizetopp}
+\newlength{\custitemizepartp}
 
-% Preserve beamer item template when using enumitem
-% Set for all levels of itemize
-\setlist[itemize,1]{label=\usebeamertemplate{itemize item}}
-\setlist[itemize,2]{label=\usebeamertemplate{itemize subitem}}
-\setlist[itemize,3]{label=\usebeamertemplate{itemize subsubitem}}
-\setlist[itemize,4]{label=\usebeamertemplate{itemize subsubitem}}
-
-% Define commands for the different spacing configurations
-\newcommand{\itemspaceS}{%
-  \setlist[itemize]{itemsep=-2pt,parsep=0pt,topsep=0pt,partopsep=0pt}%
+% Small spacing values
+\newcommand{\@setSpacingSmall}{%
+  \setlength{\custitemizeitems}{-2pt}%
+  \setlength{\custitemizeparss}{0pt}%
+  \setlength{\custitemizetopp}{0pt}%
+  \setlength{\custitemizepartp}{0pt}%
 }
 
-\newcommand{\itemspaceM}{%
-  \setlist[itemize]{} % Default spacing
+% Medium spacing values
+\newcommand{\@setSpacingMedium}{%
+  \setlength{\custitemizeitems}{3pt}%
+  \setlength{\custitemizeparss}{0pt}%
+  \setlength{\custitemizetopp}{3pt}%
+  \setlength{\custitemizepartp}{0pt}%
 }
 
-\newcommand{\itemspaceL}{%
-  % Significantly increase the spacing for "Large" setting
-  \setlist[itemize]{itemsep=12pt,parsep=5pt,topsep=5pt,partopsep=2pt}%
+% Large spacing values
+\newcommand{\@setSpacingLarge}{%
+  \setlength{\custitemizeitems}{15pt}%
+  \setlength{\custitemizeparss}{5pt}%
+  \setlength{\custitemizetopp}{5pt}%
+  \setlength{\custitemizepartp}{2pt}%
 }
 
-\newcommand{\itemspaceF}{%
-  \setlist[itemize]{itemsep=\fill}%
-}
-
-% Define environments with different spacings and optional font size
+% Compact spacing
 \newenvironment{itemizeS}[1][normalsize]{%
-  \itemspaceS%
-  \def\@fontsize{#1}%
+  \@setSpacingSmall%
+  \begingroup%
+  \csname#1\endcsname%
   \begin{itemize}%
-  \csname\@fontsize\endcsname% Apply font size to the list content
+  \setlength{\itemsep}{\custitemizeitems}%
+  \setlength{\parsep}{\custitemizeparss}%
+  \setlength{\topsep}{\custitemizetopp}%
+  \setlength{\partopsep}{\custitemizepartp}%
 }{%
   \end{itemize}%
+  \endgroup%
 }
 
+% Medium spacing
 \newenvironment{itemizeM}[1][normalsize]{%
-  \itemspaceM%
-  \def\@fontsize{#1}%
+  \@setSpacingMedium%
+  \begingroup%
+  \csname#1\endcsname%
   \begin{itemize}%
-  \csname\@fontsize\endcsname% Apply font size to the list content
+  \setlength{\itemsep}{\custitemizeitems}%
+  \setlength{\parsep}{\custitemizeparss}%
+  \setlength{\topsep}{\custitemizetopp}%
+  \setlength{\partopsep}{\custitemizepartp}%
 }{%
   \end{itemize}%
+  \endgroup%
 }
 
+% Large spacing
 \newenvironment{itemizeL}[1][normalsize]{%
-  \itemspaceL%
-  \def\@fontsize{#1}%
+  \@setSpacingLarge%
+  \begingroup%
+  \csname#1\endcsname%
   \begin{itemize}%
-  \csname\@fontsize\endcsname% Apply font size to the list content
+  \setlength{\itemsep}{\custitemizeitems}%
+  \setlength{\parsep}{\custitemizeparss}%
+  \setlength{\topsep}{\custitemizetopp}%
+  \setlength{\partopsep}{\custitemizepartp}%
 }{%
   \end{itemize}%
+  \endgroup%
 }
 
+% Fill spacing
 \newenvironment{itemizeF}[1][normalsize]{%
-  \itemspaceF%
-  \def\@fontsize{#1}%
+  \begingroup%
+  \csname#1\endcsname%
   \begin{itemize}%
-  \csname\@fontsize\endcsname% Apply font size to the list content
+  \setlength{\itemsep}{1em plus 1fill}%
 }{%
   \end{itemize}%
+  \endgroup%
 }
 
-% A version with key-value options for more flexibility
+% Key-value interface with separate environments for each type
 \RequirePackage{keyval}
 
 % Define keys
 \define@key{customitemize}{fs}{\def\custom@itemize@fs{#1}}
 \define@key{customitemize}{sep}{\def\custom@itemize@sep{#1}}
 
-% Define the environment with key-value options
-\newenvironment{kitemize}[1][]{%
-  % Set defaults
-  \def\custom@itemize@fs{normalsize}%
-  \def\custom@itemize@sep{M}%
-  % Process options
-  \setkeys{customitemize}{#1}%
-  % Apply spacing based on sep value
-  \ifx\custom@itemize@sep S\itemspaceS\fi%
-  \ifx\custom@itemize@sep M\itemspaceM\fi%
-  \ifx\custom@itemize@sep L\itemspaceL\fi%
-  \ifx\custom@itemize@sep F\itemspaceF\fi%
-  % Start list
+% Create separate command for each spacing type
+\newcommand{\kitemize@typeS}[1][normalsize]{%
+  \@setSpacingSmall%
+  \begingroup%
+  \csname#1\endcsname%
   \begin{itemize}%
-  % Apply font size
-  \csname\custom@itemize@fs\endcsname%
-}{%
-  \end{itemize}%
+  \setlength{\itemsep}{\custitemizeitems}%
+  \setlength{\parsep}{\custitemizeparss}%
+  \setlength{\topsep}{\custitemizetopp}%
+  \setlength{\partopsep}{\custitemizepartp}%
 }
 
-% For backward compatibility (if needed)
-\newenvironment{customitemize}[2][\relax]{%
-  % Process optional argument for font size if provided
-  \ifx#1\relax
-    \def\@temp{normalsize}%
-  \else
-    \def\@temp{#1}%
-  \fi
-  % Set spacing based on #2
-  \ifx#2S\itemspaceS\fi%
-  \ifx#2M\itemspaceM\fi%
-  \ifx#2L\itemspaceL\fi%
-  \ifx#2F\itemspaceF\fi%
-  % Start list
+\newcommand{\kitemize@typeM}[1][normalsize]{%
+  \@setSpacingMedium%
+  \begingroup%
+  \csname#1\endcsname%
   \begin{itemize}%
-  % Apply font size
-  \csname\@temp\endcsname%
-}{%
-  \end{itemize}%
+  \setlength{\itemsep}{\custitemizeitems}%
+  \setlength{\parsep}{\custitemizeparss}%
+  \setlength{\topsep}{\custitemizetopp}%
+  \setlength{\partopsep}{\custitemizepartp}%
 }
+
+\newcommand{\kitemize@typeL}[1][normalsize]{%
+  \@setSpacingLarge%
+  \begingroup%
+  \csname#1\endcsname%
+  \begin{itemize}%
+  \setlength{\itemsep}{\custitemizeitems}%
+  \setlength{\parsep}{\custitemizeparss}%
+  \setlength{\topsep}{\custitemizetopp}%
+  \setlength{\partopsep}{\custitemizepartp}%
+}
+
+\newcommand{\kitemize@typeF}[1][normalsize]{%
+  \begingroup%
+  \csname#1\endcsname%
+  \begin{itemize}%
+  \setlength{\itemsep}{1em plus 1fill}%
+}
+
+% Common end command for all types
+\newcommand{\kitemize@end}{%
+  \end{itemize}%
+  \endgroup%
+}
+
+% Main kitemize environment - no conditionals, just direct command definitions
+\def\kitemize{\@ifnextchar[{\kitemize@i}{\kitemize@i[]}}
+\def\kitemize@i[#1]{\begingroup\def\@tempa{#1}\expandafter\endgroup\expandafter\kitemize@ii\expandafter{\@tempa}}
+\def\kitemize@ii#1{%
+  \setkeys{customitemize}{#1}%
+  \def\@tempsep{\custom@itemize@sep}%
+  \def\@sep@S{S}%
+  \def\@sep@L{L}%
+  \def\@sep@F{F}%
+  \def\@sep@M{M}%
+  
+  \ifx\@tempsep\@sep@S
+    \expandafter\kitemize@typeS\expandafter[\custom@itemize@fs]%
+  \else
+    \ifx\@tempsep\@sep@L
+      \expandafter\kitemize@typeL\expandafter[\custom@itemize@fs]%
+    \else
+      \ifx\@tempsep\@sep@F
+        \expandafter\kitemize@typeF\expandafter[\custom@itemize@fs]%
+      \else
+        \expandafter\kitemize@typeM\expandafter[\custom@itemize@fs]%
+      \fi
+    \fi
+  \fi
+}
+\def\endkitemize{\kitemize@end}
+
+\endinput
