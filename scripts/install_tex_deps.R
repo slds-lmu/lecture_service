@@ -115,7 +115,7 @@ manually_selected_deps <- c(
   # cheatsheets
   "type1cm",
   "ragged2e",
-  "mathdots",
+  "mathdots"
 )
 
 if (tinytex_installed) {
