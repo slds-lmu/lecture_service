@@ -2,9 +2,9 @@
 # tabulated in slide_status.Rmd,
 # and used as defaults in R helper functions.
 lecture_i2ml
-lecture_advml
-lecture_sl
-lecture_algods
-lecture_optimization
-lecture_iml
-lecture_debug
+#lecture_advml
+#lecture_sl
+#lecture_algods
+#lecture_optimization
+#lecture_iml
+#lecture_debug

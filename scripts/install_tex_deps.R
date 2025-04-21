@@ -111,7 +111,11 @@ manually_selected_deps <- c(
   "paralist",
   "xfrac",
   "bytefield",
-  "cancel"
+  "cancel",
+  # cheatsheets
+  "type1cm",
+  "ragged2e",
+  "mathdots",
 )
 
 if (tinytex_installed) {

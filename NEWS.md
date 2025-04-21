@@ -20,6 +20,7 @@
   * The `vbframe` environment is considered **deprecated** and should be replace with "regular" beamer `frame`s.
   * Removed framenumber continuation counter from `lmu-lecture.sty` for simplification
 * Related: The `vframe` environment (rarely used) is now removed.
+* Add cheatsheet preamble content from I2ML. Might need further refactor and adaptation if other lectures also use these.
 
 **Breaking changes** for recently introduced macros (see [the wiki](https://github.com/slds-lmu/lecture_service/wiki/Slides#custom-macros-for-layout-images-citations)):
 
