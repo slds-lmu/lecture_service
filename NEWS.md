@@ -32,7 +32,7 @@
 * Extended `itemizeS`, `itemizeM` etc. to take argument for font size control, e.g. `\begin{itemizeM}[small]`.
   * Built upon modular `kitemize` environment.
 * Added `framei` environment which automatically wraps content in flexible `itemize` environments with font size and spacing controls.
-
+* Added `frame2`, like `frame` but also has font size control like `itemizeM` etc. and behaves like a regular `frame` otherwise.
 
 # lese 0.3.0
 
