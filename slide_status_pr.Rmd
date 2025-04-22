@@ -41,6 +41,11 @@ lectures <- lectures[match(included_lectures, lectures, nomatch = 0)]
 # Might as well subset table to only selected lectures
 # This allows having a lecture locally for testing but not include them here yet.
 all_slide_check <- all_slide_check[all_slide_check$lecture %in% included_lectures, ]
+
+if (nrow(all_slide_check) == 0) {
+  cli::cli_abort("No slides to check, {.val all_slide_check} is empty after filtering")
+}
+
 ```
 
 ```{r slide-checker-repo-status}
