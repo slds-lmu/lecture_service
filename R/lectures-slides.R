@@ -24,7 +24,9 @@ lectures <- function() {
       "lecture_advml",
       "lecture_sl",
       "lecture_iml",
-      "lecture_optimization"
+      "lecture_optimization",
+      "lecture_algods",
+      "lecture_debug"
     )
   }
 
