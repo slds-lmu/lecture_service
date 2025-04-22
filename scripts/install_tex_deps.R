@@ -96,6 +96,7 @@ manually_selected_deps <- c(
   "listings",
   "listingsutf8",
   "readarray",
+  "xstring", # new macros
   # pdfannotextractor, useful to restore clickability of links in includepdf'd document
   # Also used in iml in Makefile rule
   "pax",
