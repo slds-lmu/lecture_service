@@ -47,16 +47,22 @@
 <li>
 <code><a href="../reference/compare_slide.html">compare_slide()</a></code> gains additional option <code>eps_signif</code> (<code>[0.5]</code>) to manually filter output from <code>diff-pdf-visually</code> to decrease number of false-positives.</li>
 <li>Add <code><a href="../reference/check_docker.html">check_docker()</a></code> to check whether <code>docker</code> is available and running.</li>
-<li><h3 id="lecheck-cli">
-<code>lecheck</code> cli:</h3></li>
-<li>Gains <code>--docker</code> argument, passed to <code><a href="../reference/compile_slide.html">compile_slide()</a></code> to use <code><a href="../reference/latexmk_docker.html">latexmk_docker()</a></code>.
+</ul></div>
+<div class="section level3">
+<h3 id="lecheck-cli-0-4-0">
+<code>lecheck</code> cli:<a class="anchor" aria-label="anchor" href="#lecheck-cli-0-4-0"></a></h3>
+<ul><li>Gains <code>--docker</code> argument, passed to <code><a href="../reference/compile_slide.html">compile_slide()</a></code> to use <code><a href="../reference/latexmk_docker.html">latexmk_docker()</a></code>.
 <ul><li>Currently uses a TeX Live 2023 image as default</li>
 <li>Allows fully encapsulate compilation of slides with a static environment</li>
 </ul></li>
 <li>Gains <code>--postclean</code> argument to run <code>latexmk -c</code> after compilation, removing all detritus but keeping the <code>.pdf</code> file.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="latex-0-4-0">LaTeX<a class="anchor" aria-label="anchor" href="#latex-0-4-0"></a></h3>
+<h3 id="github-action-workflows-servicegithubworkflows-0-4-0">GitHub Action workflows (<code>service/.github/workflows</code>)<a class="anchor" aria-label="anchor" href="#github-action-workflows-servicegithubworkflows-0-4-0"></a></h3>
+<ul><li>In both worklows using tinytex, we now experimentally pin the used version to 2023.10 for safety. This is likely to change in the future but currently this is the only version generally compatible with everything as far as we know. Ideally, we keep bumping this to a recent version, also on Overleaf.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="latex-servicestyle-0-4-0">LaTeX (<code>service/style</code>)<a class="anchor" aria-label="anchor" href="#latex-servicestyle-0-4-0"></a></h3>
 <ul><li>Discourageing the use of automatic and explicit <code>\framebreak</code>s, which cause rendering issues after some TeXLive version post 2023 cutoff:
 <ul><li>The <code>vbframe</code> environment is considered <strong>deprecated</strong> and should be replace with “regular” beamer <code>frame</code>s.</li>
 <li>Removed framenumber continuation counter from <code>lmu-lecture.sty</code> for simplification</li>
