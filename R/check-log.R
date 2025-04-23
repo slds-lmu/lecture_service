@@ -26,7 +26,10 @@
 check_log <- function(slide_file, before = 0, after = 1) {
   tmp <- find_slide_tex(slide_file = slide_file)
 
-  checkmate::assert_file_exists(tmp$tex_log)
+  if (!fs::file_exists(tmp$tex_log)) {
+    cli::cli_warn("Missing log file {.file {fs::path_rel(tmp$tex_log)}}")
+    return("Missing log file.")
+  }
 
   loglines <- readLines(tmp$tex_log, warn = FALSE)
   loglines <- stringr::str_squish(loglines)
