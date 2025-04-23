@@ -1,3 +1,11 @@
+# lese 0.4.0.9000 (In develpment)
+
+## GitHub Action workflows (`service/.github/workflows`)
+
+- In both worklows using tinytex, we experimentally pin the used version to 2023.10 for safety. 
+  This is likely to change in the future but currently this is the only version generally compatible with everything as far as we know.
+  Ideally, we keep bumping this to a recent version, also on Overleaf.
+
 # lese 0.4.0
 
 ## R package
@@ -16,12 +24,6 @@
   - Currently uses a TeX Live 2023 image as default
   - Allows fully encapsulate compilation of slides with a static environment
 - Gains `--postclean` argument to run `latexmk -c` after compilation, removing all detritus but keeping the `.pdf` file.
-
-## GitHub Action workflows (`service/.github/workflows`)
-
-- In both worklows using tinytex, we now experimentally pin the used version to 2023.10 for safety. 
-  This is likely to change in the future but currently this is the only version generally compatible with everything as far as we know.
-  Ideally, we keep bumping this to a recent version, also on Overleaf.
 
 ## LaTeX  (`service/style`)
 
