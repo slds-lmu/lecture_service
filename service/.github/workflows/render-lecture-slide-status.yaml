@@ -68,6 +68,9 @@ jobs:
         with:
           use-public-rspm: true
       - uses: r-lib/actions/setup-tinytex@v2
+        env:
+          # always install the bundled version from October 2023
+          TINYTEX_VERSION: 2023.10
       - run: tlmgr --version
       # Caching the R library requires to save its path beforehand, could hard-code but meh
       - name: Get R library dir for caching
