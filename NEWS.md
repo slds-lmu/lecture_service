@@ -1,4 +1,4 @@
-# lese 0.3.9000 (In development)
+# lese 0.4.0
 
 ## R package
 
@@ -8,10 +8,13 @@
 * `clean_slide()` gains `keep_pdf` option, defaulting to `FALSE` for previous behavior.
 * `clean_slide()` gens `check_status` option, analogous to that in `compile_slide()`. The same argument in `compile_slide()` is passed to `clean_slide()`.
 * `compare_slide()` gains additional option `eps_signif` (`[0.5]`) to manually filter output from `diff-pdf-visually` to decrease number of false-positives.
-
+* Add `check_docker()` to check whether `docker` is available and running.
+* 
 ## `lecheck` cli:
 
-- Gains `--docker` argument, passed to `compile_slide()` to use `latexmk_docker()`
+- Gains `--docker` argument, passed to `compile_slide()` to use `latexmk_docker()`.
+  - Currently uses a TeX Live 2023 image as default
+  - Allows fully encapsulate compilation of slides with a static environment
 - Gains `--postclean` argument to run `latexmk -c` after compilation, removing all detritus but keeping the `.pdf` file.
 
 ## LaTeX
@@ -24,7 +27,7 @@
 
 **Breaking changes** for recently introduced macros (see [the wiki](https://github.com/slds-lmu/lecture_service/wiki/Slides#custom-macros-for-layout-images-citations)):
 
-* `splitV` now maps to `splitVCC`, not `splitVTT`
+* `splitV` now maps to `splitVCC`, not `splitVTT`.
 * `itemizefill` is renamed to `itemizeF`
 
 **New macros** (see [the wiki](https://github.com/slds-lmu/lecture_service/wiki/Slides#custom-macros-for-layout-images-citations) for usage instructions)

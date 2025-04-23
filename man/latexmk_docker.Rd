@@ -55,6 +55,6 @@ This utility is usually invoked by \code{\link[=compile_slide]{compile_slide()}}
 }
 \examples{
 \dontrun{
-latexmk_docker("slides-advriskmin-bias-variance-decomposition.tex")
+latexmk_docker("slides-cart-treegrowing.tex")
 }
 }

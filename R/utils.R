@@ -6,7 +6,7 @@
 #' @param x Name of a binary, e.g. `convert` for ImageMagick or `brew` for Homebrew on macOS.
 #' @param strictness `["warning"]` Wether to emit a warning, `"error"`, or nothing (`"none"`) if the tool is not found.
 #'
-#' @return `TRUE` if the tool is find, `FALSE` otherwise, and an error if `strict` and the tool is not found.
+#' @return Invisibly: `TRUE` if the tool is find, `FALSE` otherwise, and an error if `strict` and the tool is not found.
 #' @export
 #' @examples
 #' check_system_tool("diff-pdf", strictness = "none")
@@ -14,15 +14,53 @@ check_system_tool <- function(x, strictness = c("warning", "error", "none")) {
   checkmate::assert_character(x, len = 1)
   strictness <- match.arg(strictness)
   which <- Sys.which(x)
-
+  ret <- TRUE
   if (which == "") {
     msg <- "Could not find {x} in $PATH"
+    if (strictness == "none") cli::cli_alert_danger(msg)
     if (strictness == "error") cli::cli_abort(msg)
     if (strictness == "warning") cli::cli_alert_warning(msg)
-    return(FALSE)
+    ret <- FALSE
   }
 
-  TRUE
+  invisible(ret)
+}
+
+#' Check if docker can be used
+#'
+#' - `docker` needs to be in `$PATH`
+#' - `docker` daemon (or compatible runtime) needs to be running
+#'
+#' @param strictness `["warning"]` Wether to emit a warning, `"error"`, or nothing (`"none"`) if docker can not be used.
+#'
+#' @return Invisibly: `TRUE` if the docker seems to be running, `FALSE` otherwise, and an error if `strict` and the tool is not found.
+#' @export
+#' @examples
+#' check_docker(strictness = "none")
+check_docker <- function(strictness = c("warning", "error", "none")) {
+  strictness <- match.arg(strictness)
+
+  has_docker <- check_system_tool("docker", strictness = strictness)
+
+  if (!has_docker) return(invisible(FALSE))
+
+  p <- processx::process$new(
+    command = "docker",
+    args = c("stats", "--no-stream")
+  )
+
+  p$wait()
+
+  msg_not_running <- "Could not connect to docker runtime, is it running?"
+  ret <- TRUE
+  if (p$get_exit_status() == 1) {
+    if (strictness == "none") cli::cli_alert_danger(msg_not_running)
+    if (strictness == "warning") cli::cli_warn(msg_not_running)
+    if (strictness == "error") cli::cli_abort(msg_not_running)
+    ret <- FALSE
+  }
+
+  invisible(ret)
 }
 
 #' Manage the with/without margin dummy file

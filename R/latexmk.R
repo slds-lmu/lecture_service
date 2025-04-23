@@ -31,7 +31,7 @@
 #' @note This utility is usually invoked by [compile_slide()].
 #' @examples
 #' \dontrun{
-#' latexmk_docker("slides-advriskmin-bias-variance-decomposition.tex")
+#' latexmk_docker("slides-cart-treegrowing.tex")
 #' }
 latexmk_docker <- function(
   slide_file,
@@ -43,7 +43,7 @@ latexmk_docker <- function(
 ) {
   tmp <- find_slide_tex(slide_file = slide_file)
 
-  check_system_tool("docker", strictness = "error")
+  check_docker(strictness = "error")
 
   # Get absolute path up to "lecture_XYZ" bit for mounting into docker container
   lecture_dir <- fs::path_dir(tmp$slides_dir) |>
@@ -54,6 +54,9 @@ latexmk_docker <- function(
   # Need numeric user ID to start docker container
   # Otherwise created files are owned by root:root which is inconvenient
   uid <- system("id -u", intern = TRUE)
+  if (!is.integer(as.integer(uid))) {
+    cli::cli_abort("Could not determine user ID via {.code id -u}")
+  }
 
   processx::process$new(
     command = "docker",

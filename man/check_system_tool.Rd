@@ -12,7 +12,7 @@ check_system_tool(x, strictness = c("warning", "error", "none"))
 \item{strictness}{\verb{["warning"]} Wether to emit a warning, \code{"error"}, or nothing (\code{"none"}) if the tool is not found.}
 }
 \value{
-\code{TRUE} if the tool is find, \code{FALSE} otherwise, and an error if \code{strict} and the tool is not found.
+Invisibly: \code{TRUE} if the tool is find, \code{FALSE} otherwise, and an error if \code{strict} and the tool is not found.
 }
 \description{
 Can be used to verify if a tool (e.g. \code{convert}) is in \verb{$PATH} and findable from within R.

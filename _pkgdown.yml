@@ -15,6 +15,7 @@ reference:
       - collect_lectures
       - find_slide_tex
       - check_system_tool
+      - check_docker
   - title: "Compilation and checking"
     desc: |
       Compile slides with either latexmk or TinyTeX, and check
