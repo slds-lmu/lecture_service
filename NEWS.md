@@ -9,7 +9,7 @@
 * `clean_slide()` gens `check_status` option, analogous to that in `compile_slide()`. The same argument in `compile_slide()` is passed to `clean_slide()`.
 * `compare_slide()` gains additional option `eps_signif` (`[0.5]`) to manually filter output from `diff-pdf-visually` to decrease number of false-positives.
 * Add `check_docker()` to check whether `docker` is available and running.
-* 
+
 ## `lecheck` cli:
 
 - Gains `--docker` argument, passed to `compile_slide()` to use `latexmk_docker()`.
@@ -17,7 +17,13 @@
   - Allows fully encapsulate compilation of slides with a static environment
 - Gains `--postclean` argument to run `latexmk -c` after compilation, removing all detritus but keeping the `.pdf` file.
 
-## LaTeX
+## GitHub Action workflows (`service/.github/workflows`)
+
+- In both worklows using tinytex, we now experimentally pin the used version to 2023.10 for safety. 
+  This is likely to change in the future but currently this is the only version generally compatible with everything as far as we know.
+  Ideally, we keep bumping this to a recent version, also on Overleaf.
+
+## LaTeX  (`service/style`)
 
 * Discourageing the use of automatic and explicit `\framebreak`s, which cause rendering issues after some TeXLive version post 2023 cutoff:
   * The `vbframe` environment is considered **deprecated** and should be replace with "regular" beamer `frame`s.
