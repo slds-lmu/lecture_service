@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">lese</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,9 +32,9 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.3.9000" id="lese-039000-in-development">lese 0.3.9000 (In development)<a class="anchor" aria-label="anchor" href="#lese-039000-in-development"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.4.0" id="lese-040">lese 0.4.0<a class="anchor" aria-label="anchor" href="#lese-040"></a></h2>
 <div class="section level3">
-<h3 id="r-package-0-3-9000">R package<a class="anchor" aria-label="anchor" href="#r-package-0-3-9000"></a></h3>
+<h3 id="r-package-0-4-0">R package<a class="anchor" aria-label="anchor" href="#r-package-0-4-0"></a></h3>
 <ul><li>Add experimental <code><a href="../reference/latexmk_docker.html">latexmk_docker()</a></code> to run <code>latexmk</code> wrapped in a docker image with a fixed TeXLive version</li>
 <li>
 <code><a href="../reference/compile_slide.html">compile_slide()</a></code> gains <code>method</code> argument, defaulting to <code>"system"</code> to use local <code>ltexmk</code>. Can be <code>"docker"</code> to use the new <code><a href="../reference/latexmk_docker.html">latexmk_docker()</a></code> instead.</li>
@@ -46,16 +46,17 @@
 <code><a href="../reference/clean_slide.html">clean_slide()</a></code> gens <code>check_status</code> option, analogous to that in <code><a href="../reference/compile_slide.html">compile_slide()</a></code>. The same argument in <code><a href="../reference/compile_slide.html">compile_slide()</a></code> is passed to <code><a href="../reference/clean_slide.html">clean_slide()</a></code>.</li>
 <li>
 <code><a href="../reference/compare_slide.html">compare_slide()</a></code> gains additional option <code>eps_signif</code> (<code>[0.5]</code>) to manually filter output from <code>diff-pdf-visually</code> to decrease number of false-positives.</li>
-</ul></div>
-<div class="section level3">
-<h3 id="lecheck-cli-0-3-9000">
-<code>lecheck</code> cli:<a class="anchor" aria-label="anchor" href="#lecheck-cli-0-3-9000"></a></h3>
-<ul><li>Gains <code>--docker</code> argument, passed to <code><a href="../reference/compile_slide.html">compile_slide()</a></code> to use <code><a href="../reference/latexmk_docker.html">latexmk_docker()</a></code>
-</li>
+<li>Add <code><a href="../reference/check_docker.html">check_docker()</a></code> to check whether <code>docker</code> is available and running.</li>
+<li><h3 id="lecheck-cli">
+<code>lecheck</code> cli:</h3></li>
+<li>Gains <code>--docker</code> argument, passed to <code><a href="../reference/compile_slide.html">compile_slide()</a></code> to use <code><a href="../reference/latexmk_docker.html">latexmk_docker()</a></code>.
+<ul><li>Currently uses a TeX Live 2023 image as default</li>
+<li>Allows fully encapsulate compilation of slides with a static environment</li>
+</ul></li>
 <li>Gains <code>--postclean</code> argument to run <code>latexmk -c</code> after compilation, removing all detritus but keeping the <code>.pdf</code> file.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="latex-0-3-9000">LaTeX<a class="anchor" aria-label="anchor" href="#latex-0-3-9000"></a></h3>
+<h3 id="latex-0-4-0">LaTeX<a class="anchor" aria-label="anchor" href="#latex-0-4-0"></a></h3>
 <ul><li>Discourageing the use of automatic and explicit <code>\framebreak</code>s, which cause rendering issues after some TeXLive version post 2023 cutoff:
 <ul><li>The <code>vbframe</code> environment is considered <strong>deprecated</strong> and should be replace with “regular” beamer <code>frame</code>s.</li>
 <li>Removed framenumber continuation counter from <code>lmu-lecture.sty</code> for simplification</li>
@@ -64,8 +65,7 @@
 <li>Add cheatsheet preamble content from I2ML. Might need further refactor and adaptation if other lectures also use these.</li>
 </ul><p><strong>Breaking changes</strong> for recently introduced macros (see <a href="https://github.com/slds-lmu/lecture_service/wiki/Slides#custom-macros-for-layout-images-citations" class="external-link">the wiki</a>):</p>
 <ul><li>
-<code>splitV</code> now maps to <code>splitVCC</code>, not <code>splitVTT</code>
-</li>
+<code>splitV</code> now maps to <code>splitVCC</code>, not <code>splitVTT</code>.</li>
 <li>
 <code>itemizefill</code> is renamed to <code>itemizeF</code>
 </li>
