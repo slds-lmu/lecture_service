@@ -106,8 +106,20 @@ check_slides_many <- function(
   overwrite = FALSE
 ) {
   tictoc::tic()
+
+  cores_available <- as.integer(try(future::availableCores())) - 1 %||% 1
+  if (cores_available <= 2) {
+    parallel <- FALSE
+    cli::cli_alert_warning(
+      "Only found {.val {cores_available}} cores. Disabling parallelization."
+    )
+  }
+
   if (parallel) {
-    future::plan("multisession", workers = min(1, future::availableCores() - 2))
+    workers <- cores_available - 1
+    cli::cli_alert_info("Parallelizing using {.val {workers}} cores.")
+
+    future::plan("multisession", workers = workers)
     check_out <- future.apply::future_lapply(
       lectures_tbl$tex,
       check_slides_single,
