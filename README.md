@@ -1,7 +1,5 @@
-SLDS Lecture Service
+SLDS Lecture Service (lese)
 ================
-
-- [Overview](#overview)
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
@@ -9,6 +7,10 @@ SLDS Lecture Service
 
 [![R-CMD-check](https://github.com/slds-lmu/lecture_service/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/slds-lmu/lecture_service/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
+
+\[[Teaching DevOps
+Wiki](https://github.com/slds-lmu/lecture_service/wiki)\] \[[Issue
+Tracker](https://github.com/orgs/slds-lmu/projects/5/views/1)\]
 
 This project has two goals:
 
@@ -28,10 +30,16 @@ from this directory “on top” of an existing lecture, e.g.:
 rsync -r lecture_service/service/ lecture_i2ml/
 ```
 
-This is wrapped with the script in `service/scripts/update-service.sh`,
-which is also synced into each lecture’s top-level `./scripts/` folder.
+This is wrapped with the script in each lecture’s
+`./scripts/update-service.sh` so within e.g. `lecture_i2ml` you can run
 
-Afterwards, `git status` can be used to check changes.
+``` sh
+bash scripts/update-service.sh
+```
+
+Any changes proposed to service files covered by `./service`
+(particularly the `style` folder) will first need to be made in this
+repo and then dependant lecture repos can be updated accordingly.
 
 ## Overview
 
@@ -57,7 +65,3 @@ track of the relevant lecture repos, so if you only intend to work on
 subsequent `make` commands and other functions will be limited on scope
 to this lecture. By default it contains all lectures currently hosted at
 `slds-lmu/`.
-
-Refer to the [Teaching DevOps
-Wiki](https://github.com/slds-lmu/lecture_service/wiki) for our central
-documentation hub.
