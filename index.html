@@ -46,12 +46,12 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="slds-lecture-service">SLDS Lecture Service<a class="anchor" aria-label="anchor" href="#slds-lecture-service"></a>
+<div class="page-header"><h1 id="slds-lecture-service-lese">SLDS Lecture Service (lese)<a class="anchor" aria-label="anchor" href="#slds-lecture-service-lese"></a>
 </h1></div>
-<ul>
-<li><a href="#overview">Overview</a></li>
-</ul>
-<!-- README.md is generated from README.Rmd. Please edit that file --><!-- badges: start -->
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- badges: start -->
+
+<p>[<a href="https://github.com/slds-lmu/lecture_service/wiki" class="external-link">Teaching DevOps Wiki</a>] [<a href="https://github.com/orgs/slds-lmu/projects/5/views/1" class="external-link">Issue Tracker</a>]</p>
 <p>This project has two goals:</p>
 <ol style="list-style-type: decimal">
 <li>Provide common assets needed for all lectures, once, to keep them in sync.</li>
@@ -60,25 +60,25 @@
 <p>(It also happens to be an R package <code>lese</code> you can install with many convenience functions)</p>
 <p>For 1), all required files should live in <code>./service/</code> with the <strong>correct folder structure</strong> such that one can simply copy the files from this directory “on top” of an existing lecture, e.g.:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">rsync</span> <span class="at">-r</span> lecture_service/service/ lecture_i2ml/</span></code></pre></div>
-<p>This is wrapped with the script in <code>service/scripts/update-service.sh</code>, which is also synced into each lecture’s top-level <code>./scripts/</code> folder.</p>
-<p>Afterwards, <code>git status</code> can be used to check changes.</p>
+<p>This is wrapped with the script in each lecture’s <code>./scripts/update-service.sh</code> so within e.g. <code>lecture_i2ml</code> you can run</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">bash</span> scripts/update-service.sh</span></code></pre></div>
+<p>Any changes proposed to service files covered by <code>./service</code> (particularly the <code>style</code> folder) will first need to be made in this repo and then dependant lecture repos can be updated accordingly.</p>
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
 <p>The assumed directory structure once lecture repositories where cloned (or downloaded) looks like this:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>lecture_service</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>├── lecture_advml</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>├── lecture_i2ml</span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>├── lecture_sl</span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>├── [...]</span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>├── Makefile</span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>├── R</span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>├── scripts</span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>├── service</span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>└── [...]</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>lecture_service</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>├── lecture_advml</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>├── lecture_i2ml</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>├── lecture_sl</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>├── [...]</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>├── Makefile</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>├── R</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>├── scripts</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>├── service</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>└── [...]</span></code></pre></div>
 <p>You can either manually <code>git clone</code> lecture repos or use <code>make clone</code></p>
 <p>Note that the text file <code>include_lectures</code> is used to globally keep track of the relevant lecture repos, so if you only intend to work on <code>lecture_advml</code> you could set it to only contain <code>lecture_advml</code> and subsequent <code>make</code> commands and other functions will be limited on scope to this lecture. By default it contains all lectures currently hosted at <code>slds-lmu/</code>.</p>
-<p>Refer to the <a href="https://github.com/slds-lmu/lecture_service/wiki" class="external-link">Teaching DevOps Wiki</a> for our central documentation hub.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">
@@ -101,7 +101,7 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Lukas Burk <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-7528-3795" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Lukas Burk <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/0000-0001-7528-3795" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 </ul>
 </div>
 
@@ -121,7 +121,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer>
