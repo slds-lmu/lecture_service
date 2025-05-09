@@ -1,5 +1,8 @@
 # lese 0.4.0.9000 (In develpment)
 
+* The `\image` macro now can take a url (starting with `http[s]`) to create clickable source link without having to create entry in `references.bib`.
+* Slide check workflows now exit 1 if _at least_ one slide does not compile correctly
+
 ## GitHub Action workflows (`service/.github/workflows`)
 
 - In both worklows using tinytex, we experimentally pin the used version to 2023.10 for safety. 
