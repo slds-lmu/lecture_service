@@ -86,6 +86,7 @@ manually_selected_deps <- c(
   "footmisc",
   "tikzmark",
   "ifmtarg",
+  "fancyhdr",
   "textcase", # \citelink (\NoCaseChange)
   "pdflscape",
   "makecell",
