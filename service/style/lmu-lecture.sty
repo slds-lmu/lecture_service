@@ -352,6 +352,15 @@
   \end{frame}
 }
 
+% Itemize block, rarely used, should probably be phased out?
+\newenvironment{blocki}[1]
+{
+  \begin{block}{#1}\begin{itemize}
+      }
+      {
+  \end{itemize}\end{block}
+}
+
 
 % ------------------------------------------------------------------------
 % Misc helper for formatting, convenience, etc
