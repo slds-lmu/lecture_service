@@ -1,8 +1,12 @@
 # lese 0.4.0.9000 (In develpment)
 
+## LaTeX  (`service/style`)
+
 * The `\image` macro now can take a url (starting with `http[s]`) to create clickable source link without having to create entry in `references.bib`.
 * Slide check workflows now exit 1 if _at least_ one slide does not compile correctly
 * `framei` and `frame2` now override global itemize/enuemrate font size control when using a custom font size, and `itemizeM` etc. now correctly inherit their surrounding font sizes when not specificied.
+* Add new ref-buttons `furtherreading{}` and `sourceref{}`, the later superseding `\citelink{}`. `\image` and friends internally use `\sourceref` now.
+
 
 ## GitHub Action workflows (`service/.github/workflows`)
 
