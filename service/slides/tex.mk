@@ -24,6 +24,7 @@ help:
 	@echo "copy               : Copies PDF files to /slides-pdf/"
 	@echo "slides-pdf         : Runs texclean, renders slides, copies to /slides-pdf/, and texclean again"
 	@echo "\n --- Utilities"
+	@echo "bib                : Format and validate references.bib in the current chapter folder"
 	@echo "pax                : Runs pdfannotextractor.pl (pax) to store hyperlinks etc. in .pax files for later use"
 
 # Default action compiles without margin and copies to slides-pdf!
@@ -70,6 +71,14 @@ $(FLSFILES): %.fls: %.tex
 copy:
 	cp -u *.pdf ../../slides-pdf
 	cp -u *.pax ../../slides-pdf
+
+BIBFILE=references.bib
+
+bib:
+	biber --tool --output-align --output-indent=2 \
+	--output-fieldcase=lower \
+	--output-field-order='author,names,title,dates,options,lists' \
+	--validate-config ${BIBFILE} -O ${BIBFILE} && rm "${BIBFILE}.blg"
 
 # Extract pdf annotations, i.e. hyperlinks, for later reinsertion
 # When combining multiple PDFs into one (for slides/all/)
