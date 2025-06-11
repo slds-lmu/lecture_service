@@ -28,9 +28,10 @@ reference:
       - clean_slide
       - starts_with("latexmk")
   - title: "Utilities"
-    desc: "Useful"
+    desc: "Various helper functions"
     contents:
       - check_log
+      - bib_to_list
       - install_lecheck
       - set_margin_token_file
       - repo_status

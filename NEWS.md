@@ -1,5 +1,9 @@
 # lese 0.4.0.9000 (In develpment)
 
+## R package
+
+- Add Biblatex utility functions for `references.bib` processing to render per-chapter/lecture lierature lists
+
 ## LaTeX  (`service/style`)
 
 * The `\image` macro now can take a url (starting with `http[s]`) to create clickable source link without having to create entry in `references.bib`.

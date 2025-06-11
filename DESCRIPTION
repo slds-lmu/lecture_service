@@ -1,6 +1,6 @@
 Package: lese
 Title: SLDS Lecture Service Companion
-Version: 0.4.0
+Version: 0.4.0.9001
 Authors@R: 
     person("Lukas", "Burk", , "github@quantenbrot.de", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-7528-3795"))
@@ -11,8 +11,10 @@ URL: https://slds-lmu.github.io/lecture_service/
 Depends:
     R (>= 4.1.0)
 Imports: 
+    bib2df,
     checkmate,
     cli,
+    dplyr,
     fs,
     future,
     future.apply,
@@ -26,7 +28,6 @@ Imports:
     tictoc,
     tinytex
 Suggests: 
-    dplyr,
     kableExtra,
     rmarkdown
 Encoding: UTF-8
