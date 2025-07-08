@@ -37,6 +37,8 @@ bib_to_list <- function(bib, arrange_by = "category") {
 #' - Two authors are separated by &
 #' - More than two authors are replaced by First Author et al.
 #' @keywords internal
+#' @param author_list `list()` of character vectors with one author per element.
+#' @return `character` vector of same length as list elements
 format_authors <- function(author_list) {
   vapply(
     author_list,
@@ -70,8 +72,12 @@ format_authors <- function(author_list) {
 #' - Replaces {foo} with foo
 #' @keywords internal
 clean_tex_markup <- function(x) {
+  # if (anyNA(x)) {
+  #   x[is.na(x)] <- ""
+  # }
   x |>
     stringr::str_remove_all("\\\\") |>
     stringr::str_replace_all("emph\\{(.*)\\}", "*\\1*") |>
-    stringr::str_replace_all("\\{.*\\}", "\\1")
+    stringr::str_remove_all("[\\{\\}]")
+  # stringr::str_replace_all("\\{[,]\\}", "\\1")
 }

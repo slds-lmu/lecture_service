@@ -3,6 +3,7 @@
 ## R package
 
 - Add Biblatex utility functions for `references.bib` processing to render per-chapter/lecture lierature lists
+- Normalize file paths in `collect_lectures()` (should help path-agnostic usage)
 
 ## LaTeX  (`service/style`)
 

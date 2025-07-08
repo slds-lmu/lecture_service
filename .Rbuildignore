@@ -2,6 +2,14 @@
 ^\.Rproj\.user$
 ^service$
 ^lecture_.*$
+^lecture_sl
+^lecture_i2ml
+^lecture_debug
+^lecture_algods
+^lecture_advml
+^lecture_optimization
+^lecture_iml
+^\.git$
 ^scripts$
 ^attic$
 ^comparison$
@@ -12,7 +20,6 @@
 ^include_lectures$
 \./code-workspace$
 ^\.vscode$
-^lecheck$
 ^Makefile$
 ^Dockerfile$
 ^\.dockerignore$
@@ -27,4 +34,3 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
-^.*\.qmd$

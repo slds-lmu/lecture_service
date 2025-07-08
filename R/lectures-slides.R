@@ -87,7 +87,9 @@ collect_lectures <- function(
     rbind,
     lapply(lecture_dirs, \(lecture_dir) {
       lecture_slides <- fs::path(lecture_dir, "slides")
-      if (!fs::dir_exists(lecture_slides)) return(data.frame())
+      if (!fs::dir_exists(lecture_slides)) {
+        return(data.frame())
+      }
 
       # It's hard to collect all the slide tex files because naming conventions
       # differ (standard is slide-*.tex, optimization and iml differ),
@@ -140,6 +142,13 @@ collect_lectures <- function(
   lectures_tbl$pdf_exists <- fs::file_exists(lectures_tbl$pdf)
   lectures_tbl$pdf_static_exists <- fs::file_exists(lectures_tbl$pdf_static)
 
+  # Normalize paths
+  lectures_tbl$tex <- fs::path_real(lectures_tbl$tex)
+  lectures_tbl$tex_log <- fs::path_real(lectures_tbl$tex_log)
+  lectures_tbl$slides_dir <- fs::path_real(lectures_tbl$slides_dir)
+  lectures_tbl$pdf <- fs::path_real(lectures_tbl$pdf)
+  lectures_tbl$pdf_static <- fs::path_real(lectures_tbl$pdf_static)
+
   # Rownames were absolute paths to tex files, not helpful
   rownames(lectures_tbl) <- NULL
 
@@ -183,10 +192,12 @@ find_slide_tex <- function(slide_file, lectures_tbl = collect_lectures()) {
 
   # Allow both "slides-cart-predictions.tex" and lazy "slides-cart-predictions"
   # and "slides-cart-predictions.pdf" because why not.
-  if (identical(fs::path_ext(slide_file), ""))
+  if (identical(fs::path_ext(slide_file), "")) {
     slide_file <- fs::path_ext_set(slide_file, "tex")
-  if (identical(fs::path_ext(slide_file), "pdf"))
+  }
+  if (identical(fs::path_ext(slide_file), "pdf")) {
     slide_file <- fs::path_ext_set(slide_file, "tex")
+  }
 
   if (slide_file %in% lectures_tbl$tex) {
     matching_slides <- lectures_tbl[lectures_tbl$tex == slide_file, ]
