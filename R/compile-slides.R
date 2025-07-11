@@ -1,7 +1,7 @@
 #' Compile a single .tex file
 #'
 #' @inheritParams find_slide_tex
-#' @param pre_clean,post_clean `[TRUE]`: Run [clean_slide()] before / after compilation, ensuring a clean slate.
+#' @param pre_clean,post_clean `[TRUE, FALSE]`: Run [clean_slide()] before / after compilation, ensuring a clean slate.
 #' @param margin `[TRUE]` By default renders slides with margin. Otherwise a 4:3 slide is
 #'   rendered.
 #' @param check_status `[TRUE]`: Wait for `latexmk` to finish and return the exit status. Not supported for `method = "tinytex"`.
@@ -30,7 +30,7 @@
 compile_slide <- function(
   slide_file,
   pre_clean = TRUE,
-  post_clean = TRUE,
+  post_clean = FALSE,
   margin = TRUE,
   check_status = TRUE,
   verbose = TRUE,
