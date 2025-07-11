@@ -37,13 +37,14 @@
 <h3 id="r-package-0-4-0-9000">R package<a class="anchor" aria-label="anchor" href="#r-package-0-4-0-9000"></a></h3>
 <ul><li>Add Biblatex utility functions for <code>references.bib</code> processing to render per-chapter/lecture lierature lists</li>
 <li>Normalize file paths in <code><a href="../reference/collect_lectures.html">collect_lectures()</a></code> (should help path-agnostic usage)</li>
+<li>Change default <code>compile_slide(..., post_clean = FALSE)</code> to avoid “file not found” error when <code>.log</code> file was unexpectedly missing for checks.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="latex-servicestyle-0-4-0-9000">LaTeX (<code>service/style</code>)<a class="anchor" aria-label="anchor" href="#latex-servicestyle-0-4-0-9000"></a></h3>
 <ul><li>The <code>\image</code> macro now can take a url (starting with <code>http[s]</code>) to create clickable source link without having to create entry in <code>references.bib</code>.</li>
 <li>Slide check workflows now exit 1 if <em>at least</em> one slide does not compile correctly</li>
 <li>
-<code>framei</code> and <code>frame2</code> now override global itemize/enuemrate font size control when using a custom font size, and <code>itemizeM</code> etc. now correctly inherit their surrounding font sizes when not specificied.</li>
+<code>framei</code> and <code>frame2</code> now override global itemize/enumerate font size control when using a custom font size, and <code>itemizeM</code> etc. now correctly inherit their surrounding font sizes when not specified.</li>
 <li>Add new ref-buttons <code>furtherreading{}</code> and <code>sourceref{}</code>, the later superseding <code>\citelink{}</code>. <code>\image</code> and friends internally use <code>\sourceref</code> now.</li>
 </ul></div>
 <div class="section level3">
