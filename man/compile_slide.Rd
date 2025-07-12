@@ -7,7 +7,7 @@
 compile_slide(
   slide_file,
   pre_clean = TRUE,
-  post_clean = TRUE,
+  post_clean = FALSE,
   margin = TRUE,
   check_status = TRUE,
   verbose = TRUE,
@@ -19,7 +19,7 @@ compile_slide(
 \arguments{
 \item{slide_file}{\verb{[character(1)]} Name of a (single) slide, with or without \code{.tex} extension. See examples of \code{\link[=find_slide_tex]{find_slide_tex()}}.}
 
-\item{pre_clean, post_clean}{\verb{[TRUE]}: Run \code{\link[=clean_slide]{clean_slide()}} before / after compilation, ensuring a clean slate.}
+\item{pre_clean, post_clean}{\verb{[TRUE, FALSE]}: Run \code{\link[=clean_slide]{clean_slide()}} before / after compilation, ensuring a clean slate.}
 
 \item{margin}{\verb{[TRUE]} By default renders slides with margin. Otherwise a 4:3 slide is
 rendered.}

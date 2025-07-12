@@ -6,6 +6,12 @@
 \usage{
 format_authors(author_list)
 }
+\arguments{
+\item{author_list}{\code{list()} of character vectors with one author per element.}
+}
+\value{
+\code{character} vector of same length as list elements
+}
 \description{
 \itemize{
 \item NAs are replaced by ---
