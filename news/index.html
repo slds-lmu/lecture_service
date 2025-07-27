@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">lese</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0.9003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,15 +32,16 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.4.0.9000" id="lese-0409000-in-develpment">lese 0.4.0.9000 (In develpment)<a class="anchor" aria-label="anchor" href="#lese-0409000-in-develpment"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.4.0.9003" id="lese-0409003-in-develpment">lese 0.4.0.9003 (In develpment)<a class="anchor" aria-label="anchor" href="#lese-0409003-in-develpment"></a></h2>
 <div class="section level3">
-<h3 id="r-package-0-4-0-9000">R package<a class="anchor" aria-label="anchor" href="#r-package-0-4-0-9000"></a></h3>
+<h3 id="r-package-0-4-0-9003">R package<a class="anchor" aria-label="anchor" href="#r-package-0-4-0-9003"></a></h3>
 <ul><li>Add Biblatex utility functions for <code>references.bib</code> processing to render per-chapter/lecture lierature lists</li>
 <li>Normalize file paths in <code><a href="../reference/collect_lectures.html">collect_lectures()</a></code> (should help path-agnostic usage)</li>
 <li>Change default <code>compile_slide(..., post_clean = FALSE)</code> to avoid “file not found” error when <code>.log</code> file was unexpectedly missing for checks.</li>
+<li>Fix: Use <code><a href="https://fs.r-lib.org/reference/path_math.html" class="external-link">fs::path_norm()</a></code> instead of <code><a href="https://fs.r-lib.org/reference/path_math.html" class="external-link">fs::path_real()</a></code> for path normalization in <code><a href="../reference/collect_lectures.html">collect_lectures()</a></code> because the former expected log files to exists which may not exist.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="latex-servicestyle-0-4-0-9000">LaTeX (<code>service/style</code>)<a class="anchor" aria-label="anchor" href="#latex-servicestyle-0-4-0-9000"></a></h3>
+<h3 id="latex-servicestyle-0-4-0-9003">LaTeX (<code>service/style</code>)<a class="anchor" aria-label="anchor" href="#latex-servicestyle-0-4-0-9003"></a></h3>
 <ul><li>The <code>\image</code> macro now can take a url (starting with <code>http[s]</code>) to create clickable source link without having to create entry in <code>references.bib</code>.</li>
 <li>Slide check workflows now exit 1 if <em>at least</em> one slide does not compile correctly</li>
 <li>
@@ -48,7 +49,7 @@
 <li>Add new ref-buttons <code>furtherreading{}</code> and <code>sourceref{}</code>, the later superseding <code>\citelink{}</code>. <code>\image</code> and friends internally use <code>\sourceref</code> now.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="github-action-workflows-servicegithubworkflows-0-4-0-9000">GitHub Action workflows (<code>service/.github/workflows</code>)<a class="anchor" aria-label="anchor" href="#github-action-workflows-servicegithubworkflows-0-4-0-9000"></a></h3>
+<h3 id="github-action-workflows-servicegithubworkflows-0-4-0-9003">GitHub Action workflows (<code>service/.github/workflows</code>)<a class="anchor" aria-label="anchor" href="#github-action-workflows-servicegithubworkflows-0-4-0-9003"></a></h3>
 <ul><li>In both worklows using tinytex, we experimentally pin the used version to 2023.10 for safety. This is likely to change in the future but currently this is the only version generally compatible with everything as far as we know. Ideally, we keep bumping this to a recent version, also on Overleaf.</li>
 </ul></div>
 </div>
