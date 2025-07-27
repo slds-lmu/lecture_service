@@ -141,7 +141,11 @@ collect_lectures <- function(
   # Exclude undesired slide/<folder> and <slide-name>.tex
   lectures_tbl <- subset(lectures_tbl, !(topic %in% exclude_slide_subdirs))
   lectures_tbl <- subset(lectures_tbl, !(slide_name %in% exclude_slide_names))
+
+  # Manual excludeds for WIP and outdated slides
   lectures_tbl <- subset(lectures_tbl, !grepl("^OLD-", slide_name))
+  lectures_tbl <- subset(lectures_tbl, !grepl("^TO-DO", slide_name))
+  lectures_tbl <- subset(lectures_tbl, !grepl("^TODO", slide_name))
 
   lectures_tbl$pdf_exists <- fs::file_exists(lectures_tbl$pdf)
   lectures_tbl$pdf_static_exists <- fs::file_exists(lectures_tbl$pdf_static)
