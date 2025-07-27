@@ -39,7 +39,8 @@ if (!file.exists("slide_check_cache.rds")) {
   stop(paste(
     "slide_check_cache.rds does not exists.",
     "Run `make` and get a coffee, or",
-    "Rscript -e 'lese::check_slides_many()", sep = "\n "
+    "Rscript -e 'lese::check_slides_many()",
+    sep = "\n "
   ))
 }
 
@@ -52,7 +53,9 @@ lectures <- lectures[match(included_lectures, lectures, nomatch = 0)]
 
 # Might as well subset table to only selected lectures
 # This allows having a lecture locally for testing but not include them here yet.
-all_slide_check <- all_slide_check[all_slide_check$lecture %in% included_lectures, ]
+all_slide_check <- all_slide_check[
+  all_slide_check$lecture %in% included_lectures,
+]
 ```
 
 This document tabulates the state of the slides in `lecture_*/slides/<topic>/` based on
@@ -67,12 +70,17 @@ Displaying the latest commits of the lecture service repository and each of the 
 ```{r slide-checker-repo-status}
 this_repo_status() |>
   mutate(
-    branch = sprintf("<a href='https://github.com/slds-lmu/lecture_service/tree/%s'>%s</a>", branch, branch)
+    branch = sprintf(
+      "<a href='https://github.com/slds-lmu/lecture_service/tree/%s'>%s</a>",
+      branch,
+      branch
+    )
   ) |>
   select(branch, last_commit_time, last_commit_by, last_commit_summary) |>
   kableExtra::kbl(
     col.names = c("Branch", "Last Commit", "By", "Message"),
-    escape = FALSE, caption = "Status of the lecture_service repo (time in UTC)"
+    escape = FALSE,
+    caption = "Status of the lecture_service repo (time in UTC)"
   ) |>
   kableExtra::kable_styling()
 ```
@@ -82,13 +90,31 @@ this_repo_status() |>
 repo_status(lecture = lectures) |>
   arrange(desc(last_commit_time)) |>
   mutate(
-    lecture_link = sprintf("<a href='https://%s.github.io/%s'>%s</a>", org, lecture, lecture),
-    branch = sprintf("<a href='https://github.com/%s/%s/tree/%s'>%s</a>", org, lecture, branch, branch)
+    lecture_link = sprintf(
+      "<a href='https://%s.github.io/%s'>%s</a>",
+      org,
+      lecture,
+      lecture
+    ),
+    branch = sprintf(
+      "<a href='https://github.com/%s/%s/tree/%s'>%s</a>",
+      org,
+      lecture,
+      branch,
+      branch
+    )
   ) |>
-  select(lecture_link, branch, last_commit_time, last_commit_by, last_commit_summary) |>
+  select(
+    lecture_link,
+    branch,
+    last_commit_time,
+    last_commit_by,
+    last_commit_summary
+  ) |>
   kableExtra::kbl(
     col.names = c("Lecture", "Branch", "Last Commit", "By", "Message"),
-    escape = FALSE, caption = "Latest commits per lecture (times in UTC)"
+    escape = FALSE,
+    caption = "Latest commits per lecture (times in UTC)"
   ) |>
   kableExtra::kable_styling() |>
   # Increase width of message column as it contains the most text (potentially)
@@ -104,26 +130,47 @@ check_table <- all_slide_check |>
   # Transforms the logical columns, i.e. pdf_exists, pdf_static_exists, compile_check, ...
   mutate(across(where(is.logical), \(x) {
     case_when(
-      x ~ "\u2705",  # Green check symbol
+      x ~ "\u2705", # Green check symbol
       !x ~ "\u274c", # Red X symbol
       is.na(x) ~ ""
     )
   })) |>
   mutate(
     # Insert red question mark emoji instead of red X for easier visual parsing maybe
-    compare_check = ifelse(grepl("Dissimilar pages", compare_check_note), "\u2753", compare_check),
-    compare_check = ifelse(grepl("No reference", compare_check_note), "", compare_check)
+    compare_check = ifelse(
+      grepl("Dissimilar pages", compare_check_note),
+      "\u2753",
+      compare_check
+    ),
+    compare_check = ifelse(
+      grepl("No reference", compare_check_note),
+      "",
+      compare_check
+    )
   ) |>
   # Make links out of a few columns
   mutate(
     comparison_path = here::here("comparison", fs::path_file(pdf)),
     check_note = ifelse(
       compare_check %in% c("\u274c", "\u2753"),
-      sprintf("<a href='%s'>%s</a>", fs::path_rel(comparison_path), compare_check_note),
+      sprintf(
+        "<a href='%s'>%s</a>",
+        fs::path_rel(comparison_path),
+        compare_check_note
+      ),
       compare_check_note
     ),
     compile_note = stringr::str_replace_all(compile_note, "`", "'") |>
-      stringr::str_replace_all(r"(\\)", r"(\\\\)"),
+      # Trying to escape backslashed because they cause rendering issues because backslashes
+      stringr::str_replace_all(
+        r"(\\)",
+        "&#92;&zwnj;"
+      ) |>
+      # samer for dollar signs (tried to render as math..),
+      stringr::str_replace_all(
+        r"(\$)",
+        "&dollar;"
+      ),
     check_note = ifelse(compile_check == "\u274c", compile_note, check_note),
     slide_name = ifelse(
       fs::file_exists(pdf),
@@ -151,24 +198,30 @@ if (with_comparison) {
 #| fig.height: 6
 #| out.width: "100%"
 
-check_counts <- do.call(rbind, lapply(check_cols, \(x) {
-  all_slide_check |>
-    filter(lecture %in% .env$included_lectures) |>
-    count(lecture, .data[[x]]) |>
-    group_by(lecture) |>
-    mutate(prop = n / sum(n), check = x) |>
-    rename(result = all_of(x)) |>
-    mutate(
-      result = case_when(
-        result ~ "Passed",
-        !result ~ "Failed",
-        .default = "N/A"
+check_counts <- do.call(
+  rbind,
+  lapply(check_cols, \(x) {
+    all_slide_check |>
+      filter(lecture %in% .env$included_lectures) |>
+      count(lecture, .data[[x]]) |>
+      group_by(lecture) |>
+      mutate(prop = n / sum(n), check = x) |>
+      rename(result = all_of(x)) |>
+      mutate(
+        result = case_when(
+          result ~ "Passed",
+          !result ~ "Failed",
+          .default = "N/A"
+        )
       )
-    )
-})) |>
+  })
+) |>
   mutate(
     lecture = stringr::str_remove(lecture, "^lecture_"),
-    lecture = factor(lecture, levels = stringr::str_remove(included_lectures, "^lecture_")),
+    lecture = factor(
+      lecture,
+      levels = stringr::str_remove(included_lectures, "^lecture_")
+    ),
     check = stringr::str_remove(check, "_check$"),
   )
 
@@ -176,15 +229,17 @@ check_counts |>
   ggplot(aes(x = check, y = prop, fill = result)) +
   facet_wrap(vars(lecture)) +
   coord_flip() +
-  geom_col(alpha = 2/3) +
+  geom_col(alpha = 2 / 3) +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(
     breaks = c("Passed", "Failed", "N/A"),
     values = c(Passed = "#1B9E77", Failed = "#D95F02", "N/A" = "#7570B3")
   ) +
   labs(
-  #  title = "Lecture Check Overview",
-    y = "Proportion of Slides", x = NULL, fill = NULL
+    #  title = "Lecture Check Overview",
+    y = "Proportion of Slides",
+    x = NULL,
+    fill = NULL
   ) +
   theme_minimal(base_size = 16) +
   theme(
@@ -230,24 +285,31 @@ Topics ignore certain folders like `attic` and `all`.
 # Useful to manually assemble tables with sub-headings
 
 for (current_lecture in lectures) {
-
-  tmp <-  check_table |>
+  tmp <- check_table |>
     filter(lecture == current_lecture)
 
   cat(sprintf("\n## %s \n\n", current_lecture))
-  cat(sprintf("%i topics with a total of %i slides\n", length(unique(tmp$topic)), nrow(tmp)))
+  cat(sprintf(
+    "%i topics with a total of %i slides\n",
+    length(unique(tmp$topic)),
+    nrow(tmp)
+  ))
 
   for (current_topic in sort(unique(tmp$topic))) {
-    tmp <-  check_table |>
+    tmp <- check_table |>
       filter(lecture == current_lecture, topic == current_topic)
 
     cat(sprintf("\n### %s\n\n", current_topic))
 
     tab <- tmp |>
       select(
-        slide_name, any_of(check_cols), check_note) |>
+        slide_name,
+        any_of(check_cols),
+        check_note
+      ) |>
       kableExtra::kbl(
-        format = "html", escape = FALSE,
+        format = "html",
+        escape = FALSE,
         align = col_align,
         col.names = col_names
       ) |>
@@ -259,16 +321,16 @@ for (current_lecture in lectures) {
       kableExtra::column_spec(1, width = "40%") |>
       kableExtra::column_spec(2, width = "10%")
 
-      if (with_comparison) {
-        tab <- tab |> 
-          kableExtra::column_spec(3, width = "10%") |>
-          kableExtra::column_spec(4, width = "40%")
-      } else {
-        tab <- tab |> 
-          kableExtra::column_spec(3, width = "40%")
-      }
+    if (with_comparison) {
+      tab <- tab |>
+        kableExtra::column_spec(3, width = "10%") |>
+        kableExtra::column_spec(4, width = "40%")
+    } else {
+      tab <- tab |>
+        kableExtra::column_spec(3, width = "40%")
+    }
 
-      cat(tab)
+    cat(tab)
   }
 }
 ```
