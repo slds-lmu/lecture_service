@@ -81,7 +81,11 @@ collect_lectures <- function(
     !fs::path_file(lecture_dirs) == "lecture_service"
   )]
 
-  stopifnot("Found no lecture_* folders" = length(lecture_dirs) > 0)
+  if (length(lecture_dirs) == 0) {
+    cli::cli_abort(
+      "Found no {.code lecture_*} folders. Looked for {.val {lectures()}}"
+    )
+  }
 
   lectures_tbl <- do.call(
     rbind,
@@ -143,11 +147,11 @@ collect_lectures <- function(
   lectures_tbl$pdf_static_exists <- fs::file_exists(lectures_tbl$pdf_static)
 
   # Normalize paths
-  lectures_tbl$tex <- fs::path_real(lectures_tbl$tex)
-  lectures_tbl$tex_log <- fs::path_real(lectures_tbl$tex_log)
-  lectures_tbl$slides_dir <- fs::path_real(lectures_tbl$slides_dir)
-  lectures_tbl$pdf <- fs::path_real(lectures_tbl$pdf)
-  lectures_tbl$pdf_static <- fs::path_real(lectures_tbl$pdf_static)
+  lectures_tbl$tex <- fs::path_norm(lectures_tbl$tex)
+  lectures_tbl$tex_log <- fs::path_norm(lectures_tbl$tex_log)
+  lectures_tbl$slides_dir <- fs::path_norm(lectures_tbl$slides_dir)
+  lectures_tbl$pdf <- fs::path_norm(lectures_tbl$pdf)
+  lectures_tbl$pdf_static <- fs::path_norm(lectures_tbl$pdf_static)
 
   # Rownames were absolute paths to tex files, not helpful
   rownames(lectures_tbl) <- NULL
