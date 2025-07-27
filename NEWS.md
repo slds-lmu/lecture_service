@@ -1,10 +1,11 @@
-# lese 0.4.0.9000 (In develpment)
+# lese 0.4.0.9003 (In develpment)
 
 ## R package
 
 - Add Biblatex utility functions for `references.bib` processing to render per-chapter/lecture lierature lists
 - Normalize file paths in `collect_lectures()` (should help path-agnostic usage)
 - Change default `compile_slide(..., post_clean = FALSE)` to avoid "file not found" error when `.log` file was unexpectedly missing for checks.
+- Fix: Use `fs::path_norm()` instead of `fs::path_real()` for path normalization in `collect_lectures()` because the former expected log files to exists which may not exist.
 
 ## LaTeX  (`service/style`)
 
