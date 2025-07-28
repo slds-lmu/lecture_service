@@ -9,7 +9,7 @@ NOMARGINPDFS = $(TSLIDES:%.tex=%-nomargin.pdf)
 
 FLSFILES = $(TSLIDES:%.tex=%.fls)
 
-.PHONY: all most all-nomargin most-nomargin copy texclean clean help pax
+.PHONY: all most all-nomargin most-nomargin copy texclean clean help pax literature
 
 help:
 	@echo "\n --- Rendering slides"
@@ -24,8 +24,8 @@ help:
 	@echo "copy               : Copies PDF files to /slides-pdf/"
 	@echo "slides-pdf         : Runs texclean, renders slides, copies to /slides-pdf/, and texclean again"
 	@echo "\n --- Utilities"
-	@echo "bib                : Format and validate references.bib in the current chapter folder"
 	@echo "pax                : Runs pdfannotextractor.pl (pax) to store hyperlinks etc. in .pax files for later use"
+	@echo "literature         : Generates chapter-literature.pdf from references.bib"
 
 # Default action compiles without margin and copies to slides-pdf!
 all: $(TPDFS)
@@ -72,14 +72,6 @@ copy:
 	cp -u *.pdf ../../slides-pdf
 	cp -u *.pax ../../slides-pdf
 
-BIBFILE=references.bib
-
-bib:
-	biber --tool --output-align --output-indent=2 \
-	--output-fieldcase=lower \
-	--output-field-order='author,names,title,dates,options,lists' \
-	--validate-config ${BIBFILE} -O ${BIBFILE} && rm "${BIBFILE}.blg"
-
 # Extract pdf annotations, i.e. hyperlinks, for later reinsertion
 # When combining multiple PDFs into one (for slides/all/)
 # https://ctan.org/tex-archive/macros/latex/contrib/pax?lang=en
@@ -124,4 +116,18 @@ texclean:
 	-rm -rf nospeakermargin.tex
 
 clean: texclean
-	-rm $(TPDFS) $(NOMARGINPDFS) $(TPAXS) 2>/dev/null
+	-rm $(TPDFS) $(NOMARGINPDFS) $(TPAXS) chapter-literature.pdf 2>/dev/null
+
+# Generate literature list from references.bib
+literature: chapter-literature.pdf
+
+chapter-literature.pdf: references.bib
+	@if [ ! -f chapter-literature.tex ]; then\
+		echo "Creating chapter-literature.tex from template...";\
+		cp ../../style/chapter-literature-template.tex chapter-literature.tex;\
+	fi
+	@echo "Compiling literature list..."
+	latexmk -pdf -halt-on-error chapter-literature.tex 2>/dev/null
+	@echo "Literature list generated: chapter-literature.pdf"
+	@echo Cleaning up detritus
+	latexmk -c chapter-literature.tex 2>/dev/null

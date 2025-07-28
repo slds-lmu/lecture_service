@@ -1,4 +1,4 @@
-# lese 0.4.0.9003 (In develpment)
+# lese 0.4.0.9005 (In develpment)
 
 ## R package
 
@@ -13,7 +13,7 @@
 * Slide check workflows now exit 1 if _at least_ one slide does not compile correctly
 * `framei` and `frame2` now override global itemize/enumerate font size control when using a custom font size, and `itemizeM` etc. now correctly inherit their surrounding font sizes when not specified.
 * Add new ref-buttons `furtherreading{}` and `sourceref{}`, the later superseding `\citelink{}`. `\image` and friends internally use `\sourceref` now.
-
+* Add `chapter-literature.tex` in `style` to compile simple chapter-wise literature lists. Also adds `make` target `literature.`
 
 ## GitHub Action workflows (`service/.github/workflows`)
 
