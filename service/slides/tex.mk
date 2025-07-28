@@ -25,7 +25,7 @@ help:
 	@echo "slides-pdf         : Runs texclean, renders slides, copies to /slides-pdf/, and texclean again"
 	@echo "\n --- Utilities"
 	@echo "pax                : Runs pdfannotextractor.pl (pax) to store hyperlinks etc. in .pax files for later use"
-	@echo "literature         : Generates chapter-literature.pdf from references.bib"
+	@echo "literature         : Generates chapter-literature-CHAPTERNAME.pdf from references.bib"
 
 # Default action compiles without margin and copies to slides-pdf!
 all: $(TPDFS)
@@ -116,18 +116,21 @@ texclean:
 	-rm -rf nospeakermargin.tex
 
 clean: texclean
-	-rm $(TPDFS) $(NOMARGINPDFS) $(TPAXS) chapter-literature.pdf 2>/dev/null
+	-rm $(TPDFS) $(NOMARGINPDFS) $(TPAXS) chapter-literature-*.pdf 2>/dev/null
 
-# Generate literature list from references.bib
-literature: chapter-literature.pdf
+# Generate literature list from references.bib, appending the current chapter name to the file name
+CHAPTER_NAME := $(notdir $(CURDIR))
+LITERATURE_PDF := chapter-literature-$(CHAPTER_NAME).pdf
 
-chapter-literature.pdf: references.bib
+literature: $(LITERATURE_PDF)
+
+$(LITERATURE_PDF): references.bib
 	@if [ ! -f chapter-literature.tex ]; then\
 		echo "Creating chapter-literature.tex from template...";\
 		cp ../../style/chapter-literature-template.tex chapter-literature.tex;\
 	fi
-	@echo "Compiling literature list..."
-	latexmk -pdf -halt-on-error chapter-literature.tex 2>/dev/null
-	@echo "Literature list generated: chapter-literature.pdf"
-	@echo Cleaning up detritus
-	latexmk -c chapter-literature.tex 2>/dev/null
+	@echo "Compiling literature list for chapter $(CHAPTER_NAME)..."
+	latexmk -pdf -halt-on-error -jobname=chapter-literature-$(CHAPTER_NAME) chapter-literature.tex
+	@echo "Literature list generated: $(LITERATURE_PDF)"
+	@echo "Cleaning up detritus..."
+	latexmk -c -jobname=chapter-literature-$(CHAPTER_NAME) chapter-literature.tex 2>/dev/null
