@@ -1,4 +1,10 @@
-# lese 0.4.0.9005 (In develpment)
+# lese 0.4.0.9006 (In development)
+
+New service file: The root `Makefile` in each lecture was a placeholder, but now it actually does something.
+
+- Update latex-math (not just via GitHub action now)
+- Update service files
+- Clean LaTeX detritus and PDFs in slide directories
 
 ## R package
 
