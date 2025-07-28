@@ -125,12 +125,8 @@ LITERATURE_PDF := chapter-literature-$(CHAPTER_NAME).pdf
 literature: $(LITERATURE_PDF)
 
 $(LITERATURE_PDF): references.bib
-	@if [ ! -f chapter-literature.tex ]; then\
-		echo "Creating chapter-literature.tex from template...";\
-		cp ../../style/chapter-literature-template.tex chapter-literature.tex;\
-	fi
 	@echo "Compiling literature list for chapter $(CHAPTER_NAME)..."
-	latexmk -pdf -halt-on-error -jobname=chapter-literature-$(CHAPTER_NAME) chapter-literature.tex
+	latexmk -pdf -halt-on-error -jobname=chapter-literature-$(CHAPTER_NAME) ../../style/chapter-literature-template.tex
 	@echo "Literature list generated: $(LITERATURE_PDF)"
 	@echo "Cleaning up detritus..."
-	latexmk -c -jobname=chapter-literature-$(CHAPTER_NAME) chapter-literature.tex 2>/dev/null
+	latexmk -c -jobname=chapter-literature-$(CHAPTER_NAME) ../../style/chapter-literature-template.tex 2>/dev/null
