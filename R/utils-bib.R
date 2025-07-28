@@ -23,8 +23,8 @@ bib_to_list <- function(bib, arrange_by = "category") {
       ),
       # Append note if field is provided
       formatted = ifelse(
-        !is.na(note),
-        glue::glue("{formatted} **Note**: {note}\n"),
+        !is.na(annotation),
+        glue::glue("{formatted} **Note**: {annotation}\n"),
         formatted
       )
     ) |>
