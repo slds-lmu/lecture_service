@@ -13,7 +13,7 @@ New service file: The root `Makefile` in each lecture was a placeholder, but now
 - Change default `compile_slide(..., post_clean = FALSE)` to avoid "file not found" error when `.log` file was unexpectedly missing for checks.
 - Fix: Use `fs::path_norm()` instead of `fs::path_real()` for path normalization in `collect_lectures()` because the former expected log files to exists which may not exist.
 - Add flexibility for `find_slide_tex()` to allow `compile_slide()` etc. to work with a direct path to a slide file for interactive use in arbitrary directories
-
+= BUmp TeXLive version used by `latexmk_docker()` to 2025.
 
 ## LaTeX  (`service/style`)
 

@@ -1,7 +1,7 @@
 #' Run dockerized latexmk
 #'
 #' This uses the docker image from <https://gitlab.com/islandoftex/images/texlive>.
-#' The default uses tag `TL2023-historic` for TeXLive 2023.
+#' The default uses tag `TL2025-historic` for TeXLive 2025.
 #'
 #' You will need to install docker or podman or some other compatible runtime on your system beforehand.
 #'
@@ -16,15 +16,15 @@
 #' docker run -i --rm --user $(id -u) --name latex \
 #'   -v "${LECTURE}":/usr/src/app:z \
 #'   -w "/usr/src/app/slides/${CWD}" \
-#'   registry.gitlab.com/islandoftex/images/texlive:TL2023-historic \
+#'   registry.gitlab.com/islandoftex/images/texlive:TL2025-historic \
 #'   latexmk -pdf -halt-on-error slides-basics-data.tex
 #' ```
 #'
 #' @inheritParams find_slide_tex
 #' @param verbose `[TRUE]`: Print output from `docker`/`latexmk` to console.
-#' @param tag `["TL2023-historic"]`: Tag of `texlive` docker image to use.
+#' @param tag `["TL2025-historic"]`: Tag of `texlive` docker image to use.
 #' @param log_stdout,log_stderr `[""]`: Path to write stdout/stderr log to.
-#'   Discared if `NULL` or inherited from main R process if `""`.
+#'   Discarded if `NULL` or inherited from main R process if `""`.
 #'   `stderr` can be redirected to `stdout` with `"2>&1"`.
 #' @param supervise `[TRUE]`: Passed to [processx::process()]'s `$new()`.
 #' @return A [processx::process()] object.
@@ -36,7 +36,7 @@
 latexmk_docker <- function(
   slide_file,
   verbose = TRUE,
-  tag = "TL2023-historic",
+  tag = "TL2025-historic",
   log_stdout = "",
   log_stderr = "",
   supervise = TRUE
@@ -131,7 +131,7 @@ latexmk_system <- function(
 #'
 #' @inheritParams latexmk_docker
 #' @inheritParams find_slide_tex
-#' @param ... Arguments passed to [tinytex::latexmk()].
+#' @param ... Arguments passed to [tinytex::latexmk()], excluding `clean`, which is always `FALSE` as this is handled by `[compile_slide()]`.
 #' @return `TRUE` if the output PDF exists, `FALSE` otherwise.
 #' @note This utility is usually invoked by [compile_slide()].
 #' @examples
