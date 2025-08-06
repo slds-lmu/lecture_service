@@ -211,28 +211,11 @@ find_slide_tex <- function(slide_file, lectures_tbl = NULL) {
   # This is.. quite the hacky mess. And illustrates why I prefer a strong assumption on folder hierarchy for simplicity
   if (fs::file_exists(slide_file)) {
     slide_file <- fs::path_abs(slide_file)
-
-    lecture <- stringr::str_subset(
-      fs::path_split(slide_file)[[1]], # split path into vector with one level per element
-      pattern = paste0(lectures(), collapse = "|") # create simple regex from lectures() which enumerates known lecture folders
+    lectures_tbl <- collect_lectures(
+      lectures_path = fs::path_dir(find_lecture_root(slide_file))
     )
-
-    tmp <- data.frame(
-      lecture = lecture,
-      tex = fs::path_ext_set(slide_file, ext = "tex"),
-      tex_log = fs::path_ext_set(slide_file, ext = "log"),
-      slides_dir = fs::path_dir(slide_file),
-      topic = fs::path_file(fs::path_dir(slide_file)),
-      slide_name = fs::path_file(fs::path_ext_remove(slide_file)),
-      pdf = fs::path_ext_set(slide_file, ext = "pdf"),
-      pdf_static = NA_character_
-    )
-
-    return(tmp)
-  }
-
-  # If we made it this far we start hoping we're in lecture_service and have some lecture dirs to look stuff up in
-  if (is.null(lectures_tbl)) {
+  } else if (is.null(lectures_tbl)) {
+    # If we made it this far we start hoping we're in lecture_service and have some lecture dirs to look stuff up in
     lectures_tbl <- collect_lectures()
   }
 
@@ -265,4 +248,14 @@ find_slide_tex <- function(slide_file, lectures_tbl = NULL) {
   }
 
   matching_slides
+}
+
+find_lecture_root <- function(slide_file) {
+  pathsplit <- fs::path_split(slide_file)[[1]]
+
+  lecture_regex = paste0(lectures(), collapse = "|")
+
+# Use grep to find *last* match for lecture name, (we have ../lecture_i2ml/lecture_i2ml/slides/.. on CI)
+  pathsplit[seq_len(max(grep(pattern = lecture_regex, x = pathsplit)))] |>
+    fs::path_join()
 }
