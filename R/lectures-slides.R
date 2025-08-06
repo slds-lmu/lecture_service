@@ -13,15 +13,14 @@ lectures <- function() {
 
   if (is.na(lectures) & file.exists(here::here("include_lectures"))) {
     lectures <- grep(
-      pattern = "^#",
+      pattern = "^\\w",
       readLines(here::here("include_lectures")),
-      value = TRUE,
-      invert = TRUE
+      value = TRUE
     )
   } else {
     lectures <- c(
       "lecture_i2ml",
-      "lecture_advml",
+      # "lecture_advml",
       "lecture_sl",
       "lecture_iml",
       "lecture_optimization",
@@ -180,7 +179,8 @@ collect_lectures <- function(
 #' It is strongly assumed that slide names such as `slides-cart-predictions.tex` are unique across all lectures.
 #'
 #' @param slide_file `[character(1)]` Name of a (single) slide, with or without `.tex` extension. See examples of [find_slide_tex()].
-#' @param lectures_tbl Must contain `tex` column. Defaults to `collect_lectures()`.
+#'   Can also be a direct file path to enable use of this function outside rigid folder hierarchy.
+#' @param lectures_tbl `[NULL]` Must contain `tex` column. Will use `collect_lectures()` if not set and `slide_file` is not an existing file path.
 #'
 #' @export
 #' @examplesIf fs::dir_exists(here::here("lecture_i2ml"))
@@ -195,7 +195,7 @@ collect_lectures <- function(
 #'
 #' # Can also ge tthe .tex file for a .pdf
 #' str(find_slide_tex(slide_file = "slides-cart-predictions.pdf"))
-find_slide_tex <- function(slide_file, lectures_tbl = collect_lectures()) {
+find_slide_tex <- function(slide_file, lectures_tbl = NULL) {
   checkmate::assert_string(slide_file, na.ok = FALSE, min.chars = 1)
 
   # Allow both "slides-cart-predictions.tex" and lazy "slides-cart-predictions"
@@ -205,6 +205,35 @@ find_slide_tex <- function(slide_file, lectures_tbl = collect_lectures()) {
   }
   if (identical(fs::path_ext(slide_file), "pdf")) {
     slide_file <- fs::path_ext_set(slide_file, "tex")
+  }
+
+  # First we check for "in the wild" use where a direct file path is passed and we don't need lookup tables
+  # This is.. quite the hacky mess. And illustrates why I prefer a strong assumption on folder hierarchy for simplicity
+  if (fs::file_exists(slide_file)) {
+    slide_file <- fs::path_abs(slide_file)
+
+    lecture <- stringr::str_subset(
+      fs::path_split(slide_file)[[1]], # split path into vector with one level per element
+      pattern = paste0(lectures(), collapse = "|") # create simple regex from lectures() which enumerates known lecture folders
+    )
+
+    tmp <- data.frame(
+      lecture = lecture,
+      tex = fs::path_ext_set(slide_file, ext = "tex"),
+      tex_log = fs::path_ext_set(slide_file, ext = "log"),
+      slides_dir = fs::path_dir(slide_file),
+      topic = fs::path_file(fs::path_dir(slide_file)),
+      slide_name = fs::path_file(fs::path_ext_remove(slide_file)),
+      pdf = fs::path_ext_set(slide_file, ext = "pdf"),
+      pdf_static = NA_character_
+    )
+
+    return(tmp)
+  }
+
+  # If we made it this far we start hoping we're in lecture_service and have some lecture dirs to look stuff up in
+  if (is.null(lectures_tbl)) {
+    lectures_tbl <- collect_lectures()
   }
 
   if (slide_file %in% lectures_tbl$tex) {
