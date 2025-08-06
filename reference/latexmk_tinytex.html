@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">lese</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0.9006</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,11 +46,12 @@
 
 
 <dl><dt id="arg-slide-file">slide_file<a class="anchor" aria-label="anchor" href="#arg-slide-file"></a></dt>
-<dd><p><code>[character(1)]</code> Name of a (single) slide, with or without <code>.tex</code> extension. See examples of <code><a href="find_slide_tex.html">find_slide_tex()</a></code>.</p></dd>
+<dd><p><code>[character(1)]</code> Name of a (single) slide, with or without <code>.tex</code> extension. See examples of <code><a href="find_slide_tex.html">find_slide_tex()</a></code>.
+Can also be a direct file path to enable use of this function outside rigid folder hierarchy.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Arguments passed to <code><a href="https://rdrr.io/pkg/tinytex/man/latexmk.html" class="external-link">tinytex::latexmk()</a></code>.</p></dd>
+<dd><p>Arguments passed to <code><a href="https://rdrr.io/pkg/tinytex/man/latexmk.html" class="external-link">tinytex::latexmk()</a></code>, excluding <code>clean</code>, which is always <code>FALSE</code> as this is handled by <code>[compile_slide()]</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">

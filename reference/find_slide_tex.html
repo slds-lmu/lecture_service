@@ -9,7 +9,7 @@ It is strongly assumed that slide names such as slides-cart-predictions.tex are 
 
     <a class="navbar-brand me-2" href="../index.html">lese</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0.9006</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,7 +41,7 @@ It is strongly assumed that slide names such as <code>slides-cart-predictions.te
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">find_slide_tex</span><span class="op">(</span><span class="va">slide_file</span>, lectures_tbl <span class="op">=</span> <span class="fu"><a href="collect_lectures.html">collect_lectures</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">find_slide_tex</span><span class="op">(</span><span class="va">slide_file</span>, lectures_tbl <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -49,11 +49,12 @@ It is strongly assumed that slide names such as <code>slides-cart-predictions.te
 
 
 <dl><dt id="arg-slide-file">slide_file<a class="anchor" aria-label="anchor" href="#arg-slide-file"></a></dt>
-<dd><p><code>[character(1)]</code> Name of a (single) slide, with or without <code>.tex</code> extension. See examples of <code>find_slide_tex()</code>.</p></dd>
+<dd><p><code>[character(1)]</code> Name of a (single) slide, with or without <code>.tex</code> extension. See examples of <code>find_slide_tex()</code>.
+Can also be a direct file path to enable use of this function outside rigid folder hierarchy.</p></dd>
 
 
 <dt id="arg-lectures-tbl">lectures_tbl<a class="anchor" aria-label="anchor" href="#arg-lectures-tbl"></a></dt>
-<dd><p>Must contain <code>tex</code> column. Defaults to <code><a href="collect_lectures.html">collect_lectures()</a></code>.</p></dd>
+<dd><p><code>[NULL]</code> Must contain <code>tex</code> column. Will use <code><a href="collect_lectures.html">collect_lectures()</a></code> if not set and <code>slide_file</code> is not an existing file path.</p></dd>
 
 </dl></div>
 

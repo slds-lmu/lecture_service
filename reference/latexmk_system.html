@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">lese</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0.9006</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,7 +52,8 @@
 
 
 <dl><dt id="arg-slide-file">slide_file<a class="anchor" aria-label="anchor" href="#arg-slide-file"></a></dt>
-<dd><p><code>[character(1)]</code> Name of a (single) slide, with or without <code>.tex</code> extension. See examples of <code><a href="find_slide_tex.html">find_slide_tex()</a></code>.</p></dd>
+<dd><p><code>[character(1)]</code> Name of a (single) slide, with or without <code>.tex</code> extension. See examples of <code><a href="find_slide_tex.html">find_slide_tex()</a></code>.
+Can also be a direct file path to enable use of this function outside rigid folder hierarchy.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
@@ -61,7 +62,7 @@
 
 <dt id="arg-log-stdout-log-stderr">log_stdout, log_stderr<a class="anchor" aria-label="anchor" href="#arg-log-stdout-log-stderr"></a></dt>
 <dd><p><code>[""]</code>: Path to write stdout/stderr log to.
-Discared if <code>NULL</code> or inherited from main R process if <code>""</code>.
+Discarded if <code>NULL</code> or inherited from main R process if <code>""</code>.
 <code>stderr</code> can be redirected to <code>stdout</code> with <code>"2&gt;&amp;1"</code>.</p></dd>
 
 
