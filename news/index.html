@@ -43,6 +43,7 @@
 <li>Normalize file paths in <code><a href="../reference/collect_lectures.html">collect_lectures()</a></code> (should help path-agnostic usage)</li>
 <li>Change default <code>compile_slide(..., post_clean = FALSE)</code> to avoid “file not found” error when <code>.log</code> file was unexpectedly missing for checks.</li>
 <li>Fix: Use <code><a href="https://fs.r-lib.org/reference/path_math.html" class="external-link">fs::path_norm()</a></code> instead of <code><a href="https://fs.r-lib.org/reference/path_math.html" class="external-link">fs::path_real()</a></code> for path normalization in <code><a href="../reference/collect_lectures.html">collect_lectures()</a></code> because the former expected log files to exists which may not exist.</li>
+<li>Add flexibility for <code><a href="../reference/find_slide_tex.html">find_slide_tex()</a></code> to allow <code><a href="../reference/compile_slide.html">compile_slide()</a></code> etc. to work with a direct path to a slide file for interactive use in arbitrary directories = BUmp TeXLive version used by <code><a href="../reference/latexmk_docker.html">latexmk_docker()</a></code> to 2025.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="latex-servicestyle-0-4-0-9006">LaTeX (<code>service/style</code>)<a class="anchor" aria-label="anchor" href="#latex-servicestyle-0-4-0-9006"></a></h3>
