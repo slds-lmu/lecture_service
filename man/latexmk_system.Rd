@@ -13,12 +13,13 @@ latexmk_system(
 )
 }
 \arguments{
-\item{slide_file}{\verb{[character(1)]} Name of a (single) slide, with or without \code{.tex} extension. See examples of \code{\link[=find_slide_tex]{find_slide_tex()}}.}
+\item{slide_file}{\verb{[character(1)]} Name of a (single) slide, with or without \code{.tex} extension. See examples of \code{\link[=find_slide_tex]{find_slide_tex()}}.
+Can also be a direct file path to enable use of this function outside rigid folder hierarchy.}
 
 \item{verbose}{\verb{[TRUE]}: Print output from \code{docker}/\code{latexmk} to console.}
 
 \item{log_stdout, log_stderr}{\verb{[""]}: Path to write stdout/stderr log to.
-Discared if \code{NULL} or inherited from main R process if \code{""}.
+Discarded if \code{NULL} or inherited from main R process if \code{""}.
 \code{stderr} can be redirected to \code{stdout} with \code{"2>&1"}.}
 
 \item{supervise}{\verb{[TRUE]}: Passed to \code{\link[processx:process]{processx::process()}}'s \verb{$new()}.}

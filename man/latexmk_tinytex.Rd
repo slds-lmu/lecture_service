@@ -7,9 +7,10 @@
 latexmk_tinytex(slide_file, ...)
 }
 \arguments{
-\item{slide_file}{\verb{[character(1)]} Name of a (single) slide, with or without \code{.tex} extension. See examples of \code{\link[=find_slide_tex]{find_slide_tex()}}.}
+\item{slide_file}{\verb{[character(1)]} Name of a (single) slide, with or without \code{.tex} extension. See examples of \code{\link[=find_slide_tex]{find_slide_tex()}}.
+Can also be a direct file path to enable use of this function outside rigid folder hierarchy.}
 
-\item{...}{Arguments passed to \code{\link[tinytex:latexmk]{tinytex::latexmk()}}.}
+\item{...}{Arguments passed to \code{\link[tinytex:latexmk]{tinytex::latexmk()}}, excluding \code{clean}, which is always \code{FALSE} as this is handled by \verb{[compile_slide()]}.}
 }
 \value{
 \code{TRUE} if the output PDF exists, \code{FALSE} otherwise.

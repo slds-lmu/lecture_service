@@ -7,7 +7,8 @@
 check_log(slide_file, before = 0, after = 1)
 }
 \arguments{
-\item{slide_file}{\verb{[character(1)]} Name of a (single) slide, with or without \code{.tex} extension. See examples of \code{\link[=find_slide_tex]{find_slide_tex()}}.}
+\item{slide_file}{\verb{[character(1)]} Name of a (single) slide, with or without \code{.tex} extension. See examples of \code{\link[=find_slide_tex]{find_slide_tex()}}.
+Can also be a direct file path to enable use of this function outside rigid folder hierarchy.}
 
 \item{before, after}{\verb{[integer(1)]} Number of log lines to display \code{before} and \code{after} the line found via regex.
 Defaults to 0 lines \code{before}, 1 line \code{after.}}

@@ -7,7 +7,8 @@
 clean_slide(slide_file, keep_pdf = FALSE, verbose = FALSE, check_status = TRUE)
 }
 \arguments{
-\item{slide_file}{\verb{[character(1)]} Name of a (single) slide, with or without \code{.tex} extension. See examples of \code{\link[=find_slide_tex]{find_slide_tex()}}.}
+\item{slide_file}{\verb{[character(1)]} Name of a (single) slide, with or without \code{.tex} extension. See examples of \code{\link[=find_slide_tex]{find_slide_tex()}}.
+Can also be a direct file path to enable use of this function outside rigid folder hierarchy.}
 
 \item{keep_pdf}{\verb{[FALSE]}: Keep the PDF file.}
 

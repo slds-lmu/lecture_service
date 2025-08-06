@@ -4,12 +4,13 @@
 \alias{find_slide_tex}
 \title{Find a slide set across all lectures}
 \usage{
-find_slide_tex(slide_file, lectures_tbl = collect_lectures())
+find_slide_tex(slide_file, lectures_tbl = NULL)
 }
 \arguments{
-\item{slide_file}{\verb{[character(1)]} Name of a (single) slide, with or without \code{.tex} extension. See examples of \code{\link[=find_slide_tex]{find_slide_tex()}}.}
+\item{slide_file}{\verb{[character(1)]} Name of a (single) slide, with or without \code{.tex} extension. See examples of \code{\link[=find_slide_tex]{find_slide_tex()}}.
+Can also be a direct file path to enable use of this function outside rigid folder hierarchy.}
 
-\item{lectures_tbl}{Must contain \code{tex} column. Defaults to \code{collect_lectures()}.}
+\item{lectures_tbl}{\verb{[NULL]} Must contain \code{tex} column. Will use \code{collect_lectures()} if not set and \code{slide_file} is not an existing file path.}
 }
 \description{
 Lectures need to be stored locally in the current directory with regular names like  \code{lecture_i2ml}.
