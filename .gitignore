@@ -1,5 +1,9 @@
+# Workspace and IDE stuff
 *.code-workspace
 .vscode
+
+# For local overrides of which lectures to track
+include_lectures
 
 # Don't accidentally commit lecture repo contents
 lecture_*
@@ -9,9 +13,6 @@ slide_check_cache.rds
 slide_status.html
 slide_status*.md
 slide_status*.html
-
-# Only for local testing of tex.mk
-service/slides/Makefile
 
 attic
 logs

@@ -15,8 +15,8 @@ help:
 	@echo "\n --- Rendering slides"
 	@echo "all                : Renders slides to PDF and runs texclean + copy (see below)"
 	@echo "most               : Renders slides to PDF, does not copy or clean"
-	@echo "all-normargin      : Same as all, but renders 4:3 slides with -nomargin.pdf suffix"
-	@echo "most-normargin     : Same as most, analogous to all-normagin"
+	@echo "all-nomargin       : Same as all, but renders 4:3 slides with -nomargin.pdf suffix"
+	@echo "most-nrmargin      : Same as most, analogous to all-normagin"
 	@echo "\n --- Cleaning up"
 	@echo "texclean           : Deletes all LaTeX detrituts (.log, .aux, .nav, .synctex, ...)"
 	@echo "clean              : Runs texclean and deletes all rendered slides"
@@ -31,6 +31,7 @@ help:
 all: $(TPDFS)
 	@if [ -d "../../latex-math" ]; then\
 		$(MAKE) pax;\
+		$(MAKE) literature;\
 		$(MAKE) texclean;\
 		$(MAKE) copy;\
 	else\
@@ -50,6 +51,7 @@ slides-pdf:
 		$(MAKE) texclean;\
 		$(MAKE) $(TPDFS);\
 		$(MAKE) pax;\
+		$(MAKE) literature;\
 		$(MAKE) copy;\
 		$(MAKE) texclean;\
 	else\
@@ -122,7 +124,7 @@ texclean:
 	-rm -rf nospeakermargin.tex
 
 clean: texclean
-	-rm $(TPDFS) $(NOMARGINPDFS) $(TPAXS) chapter-literature-*.pdf 2>/dev/null
+	-rm $(TPDFS) $(NOMARGINPDFS) $(TPAXS) $(LITERATURE_PDF) 2>/dev/null
 
 # Generate literature list from references.bib, appending the current chapter name to the file name
 CHAPTER_NAME := $(notdir $(CURDIR))
