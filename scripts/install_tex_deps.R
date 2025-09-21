@@ -122,11 +122,29 @@ if (tinytex_installed) {
   cli::cli_alert_info(
     "Attempting to install manually selected LaTeX dependencies via {.fun tinytex::tlmgr_install}"
   )
+  # Handle repository version mismatch for TeX Live 2024
+  if (tl_version == 2024) {
+    cli::cli_alert_info("Configuring tlmgr repository for TeX Live 2024...")
+    tryCatch({
+      tinytex::tlmgr(c("option", "repository", "https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2024/tlnet-final"))
+    }, error = function(e) {
+      cli::cli_alert_warning("Could not set historic repository, trying default installation")
+    })
+  }
   tinytex::tlmgr_install(manually_selected_deps)
 } else {
   cli::cli_alert_info(
     "Attempting to install manually selected LaTeX dependencies via system tlmgr"
   )
+  # Handle repository version mismatch for TeX Live 2024
+  if (tl_version == 2024) {
+    cli::cli_alert_info("Configuring tlmgr repository for TeX Live 2024...")
+    tryCatch({
+      processx::run("tlmgr", args = c("option", "repository", "https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2024/tlnet-final"))
+    }, error = function(e) {
+      cli::cli_alert_warning("Could not set historic repository, trying default installation")
+    })
+  }
   processx::run("tlmgr", args = c("install", manually_selected_deps))
 }
 
