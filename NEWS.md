@@ -1,4 +1,4 @@
-# lese 0.4.0.9006 (In development)
+# lese 0.4.0.9007 (In development)
 
 New service file: The root `Makefile` in each lecture was a placeholder, but now it actually does something.
 
@@ -15,8 +15,13 @@ New service file: The root `Makefile` in each lecture was a placeholder, but now
 - Add flexibility for `find_slide_tex()` to allow `compile_slide()` etc. to work with a direct path to a slide file for interactive use in arbitrary directories
 = BUmp TeXLive version used by `latexmk_docker()` to 2025.
 
-## LaTeX  (`service/style`)
+## LaTeX  (`service/style` etc.)
 
+* Makefile in `slides/` gets big refactors:
+  * Remove `all` target, new `release` target that does all the important things and copies to `slides-pdf`
+  * Renamed `most` to `slides`
+  * Option to use docker (`make slides DOCKER=true`),  
+* Logo is now expected at ./local/logo.pdf
 * The `\image` macro now can take a url (starting with `http[s]`) to create clickable source link without having to create entry in `references.bib`.
 * Slide check workflows now exit 1 if _at least_ one slide does not compile correctly
 * `framei` and `frame2` now override global itemize/enumerate font size control when using a custom font size, and `itemizeM` etc. now correctly inherit their surrounding font sizes when not specified.
@@ -25,9 +30,10 @@ New service file: The root `Makefile` in each lecture was a placeholder, but now
 
 ## GitHub Action workflows (`service/.github/workflows`)
 
-- In both worklows using tinytex, we experimentally pin the used version to 2023.10 for safety. 
+- In both worklows using tinytex, we experimentally pin the used version to 2024.12 for safety. 
   This is likely to change in the future but currently this is the only version generally compatible with everything as far as we know.
   Ideally, we keep bumping this to a recent version, also on Overleaf.
+- The Makefile in ./slides/ use a docker image defaulting to 2024 as well
 
 # lese 0.4.0
 
