@@ -7,8 +7,6 @@ set -eo pipefail
 # When a tex-file imports another file (e.g. a figure), the generated fls-file contains a line 'IMPORT <filename>'.
 # This script compares the files listed in the given fls-files with the files that are present in a given folder.
 
-# ------
-
 # Detect platform and set appropriate realpath command
 if [[ "$OSTYPE" == "darwin"* ]]; then
   # macOS - use grealpath from GNU coreutils if available
@@ -88,7 +86,7 @@ done
 #   3. Convert absolute paths to relative paths (suppress error messages)
 #   4. Sort and remove duplicates to match format expected by 'comm'
 
-comm $commarg \
+comm "$commarg" \
   <(
     find ./"$folderpath" -type f | \
     xargs $REALPATH --relative-to=. -- | \

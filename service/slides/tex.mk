@@ -28,9 +28,9 @@ help:
 	@echo "╔═════════════════════════════════════╗"
 	@echo "║       File Checking                 ║"
 	@echo "╚═════════════════════════════════════╝"
-	@echo "check-files-used   : List files (figuees, .tex) that are used by LaTeX"
-	@echo "check-files-unused : List files that are NOT used by LaTeX"
-	@echo "check-files-missing: List files that LaTeX expects but cannot find"
+	@echo "check-files-used   : List files (figures, .tex) that are included is slide .tex files"
+	@echo "check-files-unused : List files that are NOT included in .tex files"
+	@echo "check-files-missing: List files that the slides expect but cannot find"
 	@echo "                     Optional: folder=<path> (default: figure)"
 	@echo "                     Note: Requires 'make slides' to be run first so .fls files exist!"
 
