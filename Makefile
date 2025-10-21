@@ -1,13 +1,14 @@
 # Find all the slide tex files in the lecture repos, assuming strict naming convention
 # Any changes in those should then be enough for the next make target.
-TSLIDES=$(shell find lecture_*/slides/* -maxdepth 1 -iname "*.tex")
+# Suppress errors if lecture_* directories don't exist yet (before clone/download)
+TSLIDES=$(shell find lecture_*/slides/* -maxdepth 1 -iname "*.tex" 2>/dev/null || true)
 
 # We search again rather than do path substitution because not all pdf files might exist
-TPDFS=$(shell find lecture_*/slides/* -maxdepth 1 -iname "*.pdf")
+TPDFS=$(shell find lecture_*/slides/* -maxdepth 1 -iname "*.pdf" 2>/dev/null || true)
 
 # Keep track of preamble dependencies so we can recompile slides if any of them change
 # This unfortunately means that e.g. lecture_i2ml/ slides will recompile if preamble changes in lecture_sl/
-PREAMBLES=$(shell find lecture_*/style -maxdepth 1 -type f -name "common.tex" -o -name "preamble.tex" -o -name "lmu-lecture.sty")
+PREAMBLES=$(shell find lecture_*/style -maxdepth 1 -type f \( -name "common.tex" -o -name "preamble.tex" -o -name "lmu-lecture.sty" \) 2>/dev/null || true)
 
 # data.frame of all slides and compile/comparison status checks created by check_slides_many()
 CACHETBL=slide_check_cache.rds
@@ -24,33 +25,64 @@ SITEDIR=_site
 STATUSRMD_PR=slide_status_pr.Rmd
 STATUSMD=${STATUSRMD_PR:%.Rmd=%.md}
 
-# FIle count qmd and HTML files
-FILECOUNTQMD=file_counts.qmd
-FILECOUNTHTML=${FILECOUNTQMD:%.qmd=%.html}
+# File count Rmd and HTML files
+FILECOUNTRMD=file_counts.Rmd
+FILECOUNTHTML=${FILECOUNTRMD:%.Rmd=%.html}
+
+# Check if Rscript is available
+HAS_RSCRIPT := $(shell command -v Rscript 2>/dev/null)
+
+# Helper target to check for R installation
+.PHONY: check-r
+check-r:
+ifndef HAS_RSCRIPT
+	@echo "ERROR: Rscript not found in PATH."
+	@echo "R is required for most functionality in this project."
+	@echo ""
+	@echo "Recommended installation method:"
+	@echo "  1. Install rig from https://github.com/r-lib/rig"
+	@echo "  2. Run: rig add release"
+	@echo ""
+	@exit 1
+endif
 
 .PHONY: all
 all: help
 
 # This runs latexmk internally, but it's fast if there's nothing new to do for most slides (unless you clean up)
-${CACHETBL}: $(TSLIDES) $(PREAMBLES)
+${CACHETBL}: check-r $(TSLIDES) $(PREAMBLES)
 	Rscript --quiet -e 'lese::check_slides_many()'
 
 
 .PHONY: help
 help:
-	@echo "clone                : Clone selected lecture repositories. Makes a full clone and will take a while!"
-	@echo "clone-shallow        : Same as 'clone' but makes a shallow clone of the default branch only. Significantly faster but may be unsuitable for active work."
-	@echo "download             : Download selected lecture repositories rather than using git."
-	@echo "install              : Installs everything below. Assumes an Ubuntu OS!"
-	@echo "install-service      : Installs this package via R CMD INSTALL."
-	@echo "install-r            : Install R package dependencies."
-	@echo "install-tex          : Install LaTeX package dependencies using TinyTex."
-	@echo "install-tools-ubuntu : Attempt to install diff-pdf and diff-pdf-visually on Ubuntu-based systems."
-	@echo "site                 : Generate HTML overview, re-running slide checking if necessary."
-	@echo "table                : Generate markdown table rather than site. Used to append to PRs."
+	@echo ""
+	@echo "╔═══════════════════════════════════════════════════════════════════════════════════╗"
+	@echo "║       Setup & Installation                                                        ║"
+	@echo "╚═══════════════════════════════════════════════════════════════════════════════════╝"
+	@echo "clone                : Clone selected lecture repositories. Full clone, takes a while!"
+	@echo "clone-shallow        : Clone with --shallow (default branch only). Faster but limited."
+	@echo "download             : Download lecture repositories rather than using git."
+	@echo ""
+	@echo "install              : Install everything (R packages, LaTeX, service)."
+	@echo "install-r            : Install R package dependencies only."
+	@echo "install-tex          : Install LaTeX dependencies using TinyTeX."
+	@echo "install-service      : Install this R package."
+	@echo "install-tools-ubuntu : Optional for slide validation: Install diff-pdf and diff-pdf-visually (Ubuntu only)."
+	@echo ""
+	@echo "╔═══════════════════════════════════════════════════════════════════════════════════╗"
+	@echo "║       Slide Checking & Validation                                                 ║"
+	@echo "╚═══════════════════════════════════════════════════════════════════════════════════╝"
+	@echo "site                 : Generate HTML overview with slide status (re-checks if needed)."
+	@echo "table                : Generate markdown table for pull requests."
+	@echo ""
+	@echo "╔═══════════════════════════════════════════════════════════════════════════════════╗"
+	@echo "║       Utilities                                                                    ║"
+	@echo "╚═══════════════════════════════════════════════════════════════════════════════════╝"
+	@echo "file-count           : Render ${FILECOUNTRMD} to ${FILECOUNTHTML}."
 	@echo "clean                : Remove ${CACHETBL}, ${STATUSHTML}, ${STATUSASSETS}, and ${SITEDIR}."
-	@echo "clean-site           : Remove ${STATUSHTML}, ${STATUSASSETS}, and ${SITEDIR}."
-	@echo "file-count           : Render ${FILECOUNTQMD} to ${FILECOUNTHTML} for an overview of files per lecture. Requires `quarto` to be in PATH"
+	@echo "clean-site           : Remove ${STATUSHTML}, ${STATUSASSETS}, and ${SITEDIR} only."
+	@echo ""
 
 .PHONY: check_results
 check_results: ${CACHETBL}
@@ -85,7 +117,7 @@ site: ${CACHETBL} ${STATUSRMD}
 .PHONY: clean
 clean: clean-site
 	if [ -f "${CACHETBL}" ]     ; then rm ${CACHETBL}       ; fi ;\
-	find comparison -name "*pdf" -delete
+	find comparison -name "*pdf" -delete 2>/dev/null || true
 
 .PHONY: clean-site
 clean-site:
@@ -94,16 +126,16 @@ clean-site:
 	if [ -d "${SITEDIR}" ]      ; then rm -r ${SITEDIR}     ; fi
 
 .PHONY: install-r install-tex install-tools-ubuntu install-service install
-install-r:
+install-r: check-r
 	scripts/install_r_deps.R
 
-install-tex:
+install-tex: check-r
 	scripts/install_tex_deps.R
 
 install-tools-ubuntu:
 	scripts/install_tools_ubuntu.sh
 
-install-service:
+install-service: check-r
 	@# R CMD INSTALL --preclean --no-multiarch --with-keep.source .
 	# Install local dev dependencies (DESCRIPTION Imports and Suggests)
 	Rscript -e 'pak::local_install_dev_deps()'
@@ -111,7 +143,7 @@ install-service:
 	Rscript -e 'pak::local_install()'
 	@echo "Use lese::install_lecheck() to install the lese command line tool"
 
-install: install-r install-tex install-tools-ubuntu install-service
+install: install-r install-tex install-service
 
 .PHONY: clone clone-shallow download
 clone:
@@ -123,7 +155,8 @@ clone-shallow:
 download:
 	scripts/download_lectures.sh
 
-.PHONY: file-counts
-${FILECOUNTHTML}: $(FILECOUNTQMD)
-file-count: $(FILECOUNTHTML)
-	quarto render ${FILECOUNTQMD} --to html
+.PHONY: file-count
+${FILECOUNTHTML}: check-r ${FILECOUNTRMD}
+	Rscript --quiet -e 'rmarkdown::render("${FILECOUNTRMD}", quiet = TRUE)'
+
+file-count: ${FILECOUNTHTML}
