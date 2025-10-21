@@ -17,7 +17,7 @@ Lectures need to be stored locally in the current directory with regular names l
 It is strongly assumed that slide names such as \code{slides-cart-predictions.tex} are unique across all lectures.
 }
 \examples{
-\dontshow{if (fs::dir_exists(here::here("lecture_i2ml"))) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (fs::dir_exists(here::here("lecture_i2ml"))) withAutoprint(\{ # examplesIf}
 # The "normal" way: A .tex file name
 str(find_slide_tex(slide_file = "slides-cart-computationalaspects.tex"))
 

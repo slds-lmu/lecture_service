@@ -1,10 +1,12 @@
-# lese 0.4.0.9007 (In development)
+# lese 0.4.0.9008 (In development)
 
-New service file: The root `Makefile` in each lecture was a placeholder, but now it actually does something.
-
-- Update latex-math (not just via GitHub action now)
-- Update service files
-- Clean LaTeX detritus and PDFs in slide directories
+- New service file: The root `Makefile` in each lecture was a placeholder, but now it actually does something:
+  - Update latex-math (not just via GitHub action now)
+  - Update service files
+  - Clean LaTeX detritus and PDFs in slide directories
+- Robustify the `lecture_service` Makefile to not error if no lectures are cloned (to allow just using `make install` etc.)
+- Warn if R is not installed for targets that need it, and link to `rig` as an installation suggestion.
+- Convert `file_count.qmd` to RMarkdown for backwards compatibility and consistency with other docs.
 
 ## R package
 
