@@ -1,15 +1,13 @@
 ---
 title: "File Enumerator"
 author: Lukas
-date: now
-format: 
-  html:
-    code-fold: true
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    code_folding: hide
     toc: true
-project:
-  execute-dir: "project"
-  output-dir: reports
-editor_options: 
+    toc_float: true
+editor_options:
   chunk_output_type: console
 ---
 
@@ -31,7 +29,6 @@ lecture_files <- rbindlist(lapply(lectures(), \(lecture) {
   files <- fs::path_filter(files, glob = ".git/*", invert = TRUE)
   fs::path_split(files[5:10])
 
-  
   data.table(
     lecture = lecture,
     file = fs::path_file(files),
@@ -44,18 +41,20 @@ lecture_files <- rbindlist(lapply(lectures(), \(lecture) {
 enumerate_files <- function(lecture) {
   dir <- fs::dir_ls(lecture, recurse = TRUE, type = "dir")
   # Remove first element (lecture name) from path
-  
+
   file_list <- lapply(dir, \(d) {
     dt <- data.table(
       dir = fs::path_rel(d, start = lecture),
       file = fs::dir_ls(path = d, recurse = TRUE, type = "file") |>
         fs::path_file()
     )
-    if (nrow(dt) == 0) return(data.table())
+    if (nrow(dt) == 0) {
+      return(data.table())
+    }
     dt
   })
   file_dt <- as.data.table(dplyr::bind_rows(file_list))
-  
+
   file_dt[, depth := lengths(fs::path_split(dir))]
   file_dt[, extension := tolower(fs::path_ext(file))][]
 }
@@ -66,7 +65,11 @@ count_files_per_dir <- function(lecture) {
   file_tbl |>
     count(dir, depth, sort = TRUE) |>
     arrange(desc(n)) |>
-    reactable::reactable(sortable = TRUE, filterable = TRUE, defaultPageSize = 20)
+    reactable::reactable(
+      sortable = TRUE,
+      filterable = TRUE,
+      defaultPageSize = 20
+    )
 }
 
 count_extensions_per_dir <- function(lecture) {
@@ -76,7 +79,11 @@ count_extensions_per_dir <- function(lecture) {
     count(dir, depth, extension, sort = TRUE) |>
     arrange(desc(n)) |>
     filter(n > 30) |>
-    reactable::reactable(sortable = TRUE, filterable = TRUE, defaultPageSize = 20)
+    reactable::reactable(
+      sortable = TRUE,
+      filterable = TRUE,
+      defaultPageSize = 20
+    )
 }
 
 total_counts <- function(lecture) {
