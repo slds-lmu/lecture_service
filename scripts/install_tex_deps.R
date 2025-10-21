@@ -46,6 +46,9 @@ if (!tlmgr_available) {
     is_tinytex_install <- TRUE
     tlmgr_available <- TRUE
     cli::cli_alert_success("TinyTeX installed successfully")
+
+    # Re-run tlmgr --version to get version info
+    tl_check <- processx::run("tlmgr", args = "--version", error_on_status = FALSE)
   } else {
     cli::cli_alert_danger("Cannot proceed without a LaTeX installation")
     cli::cli_inform("Please install either:")
@@ -74,20 +77,29 @@ if (tlmgr_available && !is_tinytex_install) {
 }
 
 # Now that we know tlmgr is available, get version info
-tl_version <- as.integer(stringr::str_extract(tl_check$stdout, "20\\d{2}"))
-cli::cli_alert_info("Found TeX Live version {tl_version}")
+tl_version_raw <- stringr::str_extract(tl_check$stdout, "20\\d{2}")
+tl_version <- as.integer(tl_version_raw)
 
-# Accept TeX Live 2024 or newer
-min_version <- 2024
-if (tl_version < min_version) {
-  cli::cli_alert_warning(
-    "TeX Live {tl_version} is older than recommended minimum ({min_version})"
-  )
-  cli::cli_inform(
-    "Please update if you run into issues: {.fun tinytex::reinstall_tinytex}"
-  )
+# Check if version extraction was successful
+if (length(tl_version) == 0 || is.na(tl_version)) {
+  cli::cli_alert_warning("Could not determine TeX Live version from tlmgr output")
+  cli::cli_inform("Proceeding anyway, but some features may not work correctly")
+  tl_version <- NA
 } else {
-  cli::cli_alert_success("TeX Live {tl_version} meets requirements (>= {min_version})")
+  cli::cli_alert_info("Found TeX Live version {tl_version}")
+
+  # Accept TeX Live 2024 or newer
+  min_version <- 2024
+  if (tl_version < min_version) {
+    cli::cli_alert_warning(
+      "TeX Live {tl_version} is older than recommended minimum ({min_version})"
+    )
+    cli::cli_inform(
+      "Please update if you run into issues: {.fun tinytex::reinstall_tinytex}"
+    )
+  } else {
+    cli::cli_alert_success("TeX Live {tl_version} meets requirements (>= {min_version})")
+  }
 }
 
 # Script to extract packages didn't work on GH so I ran tinytex::latexmk()
@@ -175,7 +187,7 @@ if (is_tinytex_install) {
     "Attempting to install manually selected LaTeX dependencies via {.fun tinytex::tlmgr_install}"
   )
   # Handle repository version mismatch for TeX Live 2024
-  if (tl_version == 2024) {
+  if (!is.na(tl_version) && tl_version == 2024) {
     cli::cli_alert_info("Configuring tlmgr repository for TeX Live 2024...")
     tryCatch({
       tinytex::tlmgr(c("option", "repository", "https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2024/tlnet-final"))
@@ -189,7 +201,7 @@ if (is_tinytex_install) {
     "Attempting to install manually selected LaTeX dependencies via system tlmgr"
   )
   # Handle repository version mismatch for TeX Live 2024
-  if (tl_version == 2024) {
+  if (!is.na(tl_version) && tl_version == 2024) {
     cli::cli_alert_info("Configuring tlmgr repository for TeX Live 2024...")
     tryCatch({
       processx::run("tlmgr", args = c("option", "repository", "https://ftp.math.utah.edu/pub/tex/historic/systems/texlive/2024/tlnet-final"))
