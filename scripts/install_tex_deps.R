@@ -1,27 +1,79 @@
 #! /usr/bin/env Rscript
 
-# if (!("tinytex" %in% installed.packages())) install.packages("tinytex")
-# if (!tinytex::is_tinytex()) {
-#   warning("Please install tinytex: tinytex::install_tinytex()")
-# }
+# Step 1: Check if tinytex R package is installed
+has_tinytex_pkg <- "tinytex" %in% installed.packages()
 
-has_tinytex <- "tinytex" %in% installed.packages()
-tinytex_installed <- FALSE
-if (has_tinytex) {
-  tinytex_installed <- tinytex::is_tinytex()
+if (!has_tinytex_pkg) {
+  cli::cli_alert_warning("The {.pkg tinytex} R package is not installed")
+  cli::cli_inform("Installing {.pkg tinytex} package...")
+  install.packages("tinytex", repos = "https://cloud.r-project.org")
+  has_tinytex_pkg <- TRUE
 }
 
-tl_check <- processx::run("tlmgr", args = "--version")
+# Step 2: Check if tlmgr is available on the system
+tlmgr_available <- FALSE
+tl_check <- tryCatch({
+  processx::run("tlmgr", args = "--version", error_on_status = FALSE)
+}, error = function(e) {
+  list(status = 1)
+})
 
-if (tl_check$status != 0) {
-  cli::cli_alert_danger("TeX Live / tlmgr not found, please install it:")
-  cli::cli_li(c(
-    "{.code install.packages(\"tinytex\")}",
-    "{.fun tinytex::install_tinytex}"
+tlmgr_available <- tl_check$status == 0
+
+# Step 3: Check if the LaTeX installation is from tinytex (if any)
+is_tinytex_install <- FALSE
+if (tlmgr_available && has_tinytex_pkg) {
+  is_tinytex_install <- tinytex::is_tinytex()
+}
+
+# Step 4: Handle missing LaTeX installation
+if (!tlmgr_available) {
+  cli::cli_alert_danger("No LaTeX installation found (tlmgr not available)")
+  cli::cli_inform("")
+  cli::cli_alert_info("TinyTeX can be installed automatically:")
+  cli::cli_ul(c(
+    "TinyTeX is a lightweight, cross-platform LaTeX distribution",
+    "Recommended for R users and CI/CD environments",
+    "Takes ~100MB of disk space for base installation"
   ))
-  cli::cli_abort("Re-run once TeX Live is installed")
+  cli::cli_inform("")
+  
+  response <- readline(prompt = "Install TinyTeX now? [Y/n]: ")
+  
+  if (tolower(trimws(response)) %in% c("", "y", "yes")) {
+    cli::cli_alert_info("Installing TinyTeX via {.fun tinytex::install_tinytex}...")
+    tinytex::install_tinytex()
+    is_tinytex_install <- TRUE
+    tlmgr_available <- TRUE
+    cli::cli_alert_success("TinyTeX installed successfully")
+  } else {
+    cli::cli_alert_danger("Cannot proceed without a LaTeX installation")
+    cli::cli_inform("Please install either:")
+    cli::cli_ul(c(
+      "TinyTeX: {.code tinytex::install_tinytex()}",
+      "Or a full TeX Live distribution from your system package manager"
+    ))
+    cli::cli_abort("Re-run this script once LaTeX is installed")
+  }
 }
 
+# Step 5: Warn if using non-TinyTeX installation
+if (tlmgr_available && !is_tinytex_install) {
+  cli::cli_alert_warning("Found a LaTeX installation, but it's not TinyTeX")
+  cli::cli_inform("")
+  cli::cli_inform("This should work, but TinyTeX is recommended because:")
+  cli::cli_ul(c(
+    "Better integration with R",
+    "Easier package management",
+    "Consistent across platforms"
+  ))
+  cli::cli_inform("")
+  cli::cli_alert_info("Continuing with your existing LaTeX installation...")
+  cli::cli_inform("If you encounter issues, consider installing TinyTeX: {.fun tinytex::install_tinytex}")
+  cli::cli_inform("")
+}
+
+# Now that we know tlmgr is available, get version info
 tl_version <- as.integer(stringr::str_extract(tl_check$stdout, "20\\d{2}"))
 cli::cli_alert_info("Found TeX Live version {tl_version}")
 
@@ -118,7 +170,7 @@ manually_selected_deps <- c(
   "mathdots"
 )
 
-if (tinytex_installed) {
+if (is_tinytex_install) {
   cli::cli_alert_info(
     "Attempting to install manually selected LaTeX dependencies via {.fun tinytex::tlmgr_install}"
   )
@@ -310,3 +362,4 @@ zapfding"
   )
   tinytex::tlmgr_install(missing)
 }
+
