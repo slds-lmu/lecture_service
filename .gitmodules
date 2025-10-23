@@ -1,0 +1,9 @@
+[submodule "latex-math"]
+	path = latex-math
+	url = https://github.com/slds-lmu/latex-math
+[submodule "vistool"]
+	path = vistool
+	url = https://github.com/slds-lmu/vistool
+[submodule "lecture_service.wiki"]
+	path = lecture_service.wiki
+	url = https://github.com/slds-lmu/lecture_service.wiki.git
