@@ -32,6 +32,9 @@ FILECOUNTHTML=${FILECOUNTRMD:%.Rmd=%.html}
 # Check if Rscript is available
 HAS_RSCRIPT := $(shell command -v Rscript 2>/dev/null)
 
+.PHONY: all
+all: help
+
 # Helper target to check for R installation
 .PHONY: check-r
 check-r:
@@ -45,9 +48,6 @@ ifndef HAS_RSCRIPT
 	@echo ""
 	@exit 1
 endif
-
-.PHONY: all
-all: help
 
 # This runs latexmk internally, but it's fast if there's nothing new to do for most slides (unless you clean up)
 ${CACHETBL}: check-r $(TSLIDES) $(PREAMBLES)
