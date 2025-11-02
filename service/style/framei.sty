@@ -15,10 +15,12 @@
 % Define keys for options
 \define@key{framei}{fs}{\def\framei@fs{#1}}
 \define@key{framei}{sep}{\def\framei@sep{#1}}
+\define@key{framei}{align}{\def\framei@align{#1}}
 
 % Set default values
 \def\framei@fs{normal}
 \def\framei@sep{M}
+\def\framei@align{center}
 
 % Small spacing values (S)
 \newcommand{\framei@setSpacingS}{%
@@ -55,7 +57,7 @@
 % Main framei environment
 \NewEnviron{framei}[2][]{%
   % Process options if provided
-  \setkeys{framei}{fs=normal,sep=M,#1}%
+  \setkeys{framei}{fs=normal,sep=M,align=center,#1}%
   
   % Set spacing based on sep option
   \def\@tempS{S}\def\@tempM{M}\def\@tempL{L}\def\@tempF{F}%
@@ -64,7 +66,16 @@
   \ifx\framei@sep\@tempL\framei@setSpacingL\fi%
   \ifx\framei@sep\@tempF\framei@setSpacingF\fi%
   
-  \begin{frame}[c]{#2}%
+  % Determine vertical alignment option for frame
+  \def\framei@va{c}%
+  \def\@alignTop{top}\def\@alignCenter{center}\def\@alignBottom{bottom}%
+  \def\@alignc{c}\def\@alignt{t}\def\@alignb{b}%
+  \ifx\framei@align\@alignTop\def\framei@va{t}\fi%
+  \ifx\framei@align\@alignBottom\def\framei@va{b}\fi%
+  \ifx\framei@align\@alignt\def\framei@va{t}\fi%
+  \ifx\framei@align\@alignb\def\framei@va{b}\fi%
+
+  \begin{frame}[\framei@va]{#2}%
     % Set font size based on fs option
     \def\@tempnormal{normal}\def\@tempsmall{small}\def\@temptiny{tiny}%%
     \def\@tempfootnotesize{footnotesize}\def\@templarge{large}%
