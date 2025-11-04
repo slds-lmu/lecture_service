@@ -96,9 +96,9 @@ lecture_service
 
 ---
 
-## Definition of Done (for agent-created changes)
+## Definition of done (for agent-created changes)
 
-- Slides compile with TeX Live 2024 using `lecheck` **or** the per-chapter Makefile.
+- Slides compile using `lecheck` **or** the per-chapter Makefile.
 - New/changed figures are reproducible from `rsrc/` and saved under `figure/`.
 - LaTeX content uses `latex-math` macros; no local macro definitions were introduced.
 - No edits to `service/` or `latex-math/` in lecture repos.
@@ -108,6 +108,4 @@ lecture_service
 
 ## Troubleshooting quick checks
 
-- If plotly surfaces fail to export, ensure `reticulate` finds Python with `kaleido`, or rely on `reticulate`’s auto-provisioning.
 - If macros are “undefined,” verify the correct `\input{../latex-math/<file>}` lines are present in the slide preamble and that the local `latex-math/` is up to date.
-- If compilation fails widely, confirm TeX Live 2024 and try `--tinytex` or `--docker` with `lecheck`.
