@@ -1,6 +1,6 @@
 ---
 mode: 'agent'
-model: 'GPT-5 mini' 
+model: 'Claude Sonnet 4.5' 
 tools: ['edit', 'search/codebase', 'runCommands', 'problems', 'changes', 'fetch', 'githubRepo', 'todos']
 description: 'Cleanup latex-math to use our custom macros'
 ---
