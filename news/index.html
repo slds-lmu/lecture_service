@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">lese</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0.9008</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -32,7 +32,10 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.4.0.9008" id="lese-0409008-in-development">lese 0.4.0.9008 (In development)<a class="anchor" aria-label="anchor" href="#lese-0409008-in-development"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.5.0.9000" id="lese-0509000-in-development">lese 0.5.0.9000 (In development)<a class="anchor" aria-label="anchor" href="#lese-0509000-in-development"></a></h2>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.0" id="lese-050">lese 0.5.0<a class="anchor" aria-label="anchor" href="#lese-050"></a></h2>
 <ul><li>New service file: The root <code>Makefile</code> in each lecture was a placeholder, but now it actually does something:
 <ul><li>Update latex-math (not just via GitHub action now)</li>
 <li>Update service files</li>
@@ -42,7 +45,7 @@
 <li>Warn if R is not installed for targets that need it, and link to <code>rig</code> as an installation suggestion.</li>
 <li>Convert <code>file_count.qmd</code> to RMarkdown for backwards compatibility and consistency with other docs.</li>
 </ul><div class="section level3">
-<h3 id="r-package-0-4-0-9008">R package<a class="anchor" aria-label="anchor" href="#r-package-0-4-0-9008"></a></h3>
+<h3 id="r-package-0-5-0">R package<a class="anchor" aria-label="anchor" href="#r-package-0-5-0"></a></h3>
 <ul><li>Add Biblatex utility functions for <code>references.bib</code> processing to render per-chapter/lecture lierature lists</li>
 <li>Normalize file paths in <code><a href="../reference/collect_lectures.html">collect_lectures()</a></code> (should help path-agnostic usage)</li>
 <li>Change default <code>compile_slide(..., post_clean = FALSE)</code> to avoid “file not found” error when <code>.log</code> file was unexpectedly missing for checks.</li>
@@ -50,7 +53,7 @@
 <li>Add flexibility for <code><a href="../reference/find_slide_tex.html">find_slide_tex()</a></code> to allow <code><a href="../reference/compile_slide.html">compile_slide()</a></code> etc. to work with a direct path to a slide file for interactive use in arbitrary directories = BUmp TeXLive version used by <code><a href="../reference/latexmk_docker.html">latexmk_docker()</a></code> to 2025.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="latex-servicestyle-etc-0-4-0-9008">LaTeX (<code>service/style</code> etc.)<a class="anchor" aria-label="anchor" href="#latex-servicestyle-etc-0-4-0-9008"></a></h3>
+<h3 id="latex-servicestyle-etc-0-5-0">LaTeX (<code>service/style</code> etc.)<a class="anchor" aria-label="anchor" href="#latex-servicestyle-etc-0-5-0"></a></h3>
 <ul><li>Makefile in <code>slides/</code> gets big refactors:
 <ul><li>Remove <code>all</code> target, new <code>release</code> target that does all the important things and copies to <code>slides-pdf</code>
 </li>
@@ -60,15 +63,19 @@
 </ul></li>
 <li>Logo is now expected at ./local/logo.pdf</li>
 <li>The <code>\image</code> macro now can take a url (starting with <code>http[s]</code>) to create clickable source link without having to create entry in <code>references.bib</code>.</li>
+<li>New <code>\imageFixed</code> macro for fixed-position image placement</li>
 <li>Slide check workflows now exit 1 if <em>at least</em> one slide does not compile correctly</li>
+<li>Renamed <code>frame2</code> to <code>framev</code> to avoid internal beamer package issues</li>
 <li>
-<code>framei</code> and <code>frame2</code> now override global itemize/enumerate font size control when using a custom font size, and <code>itemizeM</code> etc. now correctly inherit their surrounding font sizes when not specified.</li>
+<code>framei</code> and <code>framev</code> now override global itemize/enumerate font size control when using a custom font size, and <code>itemizeM</code> etc. now correctly inherit their surrounding font sizes when not specified.</li>
+<li>
+<code>framei</code> and <code>framev</code> now support <code>align</code> argument for beamer frame alignment passthrough.</li>
 <li>Add new ref-buttons <code>furtherreading{}</code> and <code>sourceref{}</code>, the later superseding <code>\citelink{}</code>. <code>\image</code> and friends internally use <code>\sourceref</code> now.</li>
 <li>Add <code>chapter-literature.tex</code> in <code>style</code> to compile simple chapter-wise literature lists. Also adds <code>make</code> target <code>literature.</code>
 </li>
 </ul></div>
 <div class="section level3">
-<h3 id="github-action-workflows-servicegithubworkflows-0-4-0-9008">GitHub Action workflows (<code>service/.github/workflows</code>)<a class="anchor" aria-label="anchor" href="#github-action-workflows-servicegithubworkflows-0-4-0-9008"></a></h3>
+<h3 id="github-action-workflows-servicegithubworkflows-0-5-0">GitHub Action workflows (<code>service/.github/workflows</code>)<a class="anchor" aria-label="anchor" href="#github-action-workflows-servicegithubworkflows-0-5-0"></a></h3>
 <ul><li>In both worklows using tinytex, we experimentally pin the used version to 2024.12 for safety. This is likely to change in the future but currently this is the only version generally compatible with everything as far as we know. Ideally, we keep bumping this to a recent version, also on Overleaf.</li>
 <li>The Makefile in ./slides/ use a docker image defaulting to 2024 as well</li>
 </ul></div>
@@ -190,7 +197,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
 </div>
 
     </footer></div>
