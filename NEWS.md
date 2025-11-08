@@ -1,4 +1,6 @@
-# lese 0.4.0.9008 (In development)
+# lese 0.5.0.9000 (In development)
+
+# lese 0.5.0
 
 - New service file: The root `Makefile` in each lecture was a placeholder, but now it actually does something:
   - Update latex-math (not just via GitHub action now)
@@ -25,8 +27,11 @@
   * Option to use docker (`make slides DOCKER=true`),  
 * Logo is now expected at ./local/logo.pdf
 * The `\image` macro now can take a url (starting with `http[s]`) to create clickable source link without having to create entry in `references.bib`.
+* New `\imageFixed` macro for fixed-position image placement
 * Slide check workflows now exit 1 if _at least_ one slide does not compile correctly
-* `framei` and `frame2` now override global itemize/enumerate font size control when using a custom font size, and `itemizeM` etc. now correctly inherit their surrounding font sizes when not specified.
+* Renamed `frame2` to `framev` to avoid internal beamer package issues
+* `framei` and `framev` now override global itemize/enumerate font size control when using a custom font size, and `itemizeM` etc. now correctly inherit their surrounding font sizes when not specified.
+* `framei` and `framev` now support `align` argument for beamer frame alignment passthrough.
 * Add new ref-buttons `furtherreading{}` and `sourceref{}`, the later superseding `\citelink{}`. `\image` and friends internally use `\sourceref` now.
 * Add `chapter-literature.tex` in `style` to compile simple chapter-wise literature lists. Also adds `make` target `literature.`
 
