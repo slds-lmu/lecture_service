@@ -1,6 +1,6 @@
 ---
 agent: 'agent'
-model: 'Claude Sonnet 4.5' 
+model: 'Claude Opus 4.5 (Preview)' 
 tools: ['edit', 'search/codebase', 'runCommands', 'problems', 'changes', 'fetch', 'githubRepo', 'todos']
 description: 'Cleanup LaTeX math to use our custom macros'
 ---
@@ -19,8 +19,7 @@ Requirements:
 *  Only use `align` environments if you truly need alignment, use `$$ ... $$` instead
 *  Do not use English orthography (`.`, `,`) in math formulas
 *  Matrix transposition is denoted using `^T`
-    $(\mathbf{X}^T \mathbf{X})^{-1}$ rather than
-    $(\mathbf{X}^\top \mathbf{X})^{-1}$
+    e.g., $(\mathbf{X}^T \mathbf{X})^{-1}$ rather than $(\mathbf{X}^\top \mathbf{X})^{-1}$
 *  For delimiters such as parentheses and vertical bars, the "simple" versions are preferred:
    -  `(  )` $$( \sum_{i=1}^n x_i^2 + y_i^2 )$$  
    - `|  |` $$| \sum_{i=1}^n x_i^2 + y_i^2 |$$  
