@@ -1,7 +1,7 @@
 ---
 agent: 'agent'
-model: 'Claude Opus 4.5 (Preview)' 
-tools: ['edit', 'search/codebase', 'runCommands', 'problems', 'changes', 'fetch', 'githubRepo', 'todos']
+model: 'GPT-5.2 (Preview)' 
+tools: ['edit', 'search/codebase', 'execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalLastCommand', 'read/terminalSelection', 'read/problems', 'search/changes', 'web/fetch', 'web/githubRepo', 'todo']
 description: 'Cleanup LaTeX math to use our custom macros'
 ---
 Your goal is to ensure all math (equations, in-line, etc.) in the provided (attached) LaTeX source file use our custom macros, as defined in [latex-math](../../latex-math/). Note that the compiled PDF should change at all, this is purely a cleanup of our source code! **ONLY SWAP OUT EXACT MATCHES**, if there are none, do not feel forced to make any changes!
