@@ -1,7 +1,7 @@
 ---
 agent: 'agent'
-model: 'GPT-5.2 (Preview)' 
-tools: ['edit', 'search/codebase', 'execute/getTerminalOutput', 'execute/runInTerminal', 'read/terminalLastCommand', 'read/terminalSelection', 'read/problems', 'search/changes', 'web/fetch', 'web/githubRepo', 'todo']
+model: 'GPT-5.2' 
+tools: ['edit', 'search/codebase', 'execute/getTerminalOutput', 'execute/runInTerminal', 'read', 'search', 'web/fetch', 'web/githubRepo', 'todo']
 description: 'Update source code to use vistool'
 ---
 Your goal is to reimplment the provided (attached) R script using our [vistool](../../vistool/). Its latest version is assumed available. The code quality **must** follow the rules defined in our [code guide](../../lecture_service.wiki/Slide-Code-Guide.md). In general, all plots should deviate as little as possible from the defaults (e.g., use the `viridis` color palette), even if that means deviating from the original script. **Adding manual layers on top of the base `ggplot2`/`plotly` plot vistool provides is possible and may be needed for some plots - if so, please justify this in your summary.**
