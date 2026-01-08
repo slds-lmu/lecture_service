@@ -1,7 +1,7 @@
 ---
 agent: 'agent'
 model: 'GPT-5.2' 
-tools: ['edit', 'search/codebase', 'execute/getTerminalOutput', 'execute/runInTerminal', 'read', 'search', 'web/fetch', 'web/githubRepo', 'todo']
+tools: ['edit', 'execute/getTerminalOutput', 'execute/runInTerminal', 'read', 'search', 'web', 'todo']
 description: 'Cleanup LaTeX math to use our custom macros'
 ---
 Your goal is to ensure all math (equations, in-line, etc.) in the provided (attached) LaTeX source file use our custom macros, as defined in [latex-math](../../latex-math/). Note that the compiled PDF should change at all, this is purely a cleanup of our source code! **ONLY SWAP OUT EXACT MATCHES**, if there are none, do not feel forced to make any changes!

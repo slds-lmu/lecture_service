@@ -1,7 +1,7 @@
 ---
 agent: 'agent'
 model: 'GPT-5.2' 
-tools: ['edit', 'search/codebase', 'execute/getTerminalOutput', 'execute/runInTerminal', 'read', 'search', 'web/fetch', 'web/githubRepo', 'todo']
+tools: ['edit', 'execute/getTerminalOutput', 'execute/runInTerminal', 'read', 'search', 'web', 'todo']
 description: 'Cleanup LaTeX source code'
 ---
 Your goal is to cleanup the source code (macros, environments, styles, ...) of the provided (attached) LaTeX source file. Note that the compiled PDF should not change drastically, wording should stay the **exact** same. However, do correct simple typos.
