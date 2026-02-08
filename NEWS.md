@@ -2,6 +2,23 @@
 
 - Rename `chapter` to `chapter` for consistency
 
+## Slide scripts and figure auditing
+
+A long-open issue was to enforce these rules for figures in `slides/<chapter>/figure` and `slides/<chapter>/rsrc`:
+
+1. Each script in `rsrc` runs without errors (given required R packages are installed)
+2. Each file in `figure` is created by a script in `rsrc`
+3. Each file in `figure` is used by at least one slide `.tex` file
+4. No script in `rsrc` or figure in `figure` is unused by any `.tex` file
+
+New functions for auditing this dependency chain:
+
+- `audit_chapter()`: Main entry point — audits a single chapter's script, figure, and slide dependencies. Identifies orphaned figures, orphaned scripts, missing figures, and missing packages. Optionally runs scripts to track which figures they produce.
+- `run_chapter_scripts()` / `run_script()`: Execute chapter scripts in isolated `callr` subprocesses with before/after figure directory diffing.
+- `parse_slide_figures()`: Parse `.tex` slides for figure references (`\includegraphics`, `\image`, `\imageFixed`, etc.).
+- `extract_script_deps()` / `check_script_deps()`: Detect and install R package dependencies from scripts.
+- New `chapter_audit.Rmd` for rendering per-lecture HTML audit reports.
+
 # lese 0.5.0
 
 - New service file: The root `Makefile` in each lecture was a placeholder, but now it actually does something:
