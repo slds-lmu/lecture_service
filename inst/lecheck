@@ -23,12 +23,12 @@ version <- paste0(
 doc <- 'SLDS Lecture Checker.
 
 Usage:
-  lecheck [compile] [compare] [clean] [--lecture=<lc>] [--topic=<tc>] [--slide=<sn>] [--preclean] [--postclean] [--no-margin] [--background] [--pdf-copy] [--verbose] [--tinytex | --docker]
+  lecheck [compile] [compare] [clean] [--lecture=<lc>] [--chapter=<tc>] [--slide=<sn>] [--preclean] [--postclean] [--no-margin] [--background] [--pdf-copy] [--verbose] [--tinytex | --docker]
   lecheck compile [--pdf-copy] [--tinytex | --docker] [--background]
   lecheck compare [--no-comparison-pdf] [--background]
   lecheck clean [--background]
   lecheck everything [--no-comparison-pdf] [--background]
-  lecheck list [--lecture=<lc>] [--topic=<tc>]
+  lecheck list [--lecture=<lc>] [--chapter=<tc>]
   lecheck (-h | --help)
   lecheck --version
 
@@ -43,15 +43,15 @@ Options:
   -h --help             Show this screen.
   --version             Show version.
   everything            Runs check_slides_many(), which saves results to a file rather than displaying them.
-  list                  List all lectures and topics found in this directory.
+  list                  List all lectures and chapters found in this directory.
   -l --lecture=<lc>     Lecture repository, e.g. "lecture_i2ml".
                         Can be abbreviated (dropping "lecture_" prefix) [default: NULL].
-  -t --topic=<tc>       Lecture topic, e.g. "cart".
+  -c --chapter=<tc>       Lecture chapter, e.g. "cart".
                         Assumed to be unique across lectures.
                         Takes precedence over --lecture [default: NULL].
   -s --slide=<sn>       Slide name, e.g. slides-boosting-cwb-basics.
                         No need for file extension etc. [default: NULL].
-                        Takes precedence over --lecture and --topic.
+                        Takes precedence over --lecture and --chapter.
   --no-margin           If set, compiles slides without speaker margin, i.e. 4:3 layout.
   --pdf-copy            Copy rendered slides to slides-pdf/<slide-name>.tex.
   --no-comparison-pdf   Do not render comparison PDFs to comparison/.
@@ -61,7 +61,7 @@ Options:
                         Mutually exclusive with `--docker`.
   --docker              Use dockerized latexmk for compilation. See ?latexmk_docker().
   --background          Do not wait for compilation for status checks. Not applicable if --tinytex is used.
-                        Note that this still enumerates lectures and topics but omits status reports.
+                        Note that this still enumerates lectures and chapters but omits status reports.
 '
 
 # Wrap in tryCatch to make --help default behavior when there's an argument error
@@ -74,7 +74,9 @@ arguments <- tryCatch(
     cat(doc)
   }
 )
-if (is.null(arguments)) quit(save = "no", status = 1)
+if (is.null(arguments)) {
+  quit(save = "no", status = 1)
+}
 
 if (interactive()) {
   # For debugging
@@ -92,7 +94,7 @@ if (interactive()) {
 }
 
 # If supplied as e.g. -l i2ml rather than --lecture=i2ml, strip leading whitespace
-arguments$topic <- gsub("^\\s*", "", arguments$topic)
+arguments$chapter <- gsub("^\\s*", "", arguments$chapter)
 arguments$lecture <- gsub("^\\s*", "", arguments$lecture)
 arguments$slide <- gsub("^\\s*", "", arguments$slide)
 
@@ -104,12 +106,14 @@ lectures_tbl <- collect_lectures(
   filter_lectures = lectures()
 )
 
-# If slide is specified, takes highest precedence. Then topic, then lecture.
+# If slide is specified, takes highest precedence. Then chapter, then lecture.
 # Ensures that if e.g. slide from advml is set but lecture is i2ml, slide "wins"
 if (!(arguments$slide == "NULL")) {
   lectures_tbl <- find_slide_tex(slide_file = arguments$slide)
-} else if (!(arguments$topic == "NULL")) {
-  lectures_tbl <- lectures_tbl[which(lectures_tbl$topic == arguments$topic), ]
+} else if (!(arguments$chapter == "NULL")) {
+  lectures_tbl <- lectures_tbl[
+    which(lectures_tbl$chapter == arguments$chapter),
+  ]
 } else if (!(arguments$lecture == "NULL")) {
   if (!grepl(pattern = "^lecture", arguments$lecture)) {
     arguments$lecture <- paste0("lecture_", arguments$lecture)
@@ -140,26 +144,26 @@ if (arguments$list) {
   cli::cli_inform("Found:")
   cli::cli_ul(.close = FALSE)
   cli::cli_li("{.val {length(unique(lectures_tbl$lecture))}} lectures")
-  cli::cli_li("{.val {length(unique(lectures_tbl$topic))}} topics")
+  cli::cli_li("{.val {length(unique(lectures_tbl$chapter))}} chapters")
   cli::cli_li("{.val {length(unique(lectures_tbl$tex))}} slide sets")
   cli::cli_end()
 
   for (current_lecture in unique(lectures_tbl$lecture)) {
-    topic_idx <- which(lectures_tbl[["lecture"]] == current_lecture)
-    current_lecture_tbl <- lectures_tbl[topic_idx, ]
+    chapter_idx <- which(lectures_tbl[["lecture"]] == current_lecture)
+    current_lecture_tbl <- lectures_tbl[chapter_idx, ]
 
-    n_topics <- length(unique(current_lecture_tbl$topic))
+    n_chapters <- length(unique(current_lecture_tbl$chapter))
     n_slidesets <- nrow(current_lecture_tbl)
 
     cli::cli_h1(
-      "{current_lecture}: {n_topics} topic{?s}, {n_slidesets} slide set{?s}"
+      "{current_lecture}: {n_chapters} chapter{?s}, {n_slidesets} slide set{?s}"
     )
 
     cli::cli_ul(.close = FALSE)
-    for (current_topic in unique(current_lecture_tbl$topic)) {
-      nslides <- sum(current_lecture_tbl[["topic"]] == current_topic)
+    for (current_chapter in unique(current_lecture_tbl$chapter)) {
+      nslides <- sum(current_lecture_tbl[["chapter"]] == current_chapter)
 
-      cli::cli_li("{current_topic}: {nslides} slide sets")
+      cli::cli_li("{current_chapter}: {nslides} slide sets")
     }
     cli::cli_end()
   }
@@ -168,7 +172,7 @@ if (arguments$list) {
 }
 
 # Iterate over lectures if there are more than one in the current set
-# Iteratively creating subsets of the lectures_tbl for the respective scope (lecture / topic / slide)
+# Iteratively creating subsets of the lectures_tbl for the respective scope (lecture / chapter / slide)
 # is probably not the best solution here but it feels easy to understand and robust enough.
 # Can still smartify this.
 for (current_lecture in unique(lectures_tbl$lecture)) {
@@ -177,21 +181,21 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
     lectures_tbl[["lecture"]] == current_lecture,
   ]
 
-  for (current_topic in unique(current_lecture_tbl$topic)) {
-    cli::cli_h2("{current_topic}")
-    current_topic_tbl <- current_lecture_tbl[
-      current_lecture_tbl[["topic"]] == current_topic,
+  for (current_chapter in unique(current_lecture_tbl$chapter)) {
+    cli::cli_h2("{current_chapter}")
+    current_chapter_tbl <- current_lecture_tbl[
+      current_lecture_tbl[["chapter"]] == current_chapter,
     ]
 
-    for (current_slide in unique(current_topic_tbl$slide_name)) {
-      current_slide_tbl <- current_topic_tbl[
-        current_topic_tbl[["slide_name"]] == current_slide,
+    for (current_slide in unique(current_chapter_tbl$slide_name)) {
+      current_slide_tbl <- current_chapter_tbl[
+        current_chapter_tbl[["slide_name"]] == current_slide,
       ]
 
       if (arguments$clean) {
         cli::cli_alert_info(
           "Cleaning {current_slide_tbl[['slide_name']]}",
-          id = current_topic
+          id = current_chapter
         )
         clean_slide(
           slide_file = current_slide_tbl[["slide_name"]],
@@ -202,8 +206,12 @@ for (current_lecture in unique(lectures_tbl$lecture)) {
 
       if (arguments$compile) {
         method <- "system"
-        if (arguments$tinytex) method <- "tinytex"
-        if (arguments$docker) method <- "docker"
+        if (arguments$tinytex) {
+          method <- "tinytex"
+        }
+        if (arguments$docker) {
+          method <- "docker"
+        }
 
         res <- compile_slide(
           current_slide_tbl[["slide_name"]],

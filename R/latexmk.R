@@ -48,8 +48,8 @@ latexmk_docker <- function(
   # Get absolute path up to "lecture_XYZ" bit for mounting into docker container
   lecture_dir <- fs::path_dir(tmp$slides_dir) |>
     fs::path_dir()
-  # Get relative path to topic directory, ust "advriskmin" for example, to set working directory within container
-  topic_dir_rel <- fs::path_file(tmp$slides_dir)
+  # Get relative path to chapter directory, ust "advriskmin" for example, to set working directory within container
+  chapter_dir_rel <- fs::path_file(tmp$slides_dir)
 
   # Need numeric user ID to start docker container
   # Otherwise created files are owned by root:root which is inconvenient
@@ -71,7 +71,7 @@ latexmk_docker <- function(
       "-v",
       glue::glue("{lecture_dir}:/usr/src/app:z"),
       "-w",
-      glue::glue("/usr/src/app/slides/{topic_dir_rel}"),
+      glue::glue("/usr/src/app/slides/{chapter_dir_rel}"),
       glue::glue("registry.gitlab.com/islandoftex/images/texlive:{tag}"),
       "latexmk",
       "-pdf",

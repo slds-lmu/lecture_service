@@ -99,18 +99,18 @@ collect_lectures <- function(
       # and we don't want stuff in attic/ or the chapter-order.tex file.
       # Not-smart but easy-ish method is to enumerate everything and than filter out
       # the useless stuff.
-      topic_dirs <- fs::dir_ls(
+      chapter_dirs <- fs::dir_ls(
         lecture_slides,
         recurse = FALSE,
         type = "directory"
       )
       # Exclude e.g. /slides/all
-      topic_dirs <- topic_dirs[which(
-        !(fs::path_file(topic_dirs) %in% exclude_slide_subdirs)
+      chapter_dirs <- chapter_dirs[which(
+        !(fs::path_file(chapter_dirs) %in% exclude_slide_subdirs)
       )]
       # Non-recursively list tex files now, so we avoid
       # e.g. lecture_i2ml/slides/tuning/attic/ files
-      tex_files <- fs::dir_ls(topic_dirs, recurse = FALSE, glob = "*.tex")
+      tex_files <- fs::dir_ls(chapter_dirs, recurse = FALSE, glob = "*.tex")
       slides_dir <- fs::path_tidy(fs::path_dir(tex_files))
       pdf_files <- fs::path_ext_set(tex_files, "pdf")
 
@@ -120,7 +120,7 @@ collect_lectures <- function(
         # latexmk-generated log file for later grep'ing for common errors. Might not exist but path is known.
         tex_log = fs::path_ext_set(tex_files, ext = "log"),
         slides_dir = slides_dir,
-        topic = fs::path_file(slides_dir),
+        chapter = fs::path_file(slides_dir),
         slide_name = fs::path_file(fs::path_ext_remove(tex_files)),
         pdf = pdf_files,
         pdf_static = fs::path_tidy(here::here(
@@ -138,7 +138,7 @@ collect_lectures <- function(
   }
 
   # Exclude undesired slide/<folder> and <slide-name>.tex
-  lectures_tbl <- subset(lectures_tbl, !(topic %in% exclude_slide_subdirs))
+  lectures_tbl <- subset(lectures_tbl, !(chapter %in% exclude_slide_subdirs))
   lectures_tbl <- subset(lectures_tbl, !(slide_name %in% exclude_slide_names))
 
   # Manual excludeds for WIP and outdated slides
@@ -161,7 +161,7 @@ collect_lectures <- function(
 
   lectures_tbl[, c(
     "lecture",
-    "topic",
+    "chapter",
     "slide_name",
     "tex",
     "tex_log",
@@ -255,7 +255,7 @@ find_lecture_root <- function(slide_file) {
 
   lecture_regex = paste0(lectures(), collapse = "|")
 
-# Use grep to find *last* match for lecture name, (we have ../lecture_i2ml/lecture_i2ml/slides/.. on CI)
+  # Use grep to find *last* match for lecture name, (we have ../lecture_i2ml/lecture_i2ml/slides/.. on CI)
   pathsplit[seq_len(max(grep(pattern = lecture_regex, x = pathsplit)))] |>
     fs::path_join()
 }

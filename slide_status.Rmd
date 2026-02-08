@@ -58,7 +58,7 @@ all_slide_check <- all_slide_check[
 ]
 ```
 
-This document tabulates the state of the slides in `lecture_*/slides/<topic>/` based on
+This document tabulates the state of the slides in `lecture_*/slides/<chapter>/` based on
 
 a) compilation checks (does it compile,and if not, is there a salient error message?) and 
 b) (optionally and rarely) comparison with presumably "known good" versions of the slides located in `lecture_*/slides-pdf/`
@@ -258,15 +258,15 @@ check_counts |>
 ```
 lecture_advml/slides/gaussian-processes/slides-gp-bayes-lm.tex
 \___________/        \________________/ \________________/
-   lecture                 topic            <slide-name>
+   lecture                 chapter            <slide-name>
 
 lecture_advml/slides-pdf/slides-gp-bayes-lm.pdf
                         \___________________/
                        pdf_static / "Reference PDF"
 ```
 
-Tables are organized by lecture (first level) and lecture topics corresponding to folders in `slides/<topic>` (second level), with a table per topic.
-Topics ignore certain folders like `attic` and `all`.
+Tables are organized by lecture (first level) and lecture chapters corresponding to folders in `slides/<chapter>` (second level), with a table per chapter.
+chapters ignore certain folders like `attic` and `all`.
 
 - **Slide**: The `<slide-name>` with a link to the compiled .tex file (if it compiles).
 - **Compiles?**: Whether the .tex file compiles without error using `latexmk -pdf`.
@@ -290,16 +290,16 @@ for (current_lecture in lectures) {
 
   cat(sprintf("\n## %s \n\n", current_lecture))
   cat(sprintf(
-    "%i topics with a total of %i slides\n",
-    length(unique(tmp$topic)),
+    "%i chapters with a total of %i slides\n",
+    length(unique(tmp$chapter)),
     nrow(tmp)
   ))
 
-  for (current_topic in sort(unique(tmp$topic))) {
+  for (current_chapter in sort(unique(tmp$chapter))) {
     tmp <- check_table |>
-      filter(lecture == current_lecture, topic == current_topic)
+      filter(lecture == current_lecture, chapter == current_chapter)
 
-    cat(sprintf("\n### %s\n\n", current_topic))
+    cat(sprintf("\n### %s\n\n", current_chapter))
 
     tab <- tmp |>
       select(

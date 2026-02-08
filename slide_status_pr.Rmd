@@ -27,7 +27,8 @@ if (!file.exists("slide_check_cache.rds")) {
   stop(paste(
     "slide_check_cache.rds does not exists.",
     "Run `make` and get a coffee, or",
-    "Rscript -e 'lese::check_slides_many()", sep = "\n "
+    "Rscript -e 'lese::check_slides_many()",
+    sep = "\n "
   ))
 }
 
@@ -40,10 +41,14 @@ lectures <- lectures[match(included_lectures, lectures, nomatch = 0)]
 
 # Might as well subset table to only selected lectures
 # This allows having a lecture locally for testing but not include them here yet.
-all_slide_check <- all_slide_check[all_slide_check$lecture %in% included_lectures, ]
+all_slide_check <- all_slide_check[
+  all_slide_check$lecture %in% included_lectures,
+]
 
 if (nrow(all_slide_check) == 0) {
-  cli::cli_abort("No slides to check, {.val all_slide_check} is empty after filtering")
+  cli::cli_abort(
+    "No slides to check, {.val all_slide_check} is empty after filtering"
+  )
 }
 
 ```
@@ -51,12 +56,17 @@ if (nrow(all_slide_check) == 0) {
 ```{r slide-checker-repo-status}
 this_repo_status() |>
   mutate(
-    branch = sprintf("<a href='https://github.com/slds-lmu/lecture_service/tree/%s'>%s</a>", branch, branch)
+    branch = sprintf(
+      "<a href='https://github.com/slds-lmu/lecture_service/tree/%s'>%s</a>",
+      branch,
+      branch
+    )
   ) |>
   select(branch, last_commit_time, last_commit_by, last_commit_summary) |>
   kable(
     col.names = c("Branch", "Last Commit", "By", "Message"),
-    escape = FALSE, caption = "Status of the lecture_service repo (time in UTC)"
+    escape = FALSE,
+    caption = "Status of the lecture_service repo (time in UTC)"
   )
 ```
 
@@ -65,13 +75,31 @@ this_repo_status() |>
 repo_status(lecture = lectures) |>
   arrange(desc(last_commit_time)) |>
   mutate(
-    lecture_link = sprintf("<a href='https://%s.github.io/%s'>%s</a>", org, lecture, lecture),
-    branch = sprintf("<a href='https://github.com/%s/%s/tree/%s'>%s</a>", org, lecture, branch, branch)
+    lecture_link = sprintf(
+      "<a href='https://%s.github.io/%s'>%s</a>",
+      org,
+      lecture,
+      lecture
+    ),
+    branch = sprintf(
+      "<a href='https://github.com/%s/%s/tree/%s'>%s</a>",
+      org,
+      lecture,
+      branch,
+      branch
+    )
   ) |>
-  select(lecture_link, branch, last_commit_time, last_commit_by, last_commit_summary) |>
+  select(
+    lecture_link,
+    branch,
+    last_commit_time,
+    last_commit_by,
+    last_commit_summary
+  ) |>
   kable(
     col.names = c("Lecture", "Branch", "Last Commit", "By", "Message"),
-    escape = FALSE, caption = "Latest commits per lecture (times in UTC)"
+    escape = FALSE,
+    caption = "Latest commits per lecture (times in UTC)"
   )
 ```
 
@@ -81,15 +109,23 @@ check_table <- all_slide_check |>
   # Transforms the logical columns, i.e. pdf_exists, pdf_static_exists, compile_check, ...
   mutate(across(where(is.logical), \(x) {
     case_when(
-      x ~ "\u2705",  # Green check symbol
+      x ~ "\u2705", # Green check symbol
       !x ~ "\u274c", # Red X symbol
       is.na(x) ~ ""
     )
   })) |>
   mutate(
     # Insert red question mark emoji instead of red X for easier visual parsing maybe
-    compare_check = ifelse(grepl("Dissimilar pages", compare_check_note), "\u2753", compare_check),
-    compare_check = ifelse(grepl("No reference", compare_check_note), "", compare_check)
+    compare_check = ifelse(
+      grepl("Dissimilar pages", compare_check_note),
+      "\u2753",
+      compare_check
+    ),
+    compare_check = ifelse(
+      grepl("No reference", compare_check_note),
+      "",
+      compare_check
+    )
   ) |>
   # Make links out of a few columns
   mutate(
@@ -120,21 +156,24 @@ if (!all(check_table$compare_check == "")) {
 }
 
 for (current_lecture in lectures) {
-
   tmp <- check_table |>
     filter(lecture == current_lecture)
 
   cat(sprintf("\n## %s \n\n", current_lecture))
 
-  cat(sprintf("%i topics with a total of %i slides\n", length(unique(tmp$topic)), nrow(tmp)))
-  
+  cat(sprintf(
+    "%i chapters with a total of %i slides\n",
+    length(unique(tmp$chapter)),
+    nrow(tmp)
+  ))
+
   tmp |>
     count(compile_check) |>
     kable(
       format = "html"
     ) |>
     cat()
-  
+
   tmp |>
     count(across(any_of(check_cols))) |>
     kable(
@@ -142,19 +181,21 @@ for (current_lecture in lectures) {
     ) |>
     cat()
 
-  for (current_topic in sort(unique(tmp$topic))) {
+  for (current_chapter in sort(unique(tmp$chapter))) {
     tmp <- check_table |>
-      filter(lecture == current_lecture, topic == current_topic)
+      filter(lecture == current_lecture, chapter == current_chapter)
 
-    cat(sprintf("\n### %s\n\n", current_topic))
-    
+    cat(sprintf("\n### %s\n\n", current_chapter))
+
     tmp |>
       select(
-        slide_name, any_of(check_cols), check_note
+        slide_name,
+        any_of(check_cols),
+        check_note
       ) |>
       kable(
         # Needs to be HTML even for markdown output, tables don't render properly otherwise
-        format = "html", 
+        format = "html",
         align = col_align,
         col.names = col_names
       ) |>

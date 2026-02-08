@@ -6,4 +6,4 @@
 NULL
 
 # I know.
-globalVariables(c("lecture", "topic", "slide_name"))
+globalVariables(c("lecture", "chapter", "slide_name"))
