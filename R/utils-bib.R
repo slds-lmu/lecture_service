@@ -31,7 +31,7 @@ bib_to_list <- function(bib, arrange_by = "category") {
     pull(formatted)
 }
 
-#' Condense list of authors from bilatex entry
+#' Condense list of authors from biblatex entry
 #'
 #' - NAs are replaced by ---
 #' - Two authors are separated by &
@@ -72,9 +72,6 @@ format_authors <- function(author_list) {
 #' - Replaces {foo} with foo
 #' @keywords internal
 clean_tex_markup <- function(x) {
-  # if (anyNA(x)) {
-  #   x[is.na(x)] <- ""
-  # }
   x |>
     stringr::str_remove_all("\\\\") |>
     stringr::str_replace_all("emph\\{(.*)\\}", "*\\1*") |>
