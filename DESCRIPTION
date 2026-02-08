@@ -10,8 +10,9 @@ License: MIT + file LICENSE
 URL: https://slds-lmu.github.io/lecture_service/
 Depends:
     R (>= 4.1.0)
-Imports: 
+Imports:
     bib2df,
+    callr,
     checkmate,
     cli,
     dplyr,
@@ -25,6 +26,7 @@ Imports:
     processx,
     stringi,
     stringr,
+    tibble,
     tictoc,
     tinytex
 Suggests: 

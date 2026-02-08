@@ -27,6 +27,17 @@ reference:
       - compare_slide
       - clean_slide
       - starts_with("latexmk")
+  - title: "Figure script auditing"
+    desc: |
+      Audit the script-figure-slide dependency chain within
+      lecture chapters.
+    contents:
+      - audit_chapter
+      - run_chapter_scripts
+      - run_script
+      - parse_slide_figures
+      - extract_script_deps
+      - check_script_deps
   - title: "Utilities"
     desc: "Various helper functions"
     contents:
