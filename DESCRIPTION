@@ -24,13 +24,15 @@ Imports:
     here,
     jsonlite,
     processx,
+    rlang,
     stringi,
     stringr,
     tibble,
     tictoc,
     tinytex
-Suggests: 
+Suggests:
     kableExtra,
+    pak,
     rmarkdown
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

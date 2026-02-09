@@ -17,12 +17,13 @@ get_chapter_figures <- function(lecture_dir, chapter) {
   }
 
   paths <- fs::dir_ls(figure_dir, type = "file")
+  files <- fs::path_file(paths)
 
   tibble::tibble(
     figure_path = as.character(paths),
-    figure_file = fs::path_file(paths),
-    figure_extension = fs::path_ext(figure_file),
-    figure_base_name = as.character(fs::path_ext_remove(figure_file))
+    figure_file = as.character(files),
+    figure_extension = fs::path_ext(files),
+    figure_base_name = as.character(fs::path_ext_remove(files))
   )
 }
 
@@ -47,11 +48,12 @@ get_chapter_scripts <- function(lecture_dir, chapter, pattern = "[.]R$") {
   }
 
   paths <- fs::dir_ls(rsrc_dir, type = "file", regexp = pattern)
+  files <- fs::path_file(paths)
 
   tibble::tibble(
     script_path = as.character(paths),
-    script_file = fs::path_file(paths),
-    script_extension = fs::path_ext(script_file),
-    script_base_name = as.character(fs::path_ext_remove(script_file))
+    script_file = as.character(files),
+    script_extension = fs::path_ext(files),
+    script_base_name = as.character(fs::path_ext_remove(files))
   )
 }
