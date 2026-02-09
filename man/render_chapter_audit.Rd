@@ -10,6 +10,7 @@ render_chapter_audit(
   pattern = "[.]R$",
   timeout = 300,
   run = FALSE,
+  method = "auto",
   output_dir = lecture_dir,
   ...
 )
@@ -28,6 +29,10 @@ Default \code{"[.]R$"} matches all \code{.R} files.}
 
 \item{run}{Logical. If \code{TRUE}, execute scripts and track produced figures.
 Default \code{FALSE}.}
+
+\item{method}{Character. Figure detection method passed to
+\code{\link[=audit_chapter]{audit_chapter()}}. One of \code{"auto"}, \code{"regex"}, or \code{"fls"}.
+Default \code{"auto"}.}
 
 \item{output_dir}{Character. Directory for the output HTML file.
 Defaults to \code{lecture_dir}.}

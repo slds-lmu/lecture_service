@@ -10,7 +10,8 @@ audit_chapter(
   lecture = basename(lecture_dir),
   pattern = "[.]R$",
   timeout = 300,
-  run = TRUE
+  run = TRUE,
+  method = c("auto", "regex", "fls")
 )
 }
 \arguments{
@@ -28,6 +29,17 @@ Defaults to \code{basename(lecture_dir)}.}
 
 \item{run}{Logical. If \code{TRUE} (default), execute scripts.
 If \code{FALSE}, only perform static analysis (figure existence + slide references).}
+
+\item{method}{Character. How to detect which figures slides reference:
+\itemize{
+\item \code{"auto"} (default): Use \code{.fls} files if they exist for all slides,
+otherwise fall back to regex. Best for use after \verb{make slides}.
+\item \code{"regex"}: Parse \code{.tex} source with regex. Fast but can miss
+dynamically constructed paths (e.g. \verb{\\\\foreach} loops).
+\item \code{"fls"}: Parse \code{.fls} recorder files from \code{latexmk}. More robust
+but requires prior compilation (\verb{make slides}). Errors if \code{.fls}
+files are missing.
+}}
 }
 \value{
 Invisibly: A list with components:

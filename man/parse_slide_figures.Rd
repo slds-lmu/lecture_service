@@ -20,6 +20,10 @@ Extracts figure paths referenced via \verb{\\\\includegraphics}, \verb{\\\\image
 \details{
 Only returns references to \verb{figure/} paths (skips \verb{figure_man/},
 cross-chapter \verb{../} references, and \verb{../../slides-pdf/}).
+
+Note: This uses regex on \code{.tex} source and cannot resolve dynamic
+paths (e.g. \verb{\\\\foreach} loops). For more robust detection after
+compilation, use \code{\link[=audit_chapter]{audit_chapter()}} with \code{method = "fls"}.
 }
 \examples{
 \dontshow{if (fs::dir_exists(here::here("lecture_i2ml"))) withAutoprint(\{ # examplesIf}
