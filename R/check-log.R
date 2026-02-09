@@ -53,6 +53,7 @@ check_log <- function(slide_file, before = 0, after = 1) {
     "^! Extra \\}, or forgotten \\$",
     "! TeX capacity exceeded",
     "! Incomplete",
+    "Package keyval Error",
     # Generic error
     "^! LaTeX Error:"
   )
