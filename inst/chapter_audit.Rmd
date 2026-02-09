@@ -1,0 +1,359 @@
+---
+title: "Chapter Audit: `r params$lecture`"
+author: "`r Sys.info()[['user']]`"
+date: '`r format(Sys.time(), format = "%F %T", tz = "Europe/Berlin", usetz = TRUE)`'
+output:
+  html_document:
+    toc: yes
+    toc_depth: 4
+    toc_float:
+      collapsed: true
+    self_contained: yes
+params:
+  lecture_dir: !r getwd()
+  lecture: !r NULL
+  chapters: !r NULL
+  pattern: "[.]R$"
+  timeout: 300
+  run: !r FALSE
+editor_options:
+  chunk_output_type: console
+---
+
+```{css, echo=FALSE}
+h3 {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+}
+.script-success { color: #1B9E77; }
+.script-failure { color: #D95F02; }
+.audit-warning { color: #D95F02; font-weight: bold; }
+.audit-ok { color: #1B9E77; }
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+library(lese)
+library(dplyr)
+
+lecture_dir <- normalizePath(params$lecture_dir, mustWork = TRUE)
+lecture <- params$lecture %||% basename(lecture_dir)
+
+# Discover chapters: directories under slides/ that contain rsrc/ or figure/
+exclude_dirs <- c("attic", "all", "figure", "figure_man", "rsrc", "backup")
+slides_dir <- fs::path(lecture_dir, "slides")
+
+if (!fs::dir_exists(slides_dir)) {
+  stop(sprintf("Slides directory '%s' not found.", slides_dir))
+}
+
+all_chapter_dirs <- fs::dir_ls(slides_dir, type = "directory")
+chapter_names <- fs::path_file(all_chapter_dirs)
+chapter_names <- setdiff(chapter_names, exclude_dirs)
+
+# Filter to chapters that have rsrc/ or figure/
+has_content <- vapply(
+  chapter_names,
+  function(ch) {
+    fs::dir_exists(fs::path(slides_dir, ch, "rsrc")) ||
+      fs::dir_exists(fs::path(slides_dir, ch, "figure"))
+  },
+  logical(1)
+)
+chapter_names <- chapter_names[has_content]
+
+# If specific chapters requested, subset
+if (!is.null(params$chapters)) {
+  missing <- setdiff(params$chapters, chapter_names)
+  if (length(missing) > 0) {
+    warning(sprintf("Chapters not found: %s", paste(missing, collapse = ", ")))
+  }
+  chapter_names <- intersect(params$chapters, chapter_names)
+}
+
+chapter_names <- sort(chapter_names)
+```
+
+```{r run-audits, include=FALSE}
+# Run all chapter audits
+audit_results <- list()
+for (ch in chapter_names) {
+  res <- tryCatch(
+    audit_chapter(
+      ch,
+      lecture_dir = lecture_dir,
+      pattern = params$pattern,
+      timeout = params$timeout,
+      run = params$run
+    ),
+    error = function(e) {
+      warning(sprintf(
+        "audit_chapter failed for '%s': %s",
+        ch,
+        conditionMessage(e)
+      ))
+      NULL
+    }
+  )
+  if (!is.null(res)) {
+    audit_results[[ch]] <- res
+  }
+}
+# Update chapter_names to only include successful audits
+chapter_names <- names(audit_results)
+```
+
+This report audits the **script &rarr; figure &rarr; slide** dependency chain
+for `r lecture`. Each chapter's `rsrc/` scripts, `figure/` files, and slide
+`.tex` files are cross-referenced to identify:
+
+- **Orphaned figures**: present in `figure/` but not referenced by any slide
+- **Missing figures**: referenced by slides but not present in `figure/`
+- **Missing packages**: R packages used by scripts but not installed
+-
+```{r conditional-bullets, results='asis'}
+if (params$run) {
+  cat("- **Failed scripts**: scripts that error during execution\n")
+  cat(
+    "- **Orphaned scripts**: scripts that produce no figure used by any slide\n"
+  )
+} else {
+  cat("\n> **Note**: Script execution is disabled (`run = FALSE`).")
+  cat(
+    " Set `run = TRUE` to also execute scripts and detect orphaned scripts.\n"
+  )
+}
+```
+
+**Found `r length(chapter_names)` chapter(s)** with scripts or figures to audit.
+
+# Overview
+
+```{r overview-table}
+safe_nrow <- function(x) if (is.null(x)) 0L else nrow(x)
+
+overview <- tibble::tibble(
+  Chapter = chapter_names,
+  Scripts = vapply(audit_results, function(r) safe_nrow(r$scripts), integer(1)),
+  Figures = vapply(audit_results, function(r) safe_nrow(r$figures), integer(1)),
+  `Orphaned Figs` = vapply(
+    audit_results,
+    function(r) length(r$orphaned_figures),
+    integer(1)
+  ),
+  `Missing Figs` = vapply(
+    audit_results,
+    function(r) safe_nrow(r$missing_figures),
+    integer(1)
+  ),
+  `Missing Pkgs` = vapply(
+    audit_results,
+    function(r) length(r$missing_pkgs %||% character()),
+    integer(1)
+  )
+)
+
+if (params$run) {
+  overview$`Failed Scripts` <- vapply(
+    audit_results,
+    function(r) {
+      if (is.null(r$scripts) || all(is.na(r$scripts$success))) {
+        0L
+      } else {
+        sum(!r$scripts$success)
+      }
+    },
+    integer(1)
+  )
+  overview$`Orphaned Scripts` <- vapply(
+    audit_results,
+    function(r) {
+      length(r$orphaned_scripts)
+    },
+    integer(1)
+  )
+}
+
+overview |>
+  kableExtra::kbl(caption = "Chapter audit summary") |>
+  kableExtra::kable_styling(
+    full_width = FALSE,
+    bootstrap_options = c("hover", "condensed", "responsive")
+  )
+```
+
+# Chapter Details
+
+```{r chapter-details, results='asis'}
+for (ch in chapter_names) {
+  res <- audit_results[[ch]]
+
+  n_scripts <- safe_nrow(res$scripts)
+  n_figures <- safe_nrow(res$figures)
+  n_slides <- length(res$slide_refs)
+  cat(sprintf(
+    "\n## %s\n\n%d scripts, %d figures, %d slides\n\n",
+    ch,
+    n_scripts,
+    n_figures,
+    n_slides
+  ))
+
+  # --- Figures table: one row per figure on disk, with status columns ---
+  if (n_figures > 0) {
+    fig_tbl <- tibble::tibble(
+      Figure = res$figures$figure_base_name,
+      Extension = res$figures$figure_extension,
+      `Used by slide` = vapply(
+        res$figures$figure_base_name,
+        function(fig) {
+          slides <- names(res$slide_refs)[vapply(
+            res$slide_refs,
+            function(refs) fig %in% refs,
+            logical(1)
+          )]
+          if (length(slides) == 0) "\u274c" else paste(slides, collapse = ", ")
+        },
+        character(1)
+      )
+    )
+
+    tab <- fig_tbl |>
+      kableExtra::kbl(
+        format = "html",
+        escape = FALSE,
+        caption = sprintf("Figures in %s/figure/", ch)
+      ) |>
+      kableExtra::kable_styling(
+        full_width = TRUE,
+        fixed_thead = TRUE,
+        bootstrap_options = c("hover", "condensed", "responsive")
+      ) |>
+      kableExtra::column_spec(1, width = "40%") |>
+      kableExtra::column_spec(3, width = "45%")
+
+    cat(tab)
+    cat("\n\n")
+  }
+
+  # --- Missing figures: referenced by slides but not on disk ---
+  if (nrow(res$missing_figures) > 0) {
+    cat("### Missing figures\n\n")
+
+    miss_tbl <- res$missing_figures |>
+      group_by(figure) |>
+      summarize(
+        `Referenced by` = paste(slide, collapse = ", "),
+        .groups = "drop"
+      ) |>
+      rename(Figure = figure)
+
+    tab <- miss_tbl |>
+      kableExtra::kbl(
+        format = "html",
+        escape = FALSE,
+        caption = sprintf(
+          "%d figure(s) referenced by slides but not in figure/",
+          nrow(miss_tbl)
+        )
+      ) |>
+      kableExtra::kable_styling(
+        full_width = TRUE,
+        bootstrap_options = c("hover", "condensed", "responsive")
+      )
+    cat(tab)
+    cat("\n\n")
+  }
+
+  # --- Missing packages ---
+  if (length(res$missing_pkgs %||% character()) > 0) {
+    cat("### Missing packages\n\n")
+
+    cat(paste0("- `", res$missing_pkgs, "`\n"), sep = "")
+    cat(sprintf(
+      "\n```r\ncheck_script_deps(\"%s\", lecture_dir = \"%s\")\n```\n\n",
+      ch,
+      lecture_dir
+    ))
+  }
+
+  # --- Script execution results ---
+  if (params$run && n_scripts > 0) {
+    cat("### Script execution\n\n")
+
+    script_tbl <- res$scripts |>
+      mutate(
+        Status = ifelse(success, "\u2705", "\u274c"),
+        Time = sprintf("%.1fs", elapsed),
+        Figures = vapply(
+          figures_produced,
+          function(x) {
+            if (length(x) == 0) {
+              return("")
+            }
+            paste(x, collapse = ", ")
+          },
+          character(1)
+        ),
+        Note = ifelse(
+          success,
+          Figures,
+          ifelse(
+            nchar(error_message) > 100,
+            paste0(substr(error_message, 1, 100), "..."),
+            error_message
+          )
+        )
+      ) |>
+      select(Script = script_file, Status, Time, Note)
+
+    tab <- script_tbl |>
+      kableExtra::kbl(
+        format = "html",
+        escape = FALSE,
+        caption = sprintf("Script execution for %s", ch)
+      ) |>
+      kableExtra::kable_styling(
+        full_width = TRUE,
+        fixed_thead = TRUE,
+        bootstrap_options = c("hover", "condensed", "responsive")
+      ) |>
+      kableExtra::column_spec(1, width = "30%") |>
+      kableExtra::column_spec(4, width = "45%")
+    cat(tab)
+    cat("\n\n")
+
+    n_success <- sum(res$scripts$success)
+    n_fail <- sum(!res$scripts$success)
+    cat(sprintf("**%d / %d** scripts succeeded", n_success, n_scripts))
+    if (n_fail > 0) {
+      cat(sprintf(", <span class='script-failure'>%d failed</span>", n_fail))
+    }
+    cat(".\n\n")
+
+    # --- Orphaned scripts ---
+    if (length(res$orphaned_scripts) > 0) {
+      cat("### Orphaned scripts\n\n")
+
+      orphan_tbl <- tibble::tibble(Script = res$orphaned_scripts)
+
+      tab <- orphan_tbl |>
+        kableExtra::kbl(
+          format = "html",
+          escape = FALSE,
+          caption = sprintf(
+            "%d script(s) produced no figure used by any slide",
+            length(res$orphaned_scripts)
+          )
+        ) |>
+        kableExtra::kable_styling(
+          full_width = FALSE,
+          bootstrap_options = c("hover", "condensed", "responsive")
+        )
+      cat(tab)
+      cat("\n\n")
+    }
+  }
+}
+```

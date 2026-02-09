@@ -17,7 +17,9 @@ New functions for auditing this dependency chain:
 - `run_chapter_scripts()` / `run_script()`: Execute chapter scripts in isolated `callr` subprocesses with before/after figure directory diffing.
 - `parse_slide_figures()`: Parse `.tex` slides for figure references (`\includegraphics`, `\image`, `\imageFixed`, etc.).
 - `extract_script_deps()` / `check_script_deps()`: Detect and install R package dependencies from scripts.
-- New `chapter_audit.Rmd` for rendering per-lecture HTML audit reports.
+- `render_chapter_audit()`: Render HTML audit reports from within any lecture directory. Bundled `chapter_audit.Rmd` template is installed with the package.
+- New `audit` target in the lecture Makefile (`make audit`) for running audits.
+- All audit functions accept `lecture_dir` parameter, defaulting to `here::here()`, so they work both from `lecture_service/` and from within individual lecture repos.
 
 # lese 0.5.0
 

@@ -18,7 +18,7 @@ determine which packages are needed. Scans one or more script files.
 }
 \examples{
 \dontshow{if (fs::dir_exists(here::here("lecture_i2ml"))) withAutoprint(\{ # examplesIf}
-scripts <- get_chapter_scripts("lecture_i2ml", "evaluation")
+scripts <- get_chapter_scripts(here::here("lecture_i2ml"), "evaluation")
 extract_script_deps(scripts$script_path)
 \dontshow{\}) # examplesIf}
 }

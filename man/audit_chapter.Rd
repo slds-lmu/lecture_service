@@ -4,12 +4,23 @@
 \alias{audit_chapter}
 \title{Audit the script-figure-slide dependency chain for a chapter}
 \usage{
-audit_chapter(lecture, chapter, pattern = "[.]R$", timeout = 300, run = TRUE)
+audit_chapter(
+  chapter,
+  lecture_dir = here::here(),
+  lecture = basename(lecture_dir),
+  pattern = "[.]R$",
+  timeout = 300,
+  run = TRUE
+)
 }
 \arguments{
-\item{lecture}{Character. Lecture directory name, e.g. \code{"lecture_i2ml"}.}
-
 \item{chapter}{Character. Chapter directory name, e.g. \code{"evaluation"}.}
+
+\item{lecture_dir}{Character. Path to the lecture directory.
+Defaults to \code{here::here()}, i.e. the project root.}
+
+\item{lecture}{Character. Lecture name for display purposes.
+Defaults to \code{basename(lecture_dir)}.}
 
 \item{pattern}{Regex pattern to filter scripts. Default \code{"[.]R$"}.}
 
@@ -47,13 +58,18 @@ and missing figures
 \examples{
 \dontshow{if (fs::dir_exists(here::here("lecture_i2ml"))) withAutoprint(\{ # examplesIf}
 # Static audit only (no script execution)
-result <- audit_chapter("lecture_i2ml", "evaluation", run = FALSE)
+result <- audit_chapter("evaluation",
+  lecture_dir = here::here("lecture_i2ml"),
+  run = FALSE
+)
 result$orphaned_figures
 result$missing_figures
 
 \dontrun{
 # Full audit with script execution
-result <- audit_chapter("lecture_i2ml", "evaluation", run = TRUE)
+result <- audit_chapter("evaluation",
+  lecture_dir = here::here("lecture_i2ml")
+)
 }
 \dontshow{\}) # examplesIf}
 }

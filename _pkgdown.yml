@@ -33,6 +33,7 @@ reference:
       lecture chapters.
     contents:
       - audit_chapter
+      - render_chapter_audit
       - run_chapter_scripts
       - run_script
       - parse_slide_figures

@@ -9,7 +9,7 @@
 #'
 #' @export
 #' @examplesIf fs::dir_exists(here::here("lecture_i2ml"))
-#' scripts <- get_chapter_scripts("lecture_i2ml", "evaluation")
+#' scripts <- get_chapter_scripts(here::here("lecture_i2ml"), "evaluation")
 #' extract_script_deps(scripts$script_path)
 extract_script_deps <- function(script_paths) {
   checkmate::assert_character(script_paths, min.len = 1)
@@ -20,7 +20,9 @@ extract_script_deps <- function(script_paths) {
   all_pkgs <- character()
 
   for (path in script_paths) {
-    if (!fs::file_exists(path)) next
+    if (!fs::file_exists(path)) {
+      next
+    }
     text <- paste(readLines(path, warn = FALSE), collapse = "\n")
 
     # library(pkg) and require(pkg) — with or without quotes
@@ -42,8 +44,11 @@ extract_script_deps <- function(script_paths) {
 #' directory, checks which are not installed, and offers to install them
 #' via [pak::pak()].
 #'
-#' @param lecture Character. Lecture directory name, e.g. `"lecture_i2ml"`.
 #' @param chapter Character. Chapter directory name, e.g. `"evaluation"`.
+#' @param lecture_dir Character. Path to the lecture directory.
+#'   Defaults to `here::here()`.
+#' @param lecture Character. Lecture name for display purposes.
+#'   Defaults to `basename(lecture_dir)`.
 #' @param pattern Regex pattern to filter scripts. Default `"[.]R$"`.
 #' @param install Logical. If `TRUE` (default in interactive sessions),
 #'   prompt to install missing packages. If `FALSE`, only report.
@@ -53,24 +58,33 @@ extract_script_deps <- function(script_paths) {
 #'
 #' @export
 #' @examplesIf fs::dir_exists(here::here("lecture_i2ml"))
-#' check_script_deps("lecture_i2ml", "evaluation", install = FALSE)
+#' check_script_deps("evaluation",
+#'   lecture_dir = here::here("lecture_i2ml"),
+#'   install = FALSE
+#' )
 check_script_deps <- function(
-  lecture,
   chapter,
+  lecture_dir = here::here(),
+  lecture = basename(lecture_dir),
   pattern = "[.]R$",
   install = interactive()
 ) {
-  scripts <- get_chapter_scripts(lecture, chapter, pattern = pattern)
+  check_lecture_dir(lecture_dir, lecture_dir_missing = missing(lecture_dir))
+  scripts <- get_chapter_scripts(lecture_dir, chapter, pattern = pattern)
 
   if (nrow(scripts) == 0) {
-    cli::cli_alert_warning("No scripts found in {.path {lecture}/slides/{chapter}/rsrc/}")
+    cli::cli_alert_warning(
+      "No scripts found in {.path {lecture}/slides/{chapter}/rsrc/}"
+    )
     return(invisible(list(all = character(), missing = character())))
   }
 
   deps <- extract_script_deps(scripts$script_path)
 
   if (length(deps) == 0) {
-    cli::cli_alert_success("No package dependencies detected in {nrow(scripts)} script{?s}.")
+    cli::cli_alert_success(
+      "No package dependencies detected in {nrow(scripts)} script{?s}."
+    )
     return(invisible(list(all = character(), missing = character())))
   }
 
@@ -86,15 +100,23 @@ check_script_deps <- function(
     return(invisible(list(all = deps, missing = character())))
   }
 
-  cli::cli_alert_warning("{length(missing)} package{?s} not installed: {.pkg {missing}}")
+  cli::cli_alert_warning(
+    "{length(missing)} package{?s} not installed: {.pkg {missing}}"
+  )
 
   if (install) {
     if (!requireNamespace("pak", quietly = TRUE)) {
-      cli::cli_abort("{.pkg pak} is required to install packages. Install it with {.code install.packages('pak')}")
+      cli::cli_abort(
+        "{.pkg pak} is required to install packages. Install it with {.code install.packages('pak')}"
+      )
     }
     answer <- utils::menu(
       choices = c("Yes", "No"),
-      title = paste0("Install ", length(missing), " missing package(s) via pak?")
+      title = paste0(
+        "Install ",
+        length(missing),
+        " missing package(s) via pak?"
+      )
     )
     if (answer == 1L) {
       pak::pak(missing)

@@ -54,7 +54,7 @@ run_script <- function(script_path, timeout = 300) {
 
 #' Run all scripts in a chapter and track produced figures
 #'
-#' Runs each R script in `<lecture>/slides/<chapter>/rsrc/` sequentially in
+#' Runs each R script in a chapter's `rsrc/` directory sequentially in
 #' isolated subprocesses. For each script, snapshots the `figure/` directory
 #' before and after execution to determine which figure files were
 #' created or modified.
@@ -62,8 +62,11 @@ run_script <- function(script_path, timeout = 300) {
 #' Scripts are run sequentially because the before/after figure directory
 #' diffing requires that only one script modifies `figure/` at a time.
 #'
-#' @param lecture Character. Lecture directory name, e.g. `"lecture_i2ml"`.
 #' @param chapter Character. Chapter directory name, e.g. `"evaluation"`.
+#' @param lecture_dir Character. Path to the lecture directory.
+#'   Defaults to `here::here()`.
+#' @param lecture Character. Lecture name for display purposes.
+#'   Defaults to `basename(lecture_dir)`.
 #' @param pattern Regex pattern to filter script filenames. Default `"[.]R$"`.
 #' @param timeout Numeric. Per-script timeout in seconds. Default 300.
 #'
@@ -78,21 +81,30 @@ run_script <- function(script_path, timeout = 300) {
 #' @export
 #' @examples
 #' \dontrun{
-#' run_chapter_scripts("lecture_i2ml", "evaluation")
+#' run_chapter_scripts("evaluation",
+#'   lecture_dir = here::here("lecture_i2ml")
+#' )
 #'
 #' # Only fig*.R scripts
-#' run_chapter_scripts("lecture_i2ml", "evaluation", pattern = "^fig.*[.]R$")
+#' run_chapter_scripts("evaluation",
+#'   lecture_dir = here::here("lecture_i2ml"),
+#'   pattern = "^fig.*[.]R$"
+#' )
 #' }
 run_chapter_scripts <- function(
-  lecture,
   chapter,
+  lecture_dir = here::here(),
+  lecture = basename(lecture_dir),
   pattern = "[.]R$",
   timeout = 300
 ) {
-  scripts <- get_chapter_scripts(lecture, chapter, pattern = pattern)
+  check_lecture_dir(lecture_dir, lecture_dir_missing = missing(lecture_dir))
+  scripts <- get_chapter_scripts(lecture_dir, chapter, pattern = pattern)
 
   if (nrow(scripts) == 0) {
-    cli::cli_alert_warning("No scripts found in {.path {lecture}/slides/{chapter}/rsrc/}")
+    cli::cli_alert_warning(
+      "No scripts found in {.path {lecture}/slides/{chapter}/rsrc/}"
+    )
     return(tibble::tibble(
       script_file = character(),
       script_path = character(),
@@ -103,7 +115,7 @@ run_chapter_scripts <- function(
     ))
   }
 
-  figure_dir <- here::here(lecture, "slides", chapter, "figure")
+  figure_dir <- fs::path(lecture_dir, "slides", chapter, "figure")
   has_figure_dir <- fs::dir_exists(figure_dir)
 
   cli::cli_alert_info(
@@ -132,12 +144,16 @@ run_chapter_scripts <- function(
           "{script_file} ({res$elapsed}s, produced: {.file {produced}})"
         )
       } else {
-        cli::cli_alert_success("{script_file} ({res$elapsed}s, no figures produced)")
+        cli::cli_alert_success(
+          "{script_file} ({res$elapsed}s, no figures produced)"
+        )
       }
     } else {
       cli::cli_alert_danger("{script_file} ({res$elapsed}s)")
-      cli::cli_text("
-{res$error_message}")
+      cli::cli_text(
+        "
+{res$error_message}"
+      )
     }
 
     res$script_file <- script_file
@@ -146,13 +162,23 @@ run_chapter_scripts <- function(
   }
 
   out <- do.call(rbind, results)
-  out[, c("script_file", "script_path", "success", "error_message", "elapsed", "figures_produced")]
+  out[, c(
+    "script_file",
+    "script_path",
+    "success",
+    "error_message",
+    "elapsed",
+    "figures_produced"
+  )]
 }
 
 
 #' Snapshot a figure directory (file paths + modification times)
 #' @noRd
-snapshot_figure_dir <- function(figure_dir, exists = fs::dir_exists(figure_dir)) {
+snapshot_figure_dir <- function(
+  figure_dir,
+  exists = fs::dir_exists(figure_dir)
+) {
   if (!exists) {
     return(tibble::tibble(
       path = character(),
@@ -186,7 +212,9 @@ snapshot_figure_dir <- function(figure_dir, exists = fs::dir_exists(figure_dir))
 #' @return Character vector of filenames that are new or modified.
 #' @noRd
 diff_figure_snapshots <- function(before, after) {
-  if (nrow(after) == 0) return(character())
+  if (nrow(after) == 0) {
+    return(character())
+  }
 
   # New files: in after but not in before
   new_files <- setdiff(after$file, before$file)

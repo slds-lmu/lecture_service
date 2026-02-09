@@ -68,8 +68,11 @@ parse_slide_figures <- function(slide_tex_path) {
 #' 4. Cross-references to identify orphaned figures, orphaned scripts,
 #'    and missing figures
 #'
-#' @param lecture Character. Lecture directory name, e.g. `"lecture_i2ml"`.
 #' @param chapter Character. Chapter directory name, e.g. `"evaluation"`.
+#' @param lecture_dir Character. Path to the lecture directory.
+#'   Defaults to `here::here()`, i.e. the project root.
+#' @param lecture Character. Lecture name for display purposes.
+#'   Defaults to `basename(lecture_dir)`.
 #' @param pattern Regex pattern to filter scripts. Default `"[.]R$"`.
 #' @param timeout Numeric. Per-script timeout in seconds. Default 300.
 #' @param run Logical. If `TRUE` (default), execute scripts.
@@ -91,27 +94,35 @@ parse_slide_figures <- function(slide_tex_path) {
 #' @export
 #' @examplesIf fs::dir_exists(here::here("lecture_i2ml"))
 #' # Static audit only (no script execution)
-#' result <- audit_chapter("lecture_i2ml", "evaluation", run = FALSE)
+#' result <- audit_chapter("evaluation",
+#'   lecture_dir = here::here("lecture_i2ml"),
+#'   run = FALSE
+#' )
 #' result$orphaned_figures
 #' result$missing_figures
 #'
 #' \dontrun{
 #' # Full audit with script execution
-#' result <- audit_chapter("lecture_i2ml", "evaluation", run = TRUE)
+#' result <- audit_chapter("evaluation",
+#'   lecture_dir = here::here("lecture_i2ml")
+#' )
 #' }
 audit_chapter <- function(
-  lecture,
   chapter,
+  lecture_dir = here::here(),
+  lecture = basename(lecture_dir),
   pattern = "[.]R$",
   timeout = 300,
   run = TRUE
 ) {
-  chapter_dir <- here::here(lecture, "slides", chapter)
+  check_lecture_dir(lecture_dir, lecture_dir_missing = missing(lecture_dir))
+
+  chapter_dir <- fs::path(lecture_dir, "slides", chapter)
   checkmate::assert_directory_exists(chapter_dir)
 
   # --- Discovery ---
-  scripts_tbl <- get_chapter_scripts(lecture, chapter, pattern = pattern)
-  figures_tbl <- get_chapter_figures(lecture, chapter)
+  scripts_tbl <- get_chapter_scripts(lecture_dir, chapter, pattern = pattern)
+  figures_tbl <- get_chapter_figures(lecture_dir, chapter)
 
   # Find slide .tex files in the chapter directory (not in subdirectories)
   slide_files <- as.character(
@@ -145,7 +156,7 @@ audit_chapter <- function(
           "{length(missing_pkgs)} missing package{?s}: {.pkg {missing_pkgs}}"
         )
         cli::cli_alert_info(
-          "Install with: {.code check_script_deps(\"{lecture}\", \"{chapter}\")}"
+          "Install with: {.code check_script_deps(\"{chapter}\")}"
         )
       }
     }
@@ -155,8 +166,8 @@ audit_chapter <- function(
   if (run && nrow(scripts_tbl) > 0) {
     cli::cli_h2("Script Execution")
     run_results <- run_chapter_scripts(
-      lecture,
       chapter,
+      lecture_dir = lecture_dir,
       pattern = pattern,
       timeout = timeout
     )

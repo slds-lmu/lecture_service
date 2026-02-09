@@ -15,7 +15,9 @@
 ^comparison$
 ^logs$
 ^_site$
-\.Rmd$
+^slide_status\.Rmd$
+^slide_status_pr\.Rmd$
+^file_counts\.Rmd$
 \.rds$
 ^include_lectures$
 \./code-workspace$

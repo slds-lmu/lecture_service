@@ -4,12 +4,22 @@
 \alias{check_script_deps}
 \title{Check and install missing dependencies for chapter scripts}
 \usage{
-check_script_deps(lecture, chapter, pattern = "[.]R$", install = interactive())
+check_script_deps(
+  chapter,
+  lecture_dir = here::here(),
+  lecture = basename(lecture_dir),
+  pattern = "[.]R$",
+  install = interactive()
+)
 }
 \arguments{
-\item{lecture}{Character. Lecture directory name, e.g. \code{"lecture_i2ml"}.}
-
 \item{chapter}{Character. Chapter directory name, e.g. \code{"evaluation"}.}
+
+\item{lecture_dir}{Character. Path to the lecture directory.
+Defaults to \code{here::here()}.}
+
+\item{lecture}{Character. Lecture name for display purposes.
+Defaults to \code{basename(lecture_dir)}.}
 
 \item{pattern}{Regex pattern to filter scripts. Default \code{"[.]R$"}.}
 
@@ -27,6 +37,9 @@ via \code{\link[pak:pak]{pak::pak()}}.
 }
 \examples{
 \dontshow{if (fs::dir_exists(here::here("lecture_i2ml"))) withAutoprint(\{ # examplesIf}
-check_script_deps("lecture_i2ml", "evaluation", install = FALSE)
+check_script_deps("evaluation",
+  lecture_dir = here::here("lecture_i2ml"),
+  install = FALSE
+)
 \dontshow{\}) # examplesIf}
 }

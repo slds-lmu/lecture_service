@@ -1,4 +1,4 @@
-.PHONY: help update-service update-latex-math clean slides
+.PHONY: help update-service update-latex-math clean slides audit
 
 help:
 	@echo "Available targets:"
@@ -8,6 +8,8 @@ help:
 	@echo "                      Optional: branch=<name> to use a specific branch (default: master)"
 	@echo "  slides            : Compile slides in all slides/ folders"
 	@echo "  clean             : Clean LaTeX auxiliary files in all slide directories"
+	@echo "  audit             : Render chapter audit report (requires lese R package)"
+	@echo "                      Optional: run=true to execute scripts (default: false)"
 	@echo "  help              : Show this help message"
 
 update-service:
@@ -25,6 +27,9 @@ slides:
 		fi \
 	done
 	@echo "Done"
+
+audit:
+	Rscript --quiet -e 'lese::render_chapter_audit(run = $(if $(run),TRUE,FALSE))'
 
 clean:
 	@echo "Cleaning LaTeX auxiliary files and PDFs in all slide directories..."

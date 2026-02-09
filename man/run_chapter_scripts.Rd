@@ -4,12 +4,22 @@
 \alias{run_chapter_scripts}
 \title{Run all scripts in a chapter and track produced figures}
 \usage{
-run_chapter_scripts(lecture, chapter, pattern = "[.]R$", timeout = 300)
+run_chapter_scripts(
+  chapter,
+  lecture_dir = here::here(),
+  lecture = basename(lecture_dir),
+  pattern = "[.]R$",
+  timeout = 300
+)
 }
 \arguments{
-\item{lecture}{Character. Lecture directory name, e.g. \code{"lecture_i2ml"}.}
-
 \item{chapter}{Character. Chapter directory name, e.g. \code{"evaluation"}.}
+
+\item{lecture_dir}{Character. Path to the lecture directory.
+Defaults to \code{here::here()}.}
+
+\item{lecture}{Character. Lecture name for display purposes.
+Defaults to \code{basename(lecture_dir)}.}
 
 \item{pattern}{Regex pattern to filter script filenames. Default \code{"[.]R$"}.}
 
@@ -27,7 +37,7 @@ A \code{data.frame} with columns:
 }
 }
 \description{
-Runs each R script in \verb{<lecture>/slides/<chapter>/rsrc/} sequentially in
+Runs each R script in a chapter's \verb{rsrc/} directory sequentially in
 isolated subprocesses. For each script, snapshots the \verb{figure/} directory
 before and after execution to determine which figure files were
 created or modified.
@@ -38,9 +48,14 @@ diffing requires that only one script modifies \verb{figure/} at a time.
 }
 \examples{
 \dontrun{
-run_chapter_scripts("lecture_i2ml", "evaluation")
+run_chapter_scripts("evaluation",
+  lecture_dir = here::here("lecture_i2ml")
+)
 
 # Only fig*.R scripts
-run_chapter_scripts("lecture_i2ml", "evaluation", pattern = "^fig.*[.]R$")
+run_chapter_scripts("evaluation",
+  lecture_dir = here::here("lecture_i2ml"),
+  pattern = "^fig.*[.]R$"
+)
 }
 }
