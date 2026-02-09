@@ -275,7 +275,7 @@ $(LITERATURE_PDF): references.bib
 # Uses .fls files (from 'make slides') for robust figure detection when available,
 # falls back to regex parsing of .tex source otherwise.
 audit:
-	@Rscript --quiet -e 'lese::audit_chapter("$(CWD)", lecture_dir = "$(LECTURE)", run = $(if $(run),TRUE,FALSE), method = "$(or $(method),auto)")'
+	@Rscript --quiet -e 'lese::audit_chapter("$(CWD)", lecture_dir = "$(LECTURE)", run = $(if $(filter true TRUE 1,$(run)),TRUE,FALSE), method = "$(or $(method),auto)")'
 
 # ============================================================================
 # FILE CHECKING TARGETS (legacy, superseded by 'audit')
