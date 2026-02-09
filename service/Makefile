@@ -29,7 +29,7 @@ slides:
 	@echo "Done"
 
 audit:
-	Rscript --quiet -e 'lese::render_chapter_audit(run = $(if $(run),TRUE,FALSE))'
+	Rscript --quiet -e 'lese::render_chapter_audit(run = $(if $(run),TRUE,FALSE), method = "$(or $(method),auto)")'
 
 clean:
 	@echo "Cleaning LaTeX auxiliary files and PDFs in all slide directories..."

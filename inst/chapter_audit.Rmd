@@ -16,6 +16,7 @@ params:
   pattern: "[.]R$"
   timeout: 300
   run: !r FALSE
+  method: "auto"
 editor_options:
   chunk_output_type: console
 ---
@@ -85,7 +86,8 @@ for (ch in chapter_names) {
       lecture_dir = lecture_dir,
       pattern = params$pattern,
       timeout = params$timeout,
-      run = params$run
+      run = params$run,
+      method = params$method
     ),
     error = function(e) {
       warning(sprintf(

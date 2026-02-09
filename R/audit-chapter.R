@@ -57,7 +57,7 @@ parse_slide_figures <- function(slide_tex_path) {
 
   # Strip "figure/" prefix and file extension to get basenames
   basenames <- stringr::str_remove(paths, "^figure/")
-  basenames <- tools::file_path_sans_ext(basenames)
+  basenames <- fs::path_ext_remove(basenames)
 
   unique(basenames)
 }
@@ -93,7 +93,7 @@ parse_fls_figures <- function(fls_path) {
   }
 
   # Strip "figure/" prefix and extension, deduplicate
-  basenames <- tools::file_path_sans_ext(sub("^figure/", "", paths))
+  basenames <- fs::path_ext_remove(sub("^figure/", "", paths))
   unique(basenames)
 }
 
@@ -292,7 +292,7 @@ audit_chapter <- function(
     orphaned_scripts <- character()
     for (i in seq_len(nrow(scripts_tbl))) {
       produced <- scripts_tbl$figures_produced[[i]]
-      produced_basenames <- tools::file_path_sans_ext(produced)
+      produced_basenames <- fs::path_ext_remove(produced)
       if (
         length(produced_basenames) == 0 ||
           !any(produced_basenames %in% all_referenced)
