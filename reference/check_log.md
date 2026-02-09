@@ -36,7 +36,7 @@ empty `character(0)` is returned.
 
 - `"not found"`: Implying a missing figure or other included file, maybe
   due to misspecified filename via Overleafs autocompletion
-  (`slides/<topic>/figure/` path instead of `figure/`) or file not
+  (`slides/<chapter>/figure/` path instead of `figure/`) or file not
   committed to git.
 
 - `"^! Missing $ inserted"`: Missing `$` delimiter for math

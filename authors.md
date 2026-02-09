@@ -7,13 +7,13 @@
 
 ## Citation
 
-Burk L (2025). *lese: SLDS Lecture Service Companion*. R package version
-0.5.0, <https://slds-lmu.github.io/lecture_service/>.
+Burk L (2026). *lese: SLDS Lecture Service Companion*. R package version
+0.5.0.9000, <https://slds-lmu.github.io/lecture_service/>.
 
     @Manual{,
       title = {lese: SLDS Lecture Service Companion},
       author = {Lukas Burk},
-      year = {2025},
-      note = {R package version 0.5.0},
+      year = {2026},
+      note = {R package version 0.5.0.9000},
       url = {https://slds-lmu.github.io/lecture_service/},
     }

@@ -1,4 +1,4 @@
-# Condense list of authors from bilatex entry
+# Condense list of authors from biblatex entry
 
 - NAs are replaced by —
 

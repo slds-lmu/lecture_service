@@ -2,6 +2,8 @@
 
 ## lese 0.5.0.9000 (In development)
 
+- Rename `chapter` to `chapter` for consistency
+
 ## lese 0.5.0
 
 - New service file: The root `Makefile` in each lecture was a
@@ -171,7 +173,7 @@ for usage instructions)
     on a file of itnerest directly, or
   - Using the `lecheck` cli for more control and better error messages,
     or
-  - Running `make` in selected topic directories in a shell as needed
+  - Running `make` in selected chapter directories in a shell as needed
 - Add battery of new layout macros:
   - `\image` and `\imageC` for `\includegraphics`
   - `\splitVXY` family for predefined positioning within columns (see
@@ -198,7 +200,7 @@ for usage instructions)
 ## lese 0.1.1
 
 - Add heuristic to handle duplicate slide matches.
-  - If topics move between lectures, the current heuristic prefers the
+  - If chapters move between lectures, the current heuristic prefers the
     most recently edited one.
   - Example: `slides-gp-bayes-lm.tex` is included in `lecture_sl` and
     `lecture_advml`, but the former is more recent.

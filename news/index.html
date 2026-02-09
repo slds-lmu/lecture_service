@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">lese</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,7 +33,8 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.0.9000" id="lese-0509000-in-development">lese 0.5.0.9000 (In development)<a class="anchor" aria-label="anchor" href="#lese-0509000-in-development"></a></h2>
-</div>
+<ul><li>Rename <code>chapter</code> to <code>chapter</code> for consistency</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.0" id="lese-050">lese 0.5.0<a class="anchor" aria-label="anchor" href="#lese-050"></a></h2>
 <ul><li>New service file: The root <code>Makefile</code> in each lecture was a placeholder, but now it actually does something:
@@ -138,7 +139,7 @@
 <li>Remove <code>make_slides()</code> as it was effectively superseded by either
 <ul><li>Running <code><a href="../reference/compile_slide.html">compile_slide()</a></code> on a file of itnerest directly, or</li>
 <li>Using the <code>lecheck</code> cli for more control and better error messages, or</li>
-<li>Running <code>make</code> in selected topic directories in a shell as needed</li>
+<li>Running <code>make</code> in selected chapter directories in a shell as needed</li>
 </ul></li>
 <li>Add battery of new layout macros:
 <ul><li>
@@ -165,7 +166,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.1" id="lese-011">lese 0.1.1<a class="anchor" aria-label="anchor" href="#lese-011"></a></h2>
 <ul><li>Add heuristic to handle duplicate slide matches.
-<ul><li>If topics move between lectures, the current heuristic prefers the most recently edited one.</li>
+<ul><li>If chapters move between lectures, the current heuristic prefers the most recently edited one.</li>
 <li>Example: <code>slides-gp-bayes-lm.tex</code> is included in <code>lecture_sl</code> and <code>lecture_advml</code>, but the former is more recent.</li>
 </ul></li>
 <li>Extend LaTeX dependencies install via <code>make install-tex</code> based on requirements of exercises in <code>lecture_sl</code>
