@@ -46,13 +46,18 @@ Invisibly: A list with components:
 \itemize{
 \item \code{scripts}: data.frame of scripts. Includes \code{success}, \code{error_message},
 \code{elapsed}, and \code{figures_produced} columns when \code{run = TRUE} (\code{NA} otherwise).
-\item \code{figures}: data.frame of figure files on disk
-\item \code{slide_refs}: named list mapping slide filenames to their figure references
-\item \code{orphaned_figures}: character vector of figure basenames not used by any slide
+\item \code{figures}: data.frame of figure files on disk (from \verb{figure/})
+\item \code{figures_man}: data.frame of manually created figure files (from \verb{figure_man/})
+\item \code{slide_refs}: named list mapping slide filenames to their \verb{figure/} references
+\item \code{slide_refs_man}: named list mapping slide filenames to their \verb{figure_man/} references
+\item \code{orphaned_figures}: character vector of \verb{figure/} basenames not used by any slide
+\item \code{orphaned_figures_man}: character vector of \verb{figure_man/} basenames not used by any slide
 \item \code{orphaned_scripts}: character vector of script filenames whose produced
 figures are not used by any slide (\code{NULL} if \code{run = FALSE})
 \item \code{missing_figures}: data.frame with columns \code{figure} and \code{slide} for
-figures referenced by slides but not on disk
+\verb{figure/} files referenced by slides but not on disk
+\item \code{missing_figures_man}: data.frame with columns \code{figure} and \code{slide} for
+\verb{figure_man/} files referenced by slides but not on disk
 \item \code{missing_pkgs}: character vector of R packages required by scripts
 but not currently installed
 }

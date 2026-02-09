@@ -4,10 +4,13 @@
 \alias{parse_slide_figures}
 \title{Parse figure references from a LaTeX slide file}
 \usage{
-parse_slide_figures(slide_tex_path)
+parse_slide_figures(slide_tex_path, prefix = "figure")
 }
 \arguments{
 \item{slide_tex_path}{Character. Path to a \code{.tex} file.}
+
+\item{prefix}{Character. Directory prefix to filter for, e.g. \code{"figure"}
+(default) or \code{"figure_man"}.}
 }
 \value{
 A character vector of figure basenames (without extension),
@@ -18,8 +21,9 @@ Extracts figure paths referenced via \verb{\\\\includegraphics}, \verb{\\\\image
 \verb{\\\\imageC}, \verb{\\\\imageL}, \verb{\\\\imageR}, and \verb{\\\\imageFixed} commands.
 }
 \details{
-Only returns references to \verb{figure/} paths (skips \verb{figure_man/},
-cross-chapter \verb{../} references, and \verb{../../slides-pdf/}).
+By default, returns references to \verb{figure/} paths (skipping cross-chapter
+\verb{../} references, \verb{../../slides-pdf/}, etc.). Set \code{prefix} to extract
+references for other directories, e.g. \code{"figure_man"}.
 
 Note: This uses regex on \code{.tex} source and cannot resolve dynamic
 paths (e.g. \verb{\\\\foreach} loops). For more robust detection after
