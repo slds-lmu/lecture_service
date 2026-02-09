@@ -1,11 +1,13 @@
-#' List figure files in a chapter's figure/ directory
+#' List figure files in a chapter's figure directory
 #' @param lecture_dir Character. Path to the lecture directory.
 #' @param chapter Character. Chapter directory name, e.g. "evaluation".
+#' @param subdir Character. Subdirectory name, default `"figure"`.
+#'   Use `"figure_man"` for manually created figures.
 #' @return A data.frame with columns: `figure_path`, `figure_file`,
 #'   `figure_extension`, `figure_base_name`.
 #' @noRd
-get_chapter_figures <- function(lecture_dir, chapter) {
-  figure_dir <- fs::path(lecture_dir, "slides", chapter, "figure")
+get_chapter_figures <- function(lecture_dir, chapter, subdir = "figure") {
+  figure_dir <- fs::path(lecture_dir, "slides", chapter, subdir)
 
   if (!fs::dir_exists(figure_dir)) {
     return(tibble::tibble(

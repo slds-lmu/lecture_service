@@ -53,12 +53,13 @@ all_chapter_dirs <- fs::dir_ls(slides_dir, type = "directory")
 chapter_names <- fs::path_file(all_chapter_dirs)
 chapter_names <- setdiff(chapter_names, exclude_dirs)
 
-# Filter to chapters that have rsrc/ or figure/
+# Filter to chapters that have rsrc/, figure/, or figure_man/
 has_content <- vapply(
   chapter_names,
   function(ch) {
     fs::dir_exists(fs::path(slides_dir, ch, "rsrc")) ||
-      fs::dir_exists(fs::path(slides_dir, ch, "figure"))
+      fs::dir_exists(fs::path(slides_dir, ch, "figure")) ||
+      fs::dir_exists(fs::path(slides_dir, ch, "figure_man"))
   },
   logical(1)
 )
@@ -107,11 +108,11 @@ chapter_names <- names(audit_results)
 ```
 
 This report audits the **script &rarr; figure &rarr; slide** dependency chain
-for `r lecture`. Each chapter's `rsrc/` scripts, `figure/` files, and slide
-`.tex` files are cross-referenced to identify:
+for `r lecture`. Each chapter's `rsrc/` scripts, `figure/` and `figure_man/`
+files, and slide `.tex` files are cross-referenced to identify:
 
-- **Orphaned figures**: present in `figure/` but not referenced by any slide
-- **Missing figures**: referenced by slides but not present in `figure/`
+- **Orphaned figures**: present in `figure/` or `figure_man/` but not referenced by any slide
+- **Missing figures**: referenced by slides but not present in `figure/` or `figure_man/`
 - **Missing packages**: R packages used by scripts but not installed
 -
 ```{r conditional-bullets, results='asis'}
@@ -147,6 +148,21 @@ overview <- tibble::tibble(
   `Missing Figs` = vapply(
     audit_results,
     function(r) safe_nrow(r$missing_figures),
+    integer(1)
+  ),
+  `Figs (man)` = vapply(
+    audit_results,
+    function(r) safe_nrow(r$figures_man),
+    integer(1)
+  ),
+  `Orphaned (man)` = vapply(
+    audit_results,
+    function(r) length(r$orphaned_figures_man),
+    integer(1)
+  ),
+  `Missing (man)` = vapply(
+    audit_results,
+    function(r) safe_nrow(r$missing_figures_man),
     integer(1)
   ),
   `Missing Pkgs` = vapply(
@@ -214,12 +230,14 @@ for (ch in chapter_names) {
 
   n_scripts <- safe_nrow(res$scripts)
   n_figures <- safe_nrow(res$figures)
+  n_figures_man <- safe_nrow(res$figures_man)
   n_slides <- length(res$slide_refs)
   cat(sprintf(
-    "\n## %s\n\n%d scripts, %d figures, %d slides\n\n",
+    "\n## %s\n\n%d scripts, %d figures, %d figure_man, %d slides\n\n",
     ch,
     n_scripts,
     n_figures,
+    n_figures_man,
     n_slides
   ))
 
@@ -260,9 +278,9 @@ for (ch in chapter_names) {
     cat("\n\n")
   }
 
-  # --- Missing figures: referenced by slides but not on disk ---
+  # --- Missing figures (figure/): referenced by slides but not on disk ---
   if (nrow(res$missing_figures) > 0) {
-    cat("### Missing figures\n\n")
+    cat("### Missing figures (figure/)\n\n")
 
     miss_tbl <- res$missing_figures |>
       group_by(figure) |>
@@ -279,6 +297,72 @@ for (ch in chapter_names) {
         caption = sprintf(
           "%d figure(s) referenced by slides but not in figure/",
           nrow(miss_tbl)
+        )
+      ) |>
+      kableExtra::kable_styling(
+        full_width = TRUE,
+        bootstrap_options = c("hover", "condensed", "responsive")
+      )
+    cat(tab)
+    cat("\n\n")
+  }
+
+  # --- figure_man/ table: one row per figure on disk, with status columns ---
+  if (n_figures_man > 0) {
+    fig_man_tbl <- tibble::tibble(
+      Figure = res$figures_man$figure_base_name,
+      Extension = res$figures_man$figure_extension,
+      `Used by slide` = vapply(
+        res$figures_man$figure_base_name,
+        function(fig) {
+          slides <- names(res$slide_refs_man)[vapply(
+            res$slide_refs_man,
+            function(refs) fig %in% refs,
+            logical(1)
+          )]
+          if (length(slides) == 0) "\u274c" else paste(slides, collapse = ", ")
+        },
+        character(1)
+      )
+    )
+
+    tab <- fig_man_tbl |>
+      kableExtra::kbl(
+        format = "html",
+        escape = FALSE,
+        caption = sprintf("Figures in %s/figure_man/", ch)
+      ) |>
+      kableExtra::kable_styling(
+        full_width = TRUE,
+        fixed_thead = TRUE,
+        bootstrap_options = c("hover", "condensed", "responsive")
+      ) |>
+      kableExtra::column_spec(1, width = "40%") |>
+      kableExtra::column_spec(3, width = "45%")
+
+    cat(tab)
+    cat("\n\n")
+  }
+
+  # --- Missing figures (figure_man/): referenced by slides but not on disk ---
+  if (nrow(res$missing_figures_man) > 0) {
+    cat("### Missing figures (figure_man/)\n\n")
+
+    miss_man_tbl <- res$missing_figures_man |>
+      group_by(figure) |>
+      summarize(
+        `Referenced by` = paste(slide, collapse = ", "),
+        .groups = "drop"
+      ) |>
+      rename(Figure = figure)
+
+    tab <- miss_man_tbl |>
+      kableExtra::kbl(
+        format = "html",
+        escape = FALSE,
+        caption = sprintf(
+          "%d figure(s) referenced by slides but not in figure_man/",
+          nrow(miss_man_tbl)
         )
       ) |>
       kableExtra::kable_styling(

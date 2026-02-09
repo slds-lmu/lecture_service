@@ -3,14 +3,17 @@
 #' Extracts figure paths referenced via `\\includegraphics`, `\\image`,
 #' `\\imageC`, `\\imageL`, `\\imageR`, and `\\imageFixed` commands.
 #'
-#' Only returns references to `figure/` paths (skips `figure_man/`,
-#' cross-chapter `../` references, and `../../slides-pdf/`).
+#' By default, returns references to `figure/` paths (skipping cross-chapter
+#' `../` references, `../../slides-pdf/`, etc.). Set `prefix` to extract
+#' references for other directories, e.g. `"figure_man"`.
 #'
 #' Note: This uses regex on `.tex` source and cannot resolve dynamic
 #' paths (e.g. `\\foreach` loops). For more robust detection after
 #' compilation, use [audit_chapter()] with `method = "fls"`.
 #'
 #' @param slide_tex_path Character. Path to a `.tex` file.
+#' @param prefix Character. Directory prefix to filter for, e.g. `"figure"`
+#'   (default) or `"figure_man"`.
 #'
 #' @return A character vector of figure basenames (without extension),
 #'   as referenced by the slide. Duplicates are removed.
@@ -18,7 +21,7 @@
 #' @export
 #' @examplesIf fs::dir_exists(here::here("lecture_i2ml"))
 #' parse_slide_figures("lecture_i2ml/slides/evaluation/slides-evaluation-train.tex")
-parse_slide_figures <- function(slide_tex_path) {
+parse_slide_figures <- function(slide_tex_path, prefix = "figure") {
   checkmate::assert_file_exists(slide_tex_path)
 
   lines <- readLines(slide_tex_path, warn = FALSE)
@@ -48,36 +51,32 @@ parse_slide_figures <- function(slide_tex_path) {
 
   paths <- stringr::str_trim(paths)
 
-  # Keep only figure/ references (not figure_man/, ../, etc.)
-  paths <- paths[stringr::str_starts(paths, "figure/")]
+  paths <- paths[startsWith(paths, paste0(prefix, "/"))]
 
   if (length(paths) == 0) {
     return(character())
   }
 
-  # Strip "figure/" prefix and file extension to get basenames
-  basenames <- stringr::str_remove(paths, "^figure/")
-  basenames <- fs::path_ext_remove(basenames)
-
-  unique(basenames)
+  # Strip prefix directory and file extension to get basenames
+  unique(fs::path_ext_remove(fs::path_rel(paths, prefix)))
 }
 
 
 #' Parse figure references from `.fls` recorder files
 #'
-#' Extracts `figure/` paths from LaTeX `.fls` files produced by
+#' Extracts figure paths from LaTeX `.fls` files produced by
 #' `latexmk -recorder`. More robust than regex-based parsing of `.tex`
 #' source because it captures dynamically constructed paths (e.g. from
 #' `\\foreach` loops).
 #'
 #' @param fls_path Character. Path to a single `.fls` file.
+#' @param prefix Character. Directory prefix to filter for, e.g. `"figure"`
+#'   (default) or `"figure_man"`.
 #'
 #' @return A character vector of unique figure basenames (without extension).
 #' @noRd
-parse_fls_figures <- function(fls_path) {
-  if (!fs::file_exists(fls_path)) {
-    return(character())
-  }
+parse_fls_figures <- function(fls_path, prefix = "figure") {
+  checkmate::assert_file_exists(fls_path)
 
   lines <- readLines(fls_path, warn = FALSE)
   # Keep only INPUT lines
@@ -85,16 +84,38 @@ parse_fls_figures <- function(fls_path) {
   paths <- sub("^INPUT ", "", lines)
   # Normalize: strip leading ./
   paths <- sub("^\\./", "", paths)
-  # Keep only figure/ references (not figure_man/, texmf-dist/, etc.)
-  paths <- paths[startsWith(paths, "figure/")]
+  # Keep only paths matching the requested prefix
+  paths <- paths[startsWith(paths, paste0(prefix, "/"))]
 
   if (length(paths) == 0) {
     return(character())
   }
 
-  # Strip "figure/" prefix and extension, deduplicate
-  basenames <- fs::path_ext_remove(sub("^figure/", "", paths))
-  unique(basenames)
+  # Strip prefix directory and extension, deduplicate
+  unique(fs::path_ext_remove(fs::path_rel(paths, prefix)))
+}
+
+
+#' Build a data.frame of missing figures (referenced by slides but not on disk)
+#' @param referenced Character vector of figure basenames referenced by slides.
+#' @param on_disk Character vector of figure basenames present on disk.
+#' @param slide_refs Named list mapping slide filenames to their figure references.
+#' @return A data.frame with columns `figure` and `slide` (zero rows if none missing).
+#' @noRd
+build_missing_figures_df <- function(referenced, on_disk, slide_refs) {
+  missing_figs <- setdiff(referenced, on_disk)
+  if (length(missing_figs) == 0) {
+    return(tibble::tibble(figure = character(), slide = character()))
+  }
+  rows <- lapply(missing_figs, function(fig) {
+    slides_using <- names(slide_refs)[vapply(
+      slide_refs,
+      function(refs) fig %in% refs,
+      logical(1)
+    )]
+    tibble::tibble(figure = fig, slide = slides_using)
+  })
+  do.call(rbind, rows)
 }
 
 
@@ -128,13 +149,18 @@ parse_fls_figures <- function(fls_path) {
 #' @return Invisibly: A list with components:
 #' - `scripts`: data.frame of scripts. Includes `success`, `error_message`,
 #'     `elapsed`, and `figures_produced` columns when `run = TRUE` (`NA` otherwise).
-#' - `figures`: data.frame of figure files on disk
-#' - `slide_refs`: named list mapping slide filenames to their figure references
-#' - `orphaned_figures`: character vector of figure basenames not used by any slide
+#' - `figures`: data.frame of figure files on disk (from `figure/`)
+#' - `figures_man`: data.frame of manually created figure files (from `figure_man/`)
+#' - `slide_refs`: named list mapping slide filenames to their `figure/` references
+#' - `slide_refs_man`: named list mapping slide filenames to their `figure_man/` references
+#' - `orphaned_figures`: character vector of `figure/` basenames not used by any slide
+#' - `orphaned_figures_man`: character vector of `figure_man/` basenames not used by any slide
 #' - `orphaned_scripts`: character vector of script filenames whose produced
 #'     figures are not used by any slide (`NULL` if `run = FALSE`)
 #' - `missing_figures`: data.frame with columns `figure` and `slide` for
-#'     figures referenced by slides but not on disk
+#'     `figure/` files referenced by slides but not on disk
+#' - `missing_figures_man`: data.frame with columns `figure` and `slide` for
+#'     `figure_man/` files referenced by slides but not on disk
 #' - `missing_pkgs`: character vector of R packages required by scripts
 #'     but not currently installed
 #'
@@ -172,15 +198,22 @@ audit_chapter <- function(
   # --- Discovery ---
   scripts_tbl <- get_chapter_scripts(lecture_dir, chapter, pattern = pattern)
   figures_tbl <- get_chapter_figures(lecture_dir, chapter)
+  figures_man_tbl <- get_chapter_figures(
+    lecture_dir,
+    chapter,
+    subdir = "figure_man"
+  )
 
   # Find slide .tex files in the chapter directory (not in subdirectories)
   slide_files <- as.character(
     fs::dir_ls(chapter_dir, type = "file", regexp = "slides-.*\\.tex$")
   )
 
+  n_fig <- nrow(figures_tbl)
+  n_fig_man <- nrow(figures_man_tbl)
   cli::cli_h1("Chapter: {chapter} ({lecture})")
   cli::cli_alert_info(
-    "Found {nrow(scripts_tbl)} script{?s} in rsrc/, {nrow(figures_tbl)} figure{?s} in figure/, {length(slide_files)} slide{?s}"
+    "Found {nrow(scripts_tbl)} script{?s}, {n_fig} figure/{?/s}, {n_fig_man} figure_man/{?/s}, {length(slide_files)} slide{?s}"
   )
 
   # --- Parse slide figure references ---
@@ -204,21 +237,33 @@ audit_chapter <- function(
     }
   }
 
+  slide_names <- fs::path_file(slide_files)
+
   if (use_fls) {
     slide_refs <- stats::setNames(
       lapply(fls_paths, parse_fls_figures),
-      fs::path_file(slide_files)
+      slide_names
+    )
+    slide_refs_man <- stats::setNames(
+      lapply(fls_paths, parse_fls_figures, prefix = "figure_man"),
+      slide_names
     )
   } else {
     slide_refs <- stats::setNames(
       lapply(slide_files, parse_slide_figures),
-      fs::path_file(slide_files)
+      slide_names
+    )
+    slide_refs_man <- stats::setNames(
+      lapply(slide_files, parse_slide_figures, prefix = "figure_man"),
+      slide_names
     )
   }
   all_referenced <- unique(unlist(slide_refs, use.names = FALSE))
+  all_referenced_man <- unique(unlist(slide_refs_man, use.names = FALSE))
 
   # --- Figure basenames on disk ---
   figures_on_disk <- figures_tbl$figure_base_name
+  figures_man_on_disk <- figures_man_tbl$figure_base_name
 
   # --- Check script dependencies ---
   missing_pkgs <- character()
@@ -267,24 +312,19 @@ audit_chapter <- function(
 
   # Orphaned figures: on disk but not referenced by any slide
   orphaned_figures <- setdiff(figures_on_disk, all_referenced)
+  orphaned_figures_man <- setdiff(figures_man_on_disk, all_referenced_man)
 
   # Missing figures: referenced by slides but not on disk
-  missing_figs <- setdiff(all_referenced, figures_on_disk)
-  missing_figures_df <- tibble::tibble(
-    figure = character(),
-    slide = character()
+  missing_figures_df <- build_missing_figures_df(
+    all_referenced,
+    figures_on_disk,
+    slide_refs
   )
-  if (length(missing_figs) > 0) {
-    rows <- lapply(missing_figs, function(fig) {
-      slides_using <- names(slide_refs)[vapply(
-        slide_refs,
-        function(refs) fig %in% refs,
-        logical(1)
-      )]
-      tibble::tibble(figure = fig, slide = slides_using)
-    })
-    missing_figures_df <- do.call(rbind, rows)
-  }
+  missing_figures_man_df <- build_missing_figures_df(
+    all_referenced_man,
+    figures_man_on_disk,
+    slide_refs_man
+  )
 
   # Orphaned scripts: produced no figure used by any slide
   orphaned_scripts <- NULL
@@ -316,18 +356,30 @@ audit_chapter <- function(
     }
   }
 
-  cli::cli_h3("Orphaned figures")
+  cli::cli_h3("Orphaned figures (figure/)")
   if (length(orphaned_figures) > 0) {
     cli::cli_alert_warning(
-      "Found {.val {length(orphaned_figures)}} orphaned figure{?s} (in figure/ but not used by any slide)"
+      "Found {.val {length(orphaned_figures)}} orphaned figure{?s} in figure/"
     )
-
     cli::cli_bullets(stats::setNames(
       paste0("figure/", orphaned_figures),
       rep("!", length(orphaned_figures))
     ))
   } else {
-    cli::cli_alert_success("No orphaned figures.")
+    cli::cli_alert_success("No orphaned figures in figure/.")
+  }
+
+  cli::cli_h3("Orphaned figures (figure_man/)")
+  if (length(orphaned_figures_man) > 0) {
+    cli::cli_alert_warning(
+      "Found {.val {length(orphaned_figures_man)}} orphaned figure{?s} in figure_man/"
+    )
+    cli::cli_bullets(stats::setNames(
+      paste0("figure_man/", orphaned_figures_man),
+      rep("!", length(orphaned_figures_man))
+    ))
+  } else if (nrow(figures_man_tbl) > 0) {
+    cli::cli_alert_success("No orphaned figures in figure_man/.")
   }
 
   cli::cli_h3("Orphaned scripts")
@@ -335,7 +387,6 @@ audit_chapter <- function(
     cli::cli_alert_warning(
       "Found {.val {length(orphaned_scripts)}} orphaned script{?s} (produced no figure used by a slide)"
     )
-
     cli::cli_bullets(stats::setNames(
       orphaned_scripts,
       rep("!", length(orphaned_scripts))
@@ -344,10 +395,10 @@ audit_chapter <- function(
     cli::cli_alert_success("No orphaned scripts.")
   }
 
-  cli::cli_h3("Missing figures")
+  cli::cli_h3("Missing figures (figure/)")
   if (nrow(missing_figures_df) > 0) {
     cli::cli_alert_danger(
-      "Found {.val {length(missing_figs)}} missing figure{?s} (referenced by slides but not in figure/)"
+      "Found {.val {nrow(missing_figures_df)}} missing reference{?s} to figure/"
     )
     for (fig in unique(missing_figures_df$figure)) {
       slides_using <- missing_figures_df$slide[missing_figures_df$figure == fig]
@@ -356,16 +407,37 @@ audit_chapter <- function(
       ))
     }
   } else {
-    cli::cli_alert_success("No missing figures.")
+    cli::cli_alert_success("No missing figures in figure/.")
+  }
+
+  cli::cli_h3("Missing figures (figure_man/)")
+  if (nrow(missing_figures_man_df) > 0) {
+    cli::cli_alert_danger(
+      "Found {.val {nrow(missing_figures_man_df)}} missing reference{?s} to figure_man/"
+    )
+    for (fig in unique(missing_figures_man_df$figure)) {
+      slides_using <- missing_figures_man_df$slide[
+        missing_figures_man_df$figure == fig
+      ]
+      cli::cli_bullets(c(
+        "x" = "figure_man/{fig} referenced by {.file {slides_using}}"
+      ))
+    }
+  } else if (nrow(figures_man_tbl) > 0 || length(all_referenced_man) > 0) {
+    cli::cli_alert_success("No missing figures in figure_man/.")
   }
 
   invisible(list(
     scripts = scripts_tbl,
     figures = figures_tbl,
+    figures_man = figures_man_tbl,
     slide_refs = slide_refs,
+    slide_refs_man = slide_refs_man,
     orphaned_figures = orphaned_figures,
+    orphaned_figures_man = orphaned_figures_man,
     orphaned_scripts = orphaned_scripts,
     missing_figures = missing_figures_df,
+    missing_figures_man = missing_figures_man_df,
     missing_pkgs = missing_pkgs
   ))
 }
