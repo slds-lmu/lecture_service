@@ -6,6 +6,10 @@
 #' Only returns references to `figure/` paths (skips `figure_man/`,
 #' cross-chapter `../` references, and `../../slides-pdf/`).
 #'
+#' Note: This uses regex on `.tex` source and cannot resolve dynamic
+#' paths (e.g. `\\foreach` loops). For more robust detection after
+#' compilation, use [audit_chapter()] with `method = "fls"`.
+#'
 #' @param slide_tex_path Character. Path to a `.tex` file.
 #'
 #' @return A character vector of figure basenames (without extension),
@@ -59,6 +63,41 @@ parse_slide_figures <- function(slide_tex_path) {
 }
 
 
+#' Parse figure references from `.fls` recorder files
+#'
+#' Extracts `figure/` paths from LaTeX `.fls` files produced by
+#' `latexmk -recorder`. More robust than regex-based parsing of `.tex`
+#' source because it captures dynamically constructed paths (e.g. from
+#' `\\foreach` loops).
+#'
+#' @param fls_path Character. Path to a single `.fls` file.
+#'
+#' @return A character vector of unique figure basenames (without extension).
+#' @noRd
+parse_fls_figures <- function(fls_path) {
+  if (!fs::file_exists(fls_path)) {
+    return(character())
+  }
+
+  lines <- readLines(fls_path, warn = FALSE)
+  # Keep only INPUT lines
+  lines <- lines[startsWith(lines, "INPUT ")]
+  paths <- sub("^INPUT ", "", lines)
+  # Normalize: strip leading ./
+  paths <- sub("^\\./", "", paths)
+  # Keep only figure/ references (not figure_man/, texmf-dist/, etc.)
+  paths <- paths[startsWith(paths, "figure/")]
+
+  if (length(paths) == 0) {
+    return(character())
+  }
+
+  # Strip "figure/" prefix and extension, deduplicate
+  basenames <- tools::file_path_sans_ext(sub("^figure/", "", paths))
+  unique(basenames)
+}
+
+
 #' Audit the script-figure-slide dependency chain for a chapter
 #'
 #' Performs a comprehensive audit of a lecture chapter:
@@ -77,6 +116,14 @@ parse_slide_figures <- function(slide_tex_path) {
 #' @param timeout Numeric. Per-script timeout in seconds. Default 300.
 #' @param run Logical. If `TRUE` (default), execute scripts.
 #'   If `FALSE`, only perform static analysis (figure existence + slide references).
+#' @param method Character. How to detect which figures slides reference:
+#'   - `"auto"` (default): Use `.fls` files if they exist for all slides,
+#'     otherwise fall back to regex. Best for use after `make slides`.
+#'   - `"regex"`: Parse `.tex` source with regex. Fast but can miss
+#'     dynamically constructed paths (e.g. `\\foreach` loops).
+#'   - `"fls"`: Parse `.fls` recorder files from `latexmk`. More robust
+#'     but requires prior compilation (`make slides`). Errors if `.fls`
+#'     files are missing.
 #'
 #' @return Invisibly: A list with components:
 #' - `scripts`: data.frame of scripts. Includes `success`, `error_message`,
@@ -113,8 +160,10 @@ audit_chapter <- function(
   lecture = basename(lecture_dir),
   pattern = "[.]R$",
   timeout = 300,
-  run = TRUE
+  run = TRUE,
+  method = c("auto", "regex", "fls")
 ) {
+  method <- match.arg(method)
   check_lecture_dir(lecture_dir, lecture_dir_missing = missing(lecture_dir))
 
   chapter_dir <- fs::path(lecture_dir, "slides", chapter)
@@ -135,10 +184,37 @@ audit_chapter <- function(
   )
 
   # --- Parse slide figure references ---
-  slide_refs <- stats::setNames(
-    lapply(slide_files, parse_slide_figures),
-    fs::path_file(slide_files)
-  )
+  fls_paths <- sub("\\.tex$", ".fls", slide_files)
+  use_fls <- FALSE
+
+  if (method == "fls") {
+    missing_fls <- fls_paths[!fs::file_exists(fls_paths)]
+    if (length(missing_fls) > 0) {
+      cli::cli_abort(c(
+        "{length(missing_fls)} .fls file{?s} not found.",
+        "i" = "Run {.code make slides} first to generate .fls files.",
+        "i" = "Or use {.code method = \"regex\"} for static analysis."
+      ))
+    }
+    use_fls <- TRUE
+  } else if (method == "auto") {
+    use_fls <- length(fls_paths) > 0 && all(fs::file_exists(fls_paths))
+    if (use_fls) {
+      cli::cli_alert_info("Using .fls files for figure detection (more robust)")
+    }
+  }
+
+  if (use_fls) {
+    slide_refs <- stats::setNames(
+      lapply(fls_paths, parse_fls_figures),
+      fs::path_file(slide_files)
+    )
+  } else {
+    slide_refs <- stats::setNames(
+      lapply(slide_files, parse_slide_figures),
+      fs::path_file(slide_files)
+    )
+  }
   all_referenced <- unique(unlist(slide_refs, use.names = FALSE))
 
   # --- Figure basenames on disk ---

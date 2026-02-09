@@ -13,6 +13,9 @@
 #' @param timeout Numeric. Per-script timeout in seconds. Default 300.
 #' @param run Logical. If `TRUE`, execute scripts and track produced figures.
 #'   Default `FALSE`.
+#' @param method Character. Figure detection method passed to
+#'   [audit_chapter()]. One of `"auto"`, `"regex"`, or `"fls"`.
+#'   Default `"auto"`.
 #' @param output_dir Character. Directory for the output HTML file.
 #'   Defaults to `lecture_dir`.
 #' @param ... Additional arguments passed to [rmarkdown::render()].
@@ -41,6 +44,7 @@ render_chapter_audit <- function(
   pattern = "[.]R$",
   timeout = 300,
   run = FALSE,
+  method = "auto",
   output_dir = lecture_dir,
   ...
 ) {
@@ -66,7 +70,8 @@ render_chapter_audit <- function(
       chapters = chapters,
       pattern = pattern,
       timeout = timeout,
-      run = run
+      run = run,
+      method = method
     ),
     envir = new.env(parent = globalenv()),
     ...
