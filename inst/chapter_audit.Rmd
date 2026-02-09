@@ -183,6 +183,27 @@ overview |>
   )
 ```
 
+```{r missing-packages-overview, results='asis'}
+all_missing_pkgs <- unique(unlist(lapply(
+  audit_results,
+  function(r) r$missing_pkgs %||% character()
+)))
+
+if (length(all_missing_pkgs) > 0) {
+  cat("## Missing packages\n\n")
+  cat(sprintf(
+    "**%d** package(s) used by scripts but not currently installed:\n\n",
+    length(all_missing_pkgs)
+  ))
+  cat(paste0("- `", sort(all_missing_pkgs), "`\n"), sep = "")
+  cat("\nInstall all at once:\n\n")
+  cat(sprintf(
+    "```r\npak::pak(c(%s))\n```\n\n",
+    paste0('"', sort(all_missing_pkgs), '"', collapse = ", ")
+  ))
+}
+```
+
 # Chapter Details
 
 ```{r chapter-details, results='asis'}
