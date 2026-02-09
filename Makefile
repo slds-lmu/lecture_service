@@ -13,17 +13,12 @@ PREAMBLES=$(shell find lecture_*/style -maxdepth 1 -type f \( -name "common.tex"
 # data.frame of all slides and compile/comparison status checks created by check_slides_many()
 CACHETBL=slide_check_cache.rds
 
-# Rmd file that reads CACHETBL and outputs a neato table in HTML and stuff
-STATUSRMD=slide_status.Rmd
-
-# The corresponding HTML file and the *_files directory with HTML assets
-STATUSHTML=${STATUSRMD:%.Rmd=%.html}
-STATUSASSETS=${STATUSRMD:%.Rmd=%_files}
+# Output names from lese::render_slide_status() / render_slide_status_pr()
+# (Rmd templates are bundled with the package in inst/)
+STATUSHTML=slide_status.html
+STATUSASSETS=slide_status_files
+STATUSMD=slide_status_pr.md
 SITEDIR=_site
-
-# Similar idea with the smaller Rmd file to render to markdown for pull requests
-STATUSRMD_PR=slide_status_pr.Rmd
-STATUSMD=${STATUSRMD_PR:%.Rmd=%.md}
 
 # File count Rmd and HTML files
 FILECOUNTRMD=file_counts.Rmd
@@ -88,14 +83,12 @@ help:
 check_results: ${CACHETBL}
 
 .PHONY: table
-table: ${CACHETBL} ${STATUSRMD_PR}
-	Rscript --quiet -e 'rmarkdown::render("${STATUSRMD_PR}", quiet = TRUE, output_format = "github_document", output_file = "${STATUSMD}")'
-	@# Don't know why the HTML version is always created but it's not needed
-	rm ${STATUSRMD_PR:%.Rmd=%.html}
+table: ${CACHETBL}
+	Rscript --quiet -e 'lese::render_slide_status_pr()'
 
 .PHONY: site
-site: ${CACHETBL} ${STATUSRMD}
-	Rscript --quiet -e 'rmarkdown::render("${STATUSRMD}", quiet = TRUE)'
+site: ${CACHETBL}
+	Rscript --quiet -e 'lese::render_slide_status()'
 	@# Create a self-contained folder with the HTML and assets for easier / more efficient deployment on GitHub actions
 	@# or anywhere else.
 	@# Also ensure that comparison dir exists, which might not be the case if there are no slides in
