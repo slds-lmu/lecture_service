@@ -154,9 +154,11 @@ build_missing_figures_df <- function(referenced, on_disk, slide_refs) {
 #' - `slide_refs`: named list mapping slide filenames to their `figure/` references
 #' - `slide_refs_man`: named list mapping slide filenames to their `figure_man/` references
 #' - `orphaned_figures`: character vector of `figure/` filenames (with extension)
-#'     not used by any slide
+#'     not used by any slide (excludes `attic/` subdirectory)
 #' - `orphaned_figures_man`: character vector of `figure_man/` filenames (with
-#'     extension) not used by any slide
+#'     extension) not used by any slide (excludes `attic/` subdirectory)
+#' - `attic_figures`: character vector of filenames in `figure/attic/`
+#' - `attic_figures_man`: character vector of filenames in `figure_man/attic/`
 #' - `orphaned_scripts`: character vector of script filenames whose produced
 #'     figures are not used by any slide (`NULL` if `run = FALSE`)
 #' - `missing_figures`: data.frame with columns `figure` and `slide` for
@@ -314,13 +316,21 @@ audit_chapter <- function(
 
   # Orphaned figures: on disk but basename not referenced by any slide.
   # Report as full filenames (with extension) for actionable user output.
+  # Figures in attic/ subdirectories are separated out -- they are intentionally
+  # parked and not expected to be referenced, but listed for cleanup awareness.
   orphaned_mask <- !(figures_on_disk %in% all_referenced)
-  orphaned_figures <- as.character(figures_tbl$figure_file[orphaned_mask])
+  orphaned_all <- as.character(figures_tbl$figure_file[orphaned_mask])
+  is_attic <- startsWith(orphaned_all, "attic/")
+  orphaned_figures <- orphaned_all[!is_attic]
+  attic_figures <- orphaned_all[is_attic]
 
   orphaned_mask_man <- !(figures_man_on_disk %in% all_referenced_man)
-  orphaned_figures_man <- as.character(
-    figures_man_tbl$figure_file[orphaned_mask_man]
-  )
+  orphaned_all_man <- as.character(figures_man_tbl$figure_file[
+    orphaned_mask_man
+  ])
+  is_attic_man <- startsWith(orphaned_all_man, "attic/")
+  orphaned_figures_man <- orphaned_all_man[!is_attic_man]
+  attic_figures_man <- orphaned_all_man[is_attic_man]
 
   # Missing figures: referenced by slides but not on disk
   missing_figures_df <- build_missing_figures_df(
@@ -377,6 +387,12 @@ audit_chapter <- function(
     cli::cli_alert_success("No orphaned figures in figure/.")
   }
 
+  if (length(attic_figures) > 0) {
+    cli::cli_alert_info(
+      "{.val {length(attic_figures)}} figure{?s} in figure/attic/ (parked, not expected to be referenced)"
+    )
+  }
+
   cli::cli_h3("Orphaned figures (figure_man/)")
   if (length(orphaned_figures_man) > 0) {
     cli::cli_alert_warning(
@@ -388,6 +404,12 @@ audit_chapter <- function(
     ))
   } else if (nrow(figures_man_tbl) > 0) {
     cli::cli_alert_success("No orphaned figures in figure_man/.")
+  }
+
+  if (length(attic_figures_man) > 0) {
+    cli::cli_alert_info(
+      "{.val {length(attic_figures_man)}} figure{?s} in figure_man/attic/ (parked)"
+    )
   }
 
   cli::cli_h3("Orphaned scripts")
@@ -443,6 +465,8 @@ audit_chapter <- function(
     slide_refs_man = slide_refs_man,
     orphaned_figures = orphaned_figures,
     orphaned_figures_man = orphaned_figures_man,
+    attic_figures = attic_figures,
+    attic_figures_man = attic_figures_man,
     orphaned_scripts = orphaned_scripts,
     missing_figures = missing_figures_df,
     missing_figures_man = missing_figures_man_df,

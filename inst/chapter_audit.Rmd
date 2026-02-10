@@ -114,7 +114,7 @@ files, and slide `.tex` files are cross-referenced to identify:
 - **Orphaned figures**: present in `figure/` or `figure_man/` but not referenced by any slide
 - **Missing figures**: referenced by slides but not present in `figure/` or `figure_man/`
 - **Missing packages**: R packages used by scripts but not installed
--
+
 ```{r conditional-bullets, results='asis'}
 if (params$run) {
   cat("- **Failed scripts**: scripts that error during execution\n")
@@ -136,40 +136,22 @@ if (params$run) {
 ```{r overview-table}
 safe_nrow <- function(x) if (is.null(x)) 0L else nrow(x)
 
+# Helper to extract a count from each audit result
+audit_count <- function(field, fn = length) {
+  vapply(audit_results, function(r) fn(r[[field]]), integer(1))
+}
+
 overview <- tibble::tibble(
   Chapter = chapter_names,
-  Scripts = vapply(audit_results, function(r) safe_nrow(r$scripts), integer(1)),
-  Figures = vapply(audit_results, function(r) safe_nrow(r$figures), integer(1)),
-  `Orphaned Figs` = vapply(
-    audit_results,
-    function(r) length(r$orphaned_figures),
-    integer(1)
-  ),
-  `Missing Figs` = vapply(
-    audit_results,
-    function(r) safe_nrow(r$missing_figures),
-    integer(1)
-  ),
-  `Figs (man)` = vapply(
-    audit_results,
-    function(r) safe_nrow(r$figures_man),
-    integer(1)
-  ),
-  `Orphaned (man)` = vapply(
-    audit_results,
-    function(r) length(r$orphaned_figures_man),
-    integer(1)
-  ),
-  `Missing (man)` = vapply(
-    audit_results,
-    function(r) safe_nrow(r$missing_figures_man),
-    integer(1)
-  ),
-  `Missing Pkgs` = vapply(
-    audit_results,
-    function(r) length(r$missing_pkgs %||% character()),
-    integer(1)
-  )
+  Scripts = audit_count("scripts", safe_nrow),
+  Figures = audit_count("figures", safe_nrow),
+  `Orphaned Figs` = audit_count("orphaned_figures"),
+  `Attic Figs` = audit_count("attic_figures"),
+  `Missing Figs` = audit_count("missing_figures", safe_nrow),
+  `Figs (man)` = audit_count("figures_man", safe_nrow),
+  `Orphaned (man)` = audit_count("orphaned_figures_man"),
+  `Missing (man)` = audit_count("missing_figures_man", safe_nrow),
+  `Missing Pkgs` = audit_count("missing_pkgs")
 )
 
 if (params$run) {
@@ -184,13 +166,7 @@ if (params$run) {
     },
     integer(1)
   )
-  overview$`Orphaned Scripts` <- vapply(
-    audit_results,
-    function(r) {
-      length(r$orphaned_scripts)
-    },
-    integer(1)
-  )
+  overview$`Orphaned Scripts` <- audit_count("orphaned_scripts")
 }
 
 overview |>
@@ -242,11 +218,13 @@ for (ch in chapter_names) {
   ))
 
   # --- Figures table: one row per figure on disk, with status columns ---
-  if (n_figures > 0) {
+  # Exclude attic/ figures from main table (shown separately below)
+  figs_no_attic <- res$figures[!startsWith(res$figures$figure_file, "attic/"), ]
+  if (nrow(figs_no_attic) > 0) {
     fig_tbl <- tibble::tibble(
-      Figure = res$figures$figure_file,
+      Figure = figs_no_attic$figure_file,
       `Used by slide` = vapply(
-        res$figures$figure_base_name,
+        figs_no_attic$figure_base_name,
         function(fig) {
           slides <- names(res$slide_refs)[vapply(
             res$slide_refs,
@@ -273,6 +251,26 @@ for (ch in chapter_names) {
       kableExtra::column_spec(1, width = "45%") |>
       kableExtra::column_spec(2, width = "45%")
 
+    cat(tab)
+    cat("\n\n")
+  }
+
+  # --- Attic figures (figure/attic/): parked, listed for cleanup awareness ---
+  if (length(res$attic_figures) > 0) {
+    attic_tbl <- tibble::tibble(Figure = res$attic_figures)
+    tab <- attic_tbl |>
+      kableExtra::kbl(
+        format = "html",
+        escape = FALSE,
+        caption = sprintf(
+          "%d figure(s) in %s/figure/attic/ (parked)",
+          length(res$attic_figures), ch
+        )
+      ) |>
+      kableExtra::kable_styling(
+        full_width = FALSE,
+        bootstrap_options = c("hover", "condensed", "responsive")
+      )
     cat(tab)
     cat("\n\n")
   }
@@ -307,11 +305,14 @@ for (ch in chapter_names) {
   }
 
   # --- figure_man/ table: one row per figure on disk, with status columns ---
-  if (n_figures_man > 0) {
+  figs_man_no_attic <- res$figures_man[
+    !startsWith(res$figures_man$figure_file, "attic/"),
+  ]
+  if (nrow(figs_man_no_attic) > 0) {
     fig_man_tbl <- tibble::tibble(
-      Figure = res$figures_man$figure_file,
+      Figure = figs_man_no_attic$figure_file,
       `Used by slide` = vapply(
-        res$figures_man$figure_base_name,
+        figs_man_no_attic$figure_base_name,
         function(fig) {
           slides <- names(res$slide_refs_man)[vapply(
             res$slide_refs_man,
@@ -338,6 +339,25 @@ for (ch in chapter_names) {
       kableExtra::column_spec(1, width = "45%") |>
       kableExtra::column_spec(2, width = "45%")
 
+    cat(tab)
+    cat("\n\n")
+  }
+
+  if (length(res$attic_figures_man) > 0) {
+    attic_man_tbl <- tibble::tibble(Figure = res$attic_figures_man)
+    tab <- attic_man_tbl |>
+      kableExtra::kbl(
+        format = "html",
+        escape = FALSE,
+        caption = sprintf(
+          "%d figure(s) in %s/figure_man/attic/ (parked)",
+          length(res$attic_figures_man), ch
+        )
+      ) |>
+      kableExtra::kable_styling(
+        full_width = FALSE,
+        bootstrap_options = c("hover", "condensed", "responsive")
+      )
     cat(tab)
     cat("\n\n")
   }
