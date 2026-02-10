@@ -39,6 +39,14 @@ reference:
       - parse_slide_figures
       - extract_script_deps
       - check_script_deps
+  - title: "Slide status reporting"
+    desc: |
+      Render slide status reports and manage the slide check cache.
+    contents:
+      - render_slide_status
+      - render_slide_status_pr
+      - slide_cache_path
+      - slide_cache_clean
   - title: "Utilities"
     desc: "Various helper functions"
     contents:
