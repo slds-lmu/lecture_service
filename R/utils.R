@@ -41,6 +41,21 @@ check_lecture_dir <- function(
 }
 
 
+#' Check if packages are installed without loading them
+#'
+#' Unlike [requireNamespace()], this does not load the package namespace,
+#' avoiding `.onLoad` side effects. This matters when conflicting packages
+#' coexist (e.g. mlr3 vs mlr, paradox vs ParamHelpers) — loading one
+#' namespace can trigger warnings about the other.
+#'
+#' @param pkgs Character vector of package names.
+#' @return A logical vector the same length as `pkgs`.
+#' @noRd
+is_pkg_installed <- function(pkgs) {
+  vapply(pkgs, function(pkg) nzchar(system.file(package = pkg)), logical(1))
+}
+
+
 #' Simple check for availability of system tools
 #'
 #' Can be used to verify if a tool (e.g. `convert`) is in `$PATH` and findable from within R.

@@ -1,6 +1,14 @@
 # lese 0.5.0.9000 (In development)
 
-- Rename `chapter` to `chapter` for consistency
+- Rename `topic` to `chapter` for consistency when referring to slide paths, i.e. `lecture_i2ml/slides/<chapter>/foo.tex`
+
+## Slide status reporting
+
+- Moved `slide_status.Rmd` and `slide_status_pr.Rmd` into `inst/` so they are bundled with the package and retrieved via `system.file()`.
+- New wrapper functions `render_slide_status()` and `render_slide_status_pr()` to render the reports from the installed templates. These replace direct `rmarkdown::render()` calls in the Makefile.
+- New `slide_cache_path()` returns the path to the slide check cache, now stored in the user data directory (`rappdirs::user_data_dir("lese")`) rather than the working directory.
+- New `slide_cache_clean()` deletes the cache file.
+- The Makefile uses a `.slide_check_stamp` stamp file for incremental build tracking, with `make clean` calling `slide_cache_clean()`.
 
 ## Slide scripts and figure auditing
 
@@ -20,6 +28,22 @@ New functions for auditing this dependency chain:
 - `render_chapter_audit()`: Render HTML audit reports from within any lecture directory. Bundled `chapter_audit.Rmd` template is installed with the package.
 - New `audit` target in the lecture Makefile (`make audit`) for running audits.
 - All audit functions accept `lecture_dir` parameter, defaulting to `here::here()`, so they work both from `lecture_service/` and from within individual lecture repos.
+
+## Figure audit in CI status report
+
+- The HTML slide status report (`slide_status.Rmd`) now includes a "Figure Audit" section that runs `audit_chapter()` per lecture/chapter after compilation, detecting orphaned and missing figures using `.fls` recorder files.
+- Orphaned figures are now reported with full filenames (including extension) for actionable output. Missing figures remain as basenames (extension unknown from LaTeX references).
+
+
+## Lecture Makefile (`service/Makefile`)
+
+- New `install-lese` target: installs the `lese` R package from GitHub via `pak` (bootstraps `pak` if needed). Accepts `ref=<branch/tag>` for specific versions.
+- Split `clean` into `texclean` (auxiliary files only, keeps PDFs) and `clean` (auxiliary files and PDFs), mirroring the chapter-level `tex.mk` targets.
+
+## Bug fixes
+
+- Fix `MultisessionFuture` warnings about open FIFO connections when running `check_slides_many()` in parallel. The `processx` supervision was unnecessarily creating connections inside future workers.
+- Package installation checks in `audit_chapter()` and `check_script_deps()` no longer load package namespaces, avoiding spurious conflict warnings (e.g. mlr3 vs mlr, paradox vs ParamHelpers).
 
 # lese 0.5.0
 

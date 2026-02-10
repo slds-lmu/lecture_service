@@ -1,6 +1,7 @@
 # Workspace and IDE stuff
 *.code-workspace
 .vscode
+todo.md
 
 # For local overrides of which lectures to track
 include_lectures

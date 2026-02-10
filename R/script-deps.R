@@ -88,7 +88,7 @@ check_script_deps <- function(
     return(invisible(list(all = character(), missing = character())))
   }
 
-  installed <- vapply(deps, requireNamespace, logical(1), quietly = TRUE)
+  installed <- is_pkg_installed(deps)
   missing <- deps[!installed]
 
   cli::cli_alert_info(

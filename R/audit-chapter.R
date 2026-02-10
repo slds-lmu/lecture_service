@@ -272,7 +272,7 @@ audit_chapter <- function(
   if (nrow(scripts_tbl) > 0) {
     deps <- extract_script_deps(scripts_tbl$script_path)
     if (length(deps) > 0) {
-      installed <- vapply(deps, requireNamespace, logical(1), quietly = TRUE)
+      installed <- is_pkg_installed(deps)
       missing_pkgs <- deps[!installed]
       if (length(missing_pkgs) > 0) {
         cli::cli_alert_warning(
