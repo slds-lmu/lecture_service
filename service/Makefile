@@ -62,6 +62,7 @@ clean:
 # Chapter Makefiles include ../tex.mk, rsrc Makefiles include ../../R.mk.
 init-makefiles:
 	@for dir in slides/*/; do \
+		dir=$${dir%/}; \
 		if [ ! -f "$$dir/Makefile" ]; then \
 			echo "Creating $$dir/Makefile"; \
 			echo "include ../tex.mk" > "$$dir/Makefile"; \
