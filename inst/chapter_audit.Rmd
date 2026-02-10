@@ -201,6 +201,54 @@ if (length(all_missing_pkgs) > 0) {
 # Chapter Details
 
 ```{r chapter-details, results='asis'}
+# Helper: build a figure-to-slide reference table
+make_fig_table <- function(figures_df, slide_refs, caption) {
+  fig_tbl <- tibble::tibble(
+    Figure = figures_df$figure_file,
+    `Used by slide` = vapply(
+      figures_df$figure_base_name,
+      function(fig) {
+        slides <- names(slide_refs)[vapply(
+          slide_refs,
+          function(refs) fig %in% refs,
+          logical(1)
+        )]
+        if (length(slides) == 0) "\u274c" else paste(slides, collapse = ", ")
+      },
+      character(1)
+    )
+  )
+  fig_tbl |>
+    kableExtra::kbl(format = "html", escape = FALSE, caption = caption) |>
+    kableExtra::kable_styling(
+      full_width = TRUE,
+      fixed_thead = TRUE,
+      bootstrap_options = c("hover", "condensed", "responsive")
+    ) |>
+    kableExtra::column_spec(1, width = "45%") |>
+    kableExtra::column_spec(2, width = "45%")
+}
+
+# Helper: build a missing-figures table
+make_missing_table <- function(missing_df, subdir) {
+  miss_tbl <- missing_df |>
+    group_by(figure) |>
+    summarize(`Referenced by` = paste(slide, collapse = ", "), .groups = "drop") |>
+    rename(Figure = figure)
+  miss_tbl |>
+    kableExtra::kbl(
+      format = "html", escape = FALSE,
+      caption = sprintf(
+        "%d figure(s) referenced by slides but not in %s/",
+        nrow(miss_tbl), subdir
+      )
+    ) |>
+    kableExtra::kable_styling(
+      full_width = TRUE,
+      bootstrap_options = c("hover", "condensed", "responsive")
+    )
+}
+
 for (ch in chapter_names) {
   res <- audit_results[[ch]]
 
@@ -210,196 +258,75 @@ for (ch in chapter_names) {
   n_slides <- length(res$slide_refs)
   cat(sprintf(
     "\n## %s\n\n%d scripts, %d figures, %d figure_man, %d slides\n\n",
-    ch,
-    n_scripts,
-    n_figures,
-    n_figures_man,
-    n_slides
+    ch, n_scripts, n_figures, n_figures_man, n_slides
   ))
 
-  # --- Figures table: one row per figure on disk, with status columns ---
-  # Exclude attic/ figures from main table (shown separately below)
-  figs_no_attic <- res$figures[!startsWith(res$figures$figure_file, "attic/"), ]
-  if (nrow(figs_no_attic) > 0) {
-    fig_tbl <- tibble::tibble(
-      Figure = figs_no_attic$figure_file,
-      `Used by slide` = vapply(
-        figs_no_attic$figure_base_name,
-        function(fig) {
-          slides <- names(res$slide_refs)[vapply(
-            res$slide_refs,
-            function(refs) fig %in% refs,
-            logical(1)
-          )]
-          if (length(slides) == 0) "\u274c" else paste(slides, collapse = ", ")
-        },
-        character(1)
-      )
-    )
+  has_issues <- FALSE
 
-    tab <- fig_tbl |>
-      kableExtra::kbl(
-        format = "html",
-        escape = FALSE,
-        caption = sprintf("Figures in %s/figure/", ch)
-      ) |>
-      kableExtra::kable_styling(
-        full_width = TRUE,
-        fixed_thead = TRUE,
-        bootstrap_options = c("hover", "condensed", "responsive")
-      ) |>
-      kableExtra::column_spec(1, width = "45%") |>
-      kableExtra::column_spec(2, width = "45%")
-
-    cat(tab)
-    cat("\n\n")
+  # --- Orphaned figures (figure/) ---
+  if (length(res$orphaned_figures) > 0) {
+    has_issues <- TRUE
+    cat(sprintf(
+      "### Orphaned figures (figure/)\n\n**%d** figure(s) on disk but not referenced by any slide:\n\n",
+      length(res$orphaned_figures)
+    ))
+    cat(paste0("- `figure/", res$orphaned_figures, "`\n"), sep = "")
+    cat("\n")
   }
 
-  # --- Attic figures (figure/attic/): parked, listed for cleanup awareness ---
-  if (length(res$attic_figures) > 0) {
-    attic_tbl <- tibble::tibble(Figure = res$attic_figures)
-    tab <- attic_tbl |>
-      kableExtra::kbl(
-        format = "html",
-        escape = FALSE,
-        caption = sprintf(
-          "%d figure(s) in %s/figure/attic/ (parked)",
-          length(res$attic_figures), ch
-        )
-      ) |>
-      kableExtra::kable_styling(
-        full_width = FALSE,
-        bootstrap_options = c("hover", "condensed", "responsive")
-      )
-    cat(tab)
-    cat("\n\n")
+  # --- Orphaned figures (figure_man/) ---
+  if (length(res$orphaned_figures_man) > 0) {
+    has_issues <- TRUE
+    cat(sprintf(
+      "### Orphaned figures (figure_man/)\n\n**%d** figure(s) on disk but not referenced by any slide:\n\n",
+      length(res$orphaned_figures_man)
+    ))
+    cat(paste0("- `figure_man/", res$orphaned_figures_man, "`\n"), sep = "")
+    cat("\n")
   }
 
-  # --- Missing figures (figure/): referenced by slides but not on disk ---
+  # --- Missing figures (figure/) ---
   if (nrow(res$missing_figures) > 0) {
+    has_issues <- TRUE
     cat("### Missing figures (figure/)\n\n")
-
-    miss_tbl <- res$missing_figures |>
-      group_by(figure) |>
-      summarize(
-        `Referenced by` = paste(slide, collapse = ", "),
-        .groups = "drop"
-      ) |>
-      rename(Figure = figure)
-
-    tab <- miss_tbl |>
-      kableExtra::kbl(
-        format = "html",
-        escape = FALSE,
-        caption = sprintf(
-          "%d figure(s) referenced by slides but not in figure/",
-          nrow(miss_tbl)
-        )
-      ) |>
-      kableExtra::kable_styling(
-        full_width = TRUE,
-        bootstrap_options = c("hover", "condensed", "responsive")
-      )
-    cat(tab)
+    cat(make_missing_table(res$missing_figures, "figure"))
     cat("\n\n")
   }
 
-  # --- figure_man/ table: one row per figure on disk, with status columns ---
-  figs_man_no_attic <- res$figures_man[
-    !startsWith(res$figures_man$figure_file, "attic/"),
-  ]
-  if (nrow(figs_man_no_attic) > 0) {
-    fig_man_tbl <- tibble::tibble(
-      Figure = figs_man_no_attic$figure_file,
-      `Used by slide` = vapply(
-        figs_man_no_attic$figure_base_name,
-        function(fig) {
-          slides <- names(res$slide_refs_man)[vapply(
-            res$slide_refs_man,
-            function(refs) fig %in% refs,
-            logical(1)
-          )]
-          if (length(slides) == 0) "\u274c" else paste(slides, collapse = ", ")
-        },
-        character(1)
-      )
-    )
-
-    tab <- fig_man_tbl |>
-      kableExtra::kbl(
-        format = "html",
-        escape = FALSE,
-        caption = sprintf("Figures in %s/figure_man/", ch)
-      ) |>
-      kableExtra::kable_styling(
-        full_width = TRUE,
-        fixed_thead = TRUE,
-        bootstrap_options = c("hover", "condensed", "responsive")
-      ) |>
-      kableExtra::column_spec(1, width = "45%") |>
-      kableExtra::column_spec(2, width = "45%")
-
-    cat(tab)
-    cat("\n\n")
-  }
-
-  if (length(res$attic_figures_man) > 0) {
-    attic_man_tbl <- tibble::tibble(Figure = res$attic_figures_man)
-    tab <- attic_man_tbl |>
-      kableExtra::kbl(
-        format = "html",
-        escape = FALSE,
-        caption = sprintf(
-          "%d figure(s) in %s/figure_man/attic/ (parked)",
-          length(res$attic_figures_man), ch
-        )
-      ) |>
-      kableExtra::kable_styling(
-        full_width = FALSE,
-        bootstrap_options = c("hover", "condensed", "responsive")
-      )
-    cat(tab)
-    cat("\n\n")
-  }
-
-  # --- Missing figures (figure_man/): referenced by slides but not on disk ---
+  # --- Missing figures (figure_man/) ---
   if (nrow(res$missing_figures_man) > 0) {
+    has_issues <- TRUE
     cat("### Missing figures (figure_man/)\n\n")
-
-    miss_man_tbl <- res$missing_figures_man |>
-      group_by(figure) |>
-      summarize(
-        `Referenced by` = paste(slide, collapse = ", "),
-        .groups = "drop"
-      ) |>
-      rename(Figure = figure)
-
-    tab <- miss_man_tbl |>
-      kableExtra::kbl(
-        format = "html",
-        escape = FALSE,
-        caption = sprintf(
-          "%d figure(s) referenced by slides but not in figure_man/",
-          nrow(miss_man_tbl)
-        )
-      ) |>
-      kableExtra::kable_styling(
-        full_width = TRUE,
-        bootstrap_options = c("hover", "condensed", "responsive")
-      )
-    cat(tab)
+    cat(make_missing_table(res$missing_figures_man, "figure_man"))
     cat("\n\n")
+  }
+
+  # --- Attic figures ---
+  if (length(res$attic_figures) > 0) {
+    cat(sprintf(
+      "### Attic (figure/)\n\n%d figure(s) parked in `figure/attic/`:\n\n",
+      length(res$attic_figures)
+    ))
+    cat(paste0("- `", res$attic_figures, "`\n"), sep = "")
+    cat("\n")
+  }
+  if (length(res$attic_figures_man) > 0) {
+    cat(sprintf(
+      "### Attic (figure_man/)\n\n%d figure(s) parked in `figure_man/attic/`:\n\n",
+      length(res$attic_figures_man)
+    ))
+    cat(paste0("- `", res$attic_figures_man, "`\n"), sep = "")
+    cat("\n")
   }
 
   # --- Missing packages ---
-  if (length(res$missing_pkgs %||% character()) > 0) {
+  if (length(res$missing_pkgs) > 0) {
+    has_issues <- TRUE
     cat("### Missing packages\n\n")
-
     cat(paste0("- `", res$missing_pkgs, "`\n"), sep = "")
     cat(sprintf(
       "\n```r\ncheck_script_deps(\"%s\", lecture_dir = \"%s\")\n```\n\n",
-      ch,
-      lecture_dir
+      ch, lecture_dir
     ))
   }
 
@@ -414,9 +341,7 @@ for (ch in chapter_names) {
         Figures = vapply(
           figures_produced,
           function(x) {
-            if (length(x) == 0) {
-              return("")
-            }
+            if (length(x) == 0) return("")
             paste(x, collapse = ", ")
           },
           character(1)
@@ -435,13 +360,11 @@ for (ch in chapter_names) {
 
     tab <- script_tbl |>
       kableExtra::kbl(
-        format = "html",
-        escape = FALSE,
+        format = "html", escape = FALSE,
         caption = sprintf("Script execution for %s", ch)
       ) |>
       kableExtra::kable_styling(
-        full_width = TRUE,
-        fixed_thead = TRUE,
+        full_width = TRUE, fixed_thead = TRUE,
         bootstrap_options = c("hover", "condensed", "responsive")
       ) |>
       kableExtra::column_spec(1, width = "30%") |>
@@ -453,32 +376,48 @@ for (ch in chapter_names) {
     n_fail <- sum(!res$scripts$success)
     cat(sprintf("**%d / %d** scripts succeeded", n_success, n_scripts))
     if (n_fail > 0) {
+      has_issues <- TRUE
       cat(sprintf(", <span class='script-failure'>%d failed</span>", n_fail))
     }
     cat(".\n\n")
 
-    # --- Orphaned scripts ---
     if (length(res$orphaned_scripts) > 0) {
       cat("### Orphaned scripts\n\n")
+      cat(sprintf(
+        "**%d** script(s) produced no figure used by any slide:\n\n",
+        length(res$orphaned_scripts)
+      ))
+      cat(paste0("- `", res$orphaned_scripts, "`\n"), sep = "")
+      cat("\n")
+    }
+  }
 
-      orphan_tbl <- tibble::tibble(Script = res$orphaned_scripts)
+  if (!has_issues) {
+    cat("<span class='audit-ok'>No issues found.</span>\n\n")
+  }
 
-      tab <- orphan_tbl |>
-        kableExtra::kbl(
-          format = "html",
-          escape = FALSE,
-          caption = sprintf(
-            "%d script(s) produced no figure used by any slide",
-            length(res$orphaned_scripts)
-          )
-        ) |>
-        kableExtra::kable_styling(
-          full_width = FALSE,
-          bootstrap_options = c("hover", "condensed", "responsive")
-        )
-      cat(tab)
+  # --- Full figure inventory (collapsed, for reference) ---
+  figs_no_attic <- res$figures[!startsWith(res$figures$figure_file, "attic/"), ]
+  figs_man_no_attic <- res$figures_man[
+    !startsWith(res$figures_man$figure_file, "attic/"),
+  ]
+  if (nrow(figs_no_attic) > 0 || nrow(figs_man_no_attic) > 0) {
+    cat("<details>\n<summary>Full figure inventory</summary>\n\n")
+    if (nrow(figs_no_attic) > 0) {
+      cat(make_fig_table(
+        figs_no_attic, res$slide_refs,
+        sprintf("Figures in %s/figure/", ch)
+      ))
       cat("\n\n")
     }
+    if (nrow(figs_man_no_attic) > 0) {
+      cat(make_fig_table(
+        figs_man_no_attic, res$slide_refs_man,
+        sprintf("Figures in %s/figure_man/", ch)
+      ))
+      cat("\n\n")
+    }
+    cat("</details>\n\n")
   }
 }
 ```

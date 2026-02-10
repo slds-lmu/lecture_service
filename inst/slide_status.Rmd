@@ -377,36 +377,21 @@ has_issues <- vapply(audit_results, function(r) {
 
 ```{r figure-audit-overview}
 if (length(audit_results) > 0) {
+  audit_count <- function(field, fn = length) {
+    vapply(audit_results, function(r) fn(r[[field]]), integer(1))
+  }
+
   overview <- tibble::tibble(
     key = names(audit_results),
     Lecture = vapply(strsplit(names(audit_results), "/"), `[`, character(1), 1),
     Chapter = vapply(strsplit(names(audit_results), "/"), `[`, character(1), 2),
-    Figures = vapply(audit_results, function(r) safe_nrow(r$figures), integer(1)),
-    Orphaned = vapply(
-      audit_results,
-      function(r) length(r$orphaned_figures),
-      integer(1)
-    ),
-    Missing = vapply(
-      audit_results,
-      function(r) safe_nrow(r$missing_figures),
-      integer(1)
-    ),
-    `Figs (man)` = vapply(
-      audit_results,
-      function(r) safe_nrow(r$figures_man),
-      integer(1)
-    ),
-    `Orphaned (man)` = vapply(
-      audit_results,
-      function(r) length(r$orphaned_figures_man),
-      integer(1)
-    ),
-    `Missing (man)` = vapply(
-      audit_results,
-      function(r) safe_nrow(r$missing_figures_man),
-      integer(1)
-    )
+    Figures = audit_count("figures", safe_nrow),
+    Orphaned = audit_count("orphaned_figures"),
+    Attic = audit_count("attic_figures"),
+    Missing = audit_count("missing_figures", safe_nrow),
+    `Figs (man)` = audit_count("figures_man", safe_nrow),
+    `Orphaned (man)` = audit_count("orphaned_figures_man"),
+    `Missing (man)` = audit_count("missing_figures_man", safe_nrow)
   )
 
   overview |>
@@ -496,6 +481,12 @@ if (any(has_issues)) {
         )
       cat(tab)
       cat("\n\n")
+    }
+
+    # Attic figures (informational)
+    n_attic <- length(res$attic_figures) + length(res$attic_figures_man)
+    if (n_attic > 0) {
+      cat(sprintf("*%d figure(s) parked in attic/ (not counted as orphaned)*\n\n", n_attic))
     }
   }
 } else if (length(audit_results) > 0) {
