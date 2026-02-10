@@ -23,16 +23,15 @@ library(knitr)
 
 included_lectures <- lectures()
 
-if (!file.exists("slide_check_cache.rds")) {
-  stop(paste(
-    "slide_check_cache.rds does not exists.",
-    "Run `make` and get a coffee, or",
-    "Rscript -e 'lese::check_slides_many()",
-    sep = "\n "
+cache_path <- slide_cache_path()
+if (!file.exists(cache_path)) {
+  cli::cli_abort(c(
+    "Slide check cache not found at {.path {cache_path}}.",
+    "i" = "Run {.code make} or {.code lese::check_slides_many()} first."
   ))
 }
 
-all_slide_check <- readRDS("slide_check_cache.rds")
+all_slide_check <- readRDS(cache_path)
 
 # Get lectures and reorder them
 # Ignores lectures that exist locally but are not listed in included_lectures

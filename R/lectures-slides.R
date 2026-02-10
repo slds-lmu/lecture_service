@@ -73,7 +73,7 @@ collect_lectures <- function(
   lecture_dirs <- fs::dir_ls(
     lectures_path,
     regexp = "/lecture_[a-z0-9]*$",
-    type = "directory"
+    type = c("directory", "symlink")
   )
   # Kick out spurious "lecture_service" match just in case it happens (shouldn't matter though)
   lecture_dirs <- lecture_dirs[which(

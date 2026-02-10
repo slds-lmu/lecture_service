@@ -1,3 +1,61 @@
+#' Validate and resolve the lecture directory
+#'
+#' Checks that `lecture_dir` is a valid directory and warns if it appears
+#' to be the `lecture_service` root rather than an individual lecture repo.
+#'
+#' @param lecture_dir Character. Path to the lecture directory.
+#' @param lecture_dir_missing Logical. Whether the caller's `lecture_dir`
+#'   argument was not explicitly supplied (i.e. `missing(lecture_dir)` in
+#'   the calling function). Only warn about `lecture_service` context when
+#'   the default was used implicitly.
+#' @param call The calling environment for error reporting.
+#'
+#' @return The normalized `lecture_dir` path (invisibly).
+#' @noRd
+check_lecture_dir <- function(
+  lecture_dir,
+  lecture_dir_missing = FALSE,
+  call = parent.frame()
+) {
+  lecture_dir <- normalizePath(lecture_dir, mustWork = FALSE)
+
+  if (!fs::dir_exists(lecture_dir)) {
+    cli::cli_abort(
+      "Lecture directory {.path {lecture_dir}} does not exist.",
+      call = call
+    )
+  }
+
+  if (lecture_dir_missing && basename(lecture_dir) == "lecture_service") {
+    cli::cli_abort(
+      c(
+        "It looks like you are in the {.path lecture_service} directory.",
+        "i" = "Supply {.arg lecture_dir} explicitly, e.g. {.code lecture_dir = here::here(\"lecture_i2ml\")}",
+        "i" = "Or run from within a lecture directory like {.path lecture_i2ml/}."
+      ),
+      call = call
+    )
+  }
+
+  invisible(lecture_dir)
+}
+
+
+#' Check if packages are installed without loading them
+#'
+#' Unlike [requireNamespace()], this does not load the package namespace,
+#' avoiding `.onLoad` side effects. This matters when conflicting packages
+#' coexist (e.g. mlr3 vs mlr, paradox vs ParamHelpers) — loading one
+#' namespace can trigger warnings about the other.
+#'
+#' @param pkgs Character vector of package names.
+#' @return A logical vector the same length as `pkgs`.
+#' @noRd
+is_pkg_installed <- function(pkgs) {
+  vapply(pkgs, function(pkg) nzchar(system.file(package = pkg)), logical(1))
+}
+
+
 #' Simple check for availability of system tools
 #'
 #' Can be used to verify if a tool (e.g. `convert`) is in `$PATH` and findable from within R.
@@ -17,9 +75,15 @@ check_system_tool <- function(x, strictness = c("warning", "error", "none")) {
   ret <- TRUE
   if (which == "") {
     msg <- "Could not find {x} in $PATH"
-    if (strictness == "none") cli::cli_alert_danger(msg)
-    if (strictness == "error") cli::cli_abort(msg)
-    if (strictness == "warning") cli::cli_alert_warning(msg)
+    if (strictness == "none") {
+      cli::cli_alert_danger(msg)
+    }
+    if (strictness == "error") {
+      cli::cli_abort(msg)
+    }
+    if (strictness == "warning") {
+      cli::cli_alert_warning(msg)
+    }
     ret <- FALSE
   }
 
@@ -42,7 +106,9 @@ check_docker <- function(strictness = c("warning", "error", "none")) {
 
   has_docker <- check_system_tool("docker", strictness = strictness)
 
-  if (!has_docker) return(invisible(FALSE))
+  if (!has_docker) {
+    return(invisible(FALSE))
+  }
 
   p <- processx::process$new(
     command = "docker",
@@ -54,9 +120,15 @@ check_docker <- function(strictness = c("warning", "error", "none")) {
   msg_not_running <- "Could not connect to docker runtime, is it running?"
   ret <- TRUE
   if (p$get_exit_status() == 1) {
-    if (strictness == "none") cli::cli_alert_danger(msg_not_running)
-    if (strictness == "warning") cli::cli_warn(msg_not_running)
-    if (strictness == "error") cli::cli_abort(msg_not_running)
+    if (strictness == "none") {
+      cli::cli_alert_danger(msg_not_running)
+    }
+    if (strictness == "warning") {
+      cli::cli_warn(msg_not_running)
+    }
+    if (strictness == "error") {
+      cli::cli_abort(msg_not_running)
+    }
     ret <- FALSE
   }
 

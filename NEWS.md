@@ -1,6 +1,50 @@
 # lese 0.5.0.9000 (In development)
 
-- Rename `chapter` to `chapter` for consistency
+- Rename `topic` to `chapter` for consistency when referring to slide paths, i.e. `lecture_i2ml/slides/<chapter>/foo.tex`
+
+## Slide status reporting
+
+- Moved `slide_status.Rmd` and `slide_status_pr.Rmd` into `inst/` so they are bundled with the package and retrieved via `system.file()`.
+- New wrapper functions `render_slide_status()` and `render_slide_status_pr()` to render the reports from the installed templates. These replace direct `rmarkdown::render()` calls in the Makefile.
+- New `slide_cache_path()` returns the path to the slide check cache, now stored in the user data directory (`rappdirs::user_data_dir("lese")`) rather than the working directory.
+- New `slide_cache_clean()` deletes the cache file.
+- The Makefile uses a `.slide_check_stamp` stamp file for incremental build tracking, with `make clean` calling `slide_cache_clean()`.
+
+## Slide scripts and figure auditing
+
+A long-open issue was to enforce these rules for figures in `slides/<chapter>/figure` and `slides/<chapter>/rsrc`:
+
+1. Each script in `rsrc` runs without errors (given required R packages are installed)
+2. Each file in `figure` is created by a script in `rsrc`
+3. Each file in `figure` is used by at least one slide `.tex` file
+4. No script in `rsrc` or figure in `figure` is unused by any `.tex` file
+
+New functions for auditing this dependency chain:
+
+- `audit_chapter()`: Main entry point — audits a single chapter's script, figure, and slide dependencies. Identifies orphaned figures, orphaned scripts, missing figures, and missing packages. Optionally runs scripts to track which figures they produce.
+- `run_chapter_scripts()` / `run_script()`: Execute chapter scripts in isolated `callr` subprocesses with before/after figure directory diffing.
+- `parse_slide_figures()`: Parse `.tex` slides for figure references (`\includegraphics`, `\image`, `\imageFixed`, etc.).
+- `extract_script_deps()` / `check_script_deps()`: Detect and install R package dependencies from scripts.
+- `render_chapter_audit()`: Render HTML audit reports from within any lecture directory. Bundled `chapter_audit.Rmd` template is installed with the package.
+- New `audit` target in the lecture Makefile (`make audit`) for running audits.
+- All audit functions accept `lecture_dir` parameter, defaulting to `here::here()`, so they work both from `lecture_service/` and from within individual lecture repos.
+
+## Figure audit in CI status report
+
+- The HTML slide status report (`slide_status.Rmd`) now includes a "Figure Audit" section that runs `audit_chapter()` per lecture/chapter after compilation, detecting orphaned and missing figures using `.fls` recorder files.
+- Orphaned figures are now reported with full filenames (including extension) for actionable output. Missing figures remain as basenames (extension unknown from LaTeX references).
+
+
+## Lecture Makefile (`service/Makefile`)
+
+- New `install-lese` target: installs the `lese` R package from GitHub via `pak` (bootstraps `pak` if needed). Accepts `ref=<branch/tag>` for specific versions.
+- Split `clean` into `texclean` (auxiliary files only, keeps PDFs) and `clean` (auxiliary files and PDFs), mirroring the chapter-level `tex.mk` targets.
+
+## Bug fixes
+
+- Fix `MultisessionFuture` warnings about open FIFO connections when running `check_slides_many()` in parallel. The `processx` supervision was unnecessarily creating connections inside future workers.
+- Package installation checks in `audit_chapter()` and `check_script_deps()` no longer load package namespaces, avoiding spurious conflict warnings (e.g. mlr3 vs mlr, paradox vs ParamHelpers).
+- `collect_lectures()` now discovers symlinked lecture directories (e.g. `lecture_sl -> ../lecture_sl`). Previously `fs::dir_ls(..., type = "directory")` skipped symlinks.
 
 # lese 0.5.0
 

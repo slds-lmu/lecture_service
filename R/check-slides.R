@@ -92,7 +92,7 @@ check_slides_single <- function(
 #'   Uses [future.apply::future_lapply] with `future::plan("multisession")`.
 #' @export
 #' @return Invisibly: An expanded `lectures_tbl` with check results
-#' Also saves output at `slide_check_cache.rds`.
+#' Also saves output at [slide_cache_path()].
 check_slides_many <- function(
   lectures_tbl = collect_lectures(),
   pre_clean = FALSE,
@@ -141,9 +141,11 @@ check_slides_many <- function(
 
   took <- tictoc::toc()
 
+  cache_path <- slide_cache_path()
+  fs::dir_create(fs::path_dir(cache_path))
   cli::cli_alert_info(
-    "{took$callback_msg}. Saving results to {.file slide_check_cache.rds}."
+    "{took$callback_msg}. Saving results to {.path {cache_path}}."
   )
-  saveRDS(check_table_result, file = "slide_check_cache.rds")
+  saveRDS(check_table_result, file = cache_path)
   invisible(check_table_result)
 }
