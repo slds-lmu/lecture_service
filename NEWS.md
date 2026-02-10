@@ -44,6 +44,7 @@ New functions for auditing this dependency chain:
 
 - Fix `MultisessionFuture` warnings about open FIFO connections when running `check_slides_many()` in parallel. The `processx` supervision was unnecessarily creating connections inside future workers.
 - Package installation checks in `audit_chapter()` and `check_script_deps()` no longer load package namespaces, avoiding spurious conflict warnings (e.g. mlr3 vs mlr, paradox vs ParamHelpers).
+- `collect_lectures()` now discovers symlinked lecture directories (e.g. `lecture_sl -> ../lecture_sl`). Previously `fs::dir_ls(..., type = "directory")` skipped symlinks.
 
 # lese 0.5.0
 
