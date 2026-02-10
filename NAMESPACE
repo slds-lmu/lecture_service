@@ -3,6 +3,7 @@
 export(audit_chapter)
 export(bib_to_list)
 export(check_docker)
+export(check_lecture_deps)
 export(check_log)
 export(check_script_deps)
 export(check_slides_many)
