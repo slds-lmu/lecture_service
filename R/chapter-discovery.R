@@ -18,14 +18,16 @@ get_chapter_figures <- function(lecture_dir, chapter, subdir = "figure") {
     ))
   }
 
-  paths <- fs::dir_ls(figure_dir, type = "file")
-  files <- fs::path_file(paths)
+  paths <- fs::dir_ls(figure_dir, type = "file", recurse = TRUE)
+  # Paths relative to figure_dir, preserving subdirectory structure
+  # e.g. "cwb-anim/fig-iter-0038.png" for figure/cwb-anim/fig-iter-0038.png
+  rel_paths <- fs::path_rel(paths, figure_dir)
 
   tibble::tibble(
     figure_path = as.character(paths),
-    figure_file = as.character(files),
-    figure_extension = fs::path_ext(files),
-    figure_base_name = as.character(fs::path_ext_remove(files))
+    figure_file = as.character(rel_paths),
+    figure_extension = fs::path_ext(rel_paths),
+    figure_base_name = as.character(fs::path_ext_remove(rel_paths))
   )
 }
 
