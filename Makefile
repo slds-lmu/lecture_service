@@ -64,7 +64,7 @@ help:
 	@echo "install              : Install everything (R packages, LaTeX, service)."
 	@echo "install-r            : Install R package dependencies only."
 	@echo "install-tex          : Install LaTeX dependencies using TinyTeX."
-	@echo "install-service      : Install this R package."
+	@echo "install-lese      : Install this R package."
 	@echo "install-tools-ubuntu : Optional for slide validation: Install diff-pdf and diff-pdf-visually (Ubuntu only)."
 	@echo ""
 	@echo "╔═══════════════════════════════════════════════════════════════════════════════════╗"
@@ -121,7 +121,7 @@ clean-site:
 	if [ -d "${STATUSASSETS}" ] ; then rm -r ${STATUSASSETS}; fi ;\
 	if [ -d "${SITEDIR}" ]      ; then rm -r ${SITEDIR}     ; fi
 
-.PHONY: install-r install-tex install-tools-ubuntu install-service install
+.PHONY: install-r install-tex install-tools-ubuntu install-lese install
 install-r: check-r
 	scripts/install_r_deps.R
 
@@ -131,7 +131,7 @@ install-tex: check-r
 install-tools-ubuntu:
 	scripts/install_tools_ubuntu.sh
 
-install-service: check-r
+install-lese: check-r
 	@# R CMD INSTALL --preclean --no-multiarch --with-keep.source .
 	# Install local dev dependencies (DESCRIPTION Imports and Suggests)
 	Rscript -e 'pak::local_install_dev_deps()'
@@ -139,7 +139,7 @@ install-service: check-r
 	Rscript -e 'pak::local_install()'
 	@echo "Use lese::install_lecheck() to install the lese command line tool"
 
-install: install-r install-tex install-service
+install: install-r install-tex install-lese
 
 .PHONY: clone clone-shallow download
 clone:
