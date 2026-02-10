@@ -20,8 +20,8 @@ The path to the rendered markdown file (invisibly).
 \description{
 Renders a simplified markdown version of the slide status for use in
 pull request comments. Uses the \code{slide_status_pr.Rmd} template bundled
-with the package. Requires \code{slide_check_cache.rds} (produced by
-\code{\link[=check_slides_many]{check_slides_many()}}) in the output directory.
+with the package. Requires the slide check cache produced by
+\code{\link[=check_slides_many]{check_slides_many()}} (see \code{\link[=slide_cache_path]{slide_cache_path()}}).
 }
 \examples{
 \dontrun{

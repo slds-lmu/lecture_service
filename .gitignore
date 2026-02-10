@@ -9,7 +9,7 @@ include_lectures
 lecture_*
 
 # Cached check data and output
-slide_check_cache.rds
+.slide_check_stamp
 slide_status.html
 slide_status*.md
 slide_status*.html

@@ -67,6 +67,10 @@ compile_slide <- function(
 
   # Picking the latexmk to use, system or docker
   # When I made this a switch statement I assumed less redundancy than I actually built.
+  # supervise = !check_status: When we wait for the process (check_status = TRUE),
+  # supervision is unnecessary and its FIFO connections cause warnings in parallel
+  # mode (future package). When fire-and-forget (!check_status), supervision ensures
+  # the child is cleaned up if the parent dies.
   p <- switch(
     method,
     system = latexmk_system(
@@ -74,7 +78,7 @@ compile_slide <- function(
       verbose = verbose,
       log_stdout = log_stdout,
       log_stderr = log_stderr,
-      supervise = check_status,
+      supervise = !check_status,
       ...
     ),
     docker = latexmk_docker(
@@ -82,7 +86,7 @@ compile_slide <- function(
       verbose = verbose,
       log_stdout = log_stdout,
       log_stderr = log_stderr,
-      supervise = check_status,
+      supervise = !check_status,
       ...
     ),
     tinytex = latexmk_tinytex(slide_file = slide_file, ...)

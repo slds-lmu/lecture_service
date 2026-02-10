@@ -244,8 +244,7 @@ for (ch in chapter_names) {
   # --- Figures table: one row per figure on disk, with status columns ---
   if (n_figures > 0) {
     fig_tbl <- tibble::tibble(
-      Figure = res$figures$figure_base_name,
-      Extension = res$figures$figure_extension,
+      Figure = res$figures$figure_file,
       `Used by slide` = vapply(
         res$figures$figure_base_name,
         function(fig) {
@@ -271,8 +270,8 @@ for (ch in chapter_names) {
         fixed_thead = TRUE,
         bootstrap_options = c("hover", "condensed", "responsive")
       ) |>
-      kableExtra::column_spec(1, width = "40%") |>
-      kableExtra::column_spec(3, width = "45%")
+      kableExtra::column_spec(1, width = "45%") |>
+      kableExtra::column_spec(2, width = "45%")
 
     cat(tab)
     cat("\n\n")
@@ -310,8 +309,7 @@ for (ch in chapter_names) {
   # --- figure_man/ table: one row per figure on disk, with status columns ---
   if (n_figures_man > 0) {
     fig_man_tbl <- tibble::tibble(
-      Figure = res$figures_man$figure_base_name,
-      Extension = res$figures_man$figure_extension,
+      Figure = res$figures_man$figure_file,
       `Used by slide` = vapply(
         res$figures_man$figure_base_name,
         function(fig) {
@@ -337,8 +335,8 @@ for (ch in chapter_names) {
         fixed_thead = TRUE,
         bootstrap_options = c("hover", "condensed", "responsive")
       ) |>
-      kableExtra::column_spec(1, width = "40%") |>
-      kableExtra::column_spec(3, width = "45%")
+      kableExtra::column_spec(1, width = "45%") |>
+      kableExtra::column_spec(2, width = "45%")
 
     cat(tab)
     cat("\n\n")

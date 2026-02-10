@@ -10,8 +10,9 @@ TPDFS=$(shell find lecture_*/slides/* -maxdepth 1 -iname "*.pdf" 2>/dev/null || 
 # This unfortunately means that e.g. lecture_i2ml/ slides will recompile if preamble changes in lecture_sl/
 PREAMBLES=$(shell find lecture_*/style -maxdepth 1 -type f \( -name "common.tex" -o -name "preamble.tex" -o -name "lmu-lecture.sty" \) 2>/dev/null || true)
 
-# data.frame of all slides and compile/comparison status checks created by check_slides_many()
-CACHETBL=slide_check_cache.rds
+# Stamp file tracking when check_slides_many() last ran.
+# The actual cache is stored in the user data dir (see lese::slide_cache_path()).
+CACHESTAMP=.slide_check_stamp
 
 # Output names from lese::render_slide_status() / render_slide_status_pr()
 # (Rmd templates are bundled with the package in inst/)
@@ -45,8 +46,9 @@ ifndef HAS_RSCRIPT
 endif
 
 # This runs latexmk internally, but it's fast if there's nothing new to do for most slides (unless you clean up)
-${CACHETBL}: check-r $(TSLIDES) $(PREAMBLES)
+${CACHESTAMP}: check-r $(TSLIDES) $(PREAMBLES)
 	Rscript --quiet -e 'lese::check_slides_many()'
+	@touch ${CACHESTAMP}
 
 
 .PHONY: help
@@ -75,19 +77,19 @@ help:
 	@echo "║       Utilities                                                                    ║"
 	@echo "╚═══════════════════════════════════════════════════════════════════════════════════╝"
 	@echo "file-count           : Render ${FILECOUNTRMD} to ${FILECOUNTHTML}."
-	@echo "clean                : Remove ${CACHETBL}, ${STATUSHTML}, ${STATUSASSETS}, and ${SITEDIR}."
+	@echo "clean                : Remove slide cache, ${STATUSHTML}, ${STATUSASSETS}, and ${SITEDIR}."
 	@echo "clean-site           : Remove ${STATUSHTML}, ${STATUSASSETS}, and ${SITEDIR} only."
 	@echo ""
 
 .PHONY: check_results
-check_results: ${CACHETBL}
+check_results: ${CACHESTAMP}
 
 .PHONY: table
-table: ${CACHETBL}
+table: ${CACHESTAMP}
 	Rscript --quiet -e 'lese::render_slide_status_pr()'
 
 .PHONY: site
-site: ${CACHETBL}
+site: ${CACHESTAMP}
 	Rscript --quiet -e 'lese::render_slide_status()'
 	@# Create a self-contained folder with the HTML and assets for easier / more efficient deployment on GitHub actions
 	@# or anywhere else.
@@ -109,7 +111,8 @@ site: ${CACHETBL}
 # Multi-line command needs ; to terminate bash commands and \ to recognize linebreaks
 .PHONY: clean
 clean: clean-site
-	if [ -f "${CACHETBL}" ]     ; then rm ${CACHETBL}       ; fi ;\
+	Rscript --quiet -e 'lese::slide_cache_clean()'
+	rm -f ${CACHESTAMP}
 	find comparison -name "*pdf" -delete 2>/dev/null || true
 
 .PHONY: clean-site

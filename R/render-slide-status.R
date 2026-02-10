@@ -1,8 +1,8 @@
 #' Render the slide status HTML report
 #'
 #' Renders the slide status overview site from the `slide_status.Rmd`
-#' template bundled with the package. Requires `slide_check_cache.rds`
-#' (produced by [check_slides_many()]) in the output directory.
+#' template bundled with the package. Requires the slide check cache
+#' produced by [check_slides_many()] (see [slide_cache_path()]).
 #'
 #' @param output_dir Character. Directory for the output HTML and assets.
 #'   Defaults to the current working directory.
@@ -45,8 +45,8 @@ render_slide_status <- function(output_dir = ".", quiet = TRUE, ...) {
 #'
 #' Renders a simplified markdown version of the slide status for use in
 #' pull request comments. Uses the `slide_status_pr.Rmd` template bundled
-#' with the package. Requires `slide_check_cache.rds` (produced by
-#' [check_slides_many()]) in the output directory.
+#' with the package. Requires the slide check cache produced by
+#' [check_slides_many()] (see [slide_cache_path()]).
 #'
 #' @inheritParams render_slide_status
 #'

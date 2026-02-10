@@ -153,8 +153,10 @@ build_missing_figures_df <- function(referenced, on_disk, slide_refs) {
 #' - `figures_man`: data.frame of manually created figure files (from `figure_man/`)
 #' - `slide_refs`: named list mapping slide filenames to their `figure/` references
 #' - `slide_refs_man`: named list mapping slide filenames to their `figure_man/` references
-#' - `orphaned_figures`: character vector of `figure/` basenames not used by any slide
-#' - `orphaned_figures_man`: character vector of `figure_man/` basenames not used by any slide
+#' - `orphaned_figures`: character vector of `figure/` filenames (with extension)
+#'     not used by any slide
+#' - `orphaned_figures_man`: character vector of `figure_man/` filenames (with
+#'     extension) not used by any slide
 #' - `orphaned_scripts`: character vector of script filenames whose produced
 #'     figures are not used by any slide (`NULL` if `run = FALSE`)
 #' - `missing_figures`: data.frame with columns `figure` and `slide` for
@@ -310,9 +312,15 @@ audit_chapter <- function(
   # --- Cross-reference analysis ---
   cli::cli_h2("Dependency Analysis")
 
-  # Orphaned figures: on disk but not referenced by any slide
-  orphaned_figures <- setdiff(figures_on_disk, all_referenced)
-  orphaned_figures_man <- setdiff(figures_man_on_disk, all_referenced_man)
+  # Orphaned figures: on disk but basename not referenced by any slide.
+  # Report as full filenames (with extension) for actionable user output.
+  orphaned_mask <- !(figures_on_disk %in% all_referenced)
+  orphaned_figures <- as.character(figures_tbl$figure_file[orphaned_mask])
+
+  orphaned_mask_man <- !(figures_man_on_disk %in% all_referenced_man)
+  orphaned_figures_man <- as.character(
+    figures_man_tbl$figure_file[orphaned_mask_man]
+  )
 
   # Missing figures: referenced by slides but not on disk
   missing_figures_df <- build_missing_figures_df(

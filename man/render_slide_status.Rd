@@ -20,8 +20,8 @@ The path to the rendered HTML file (invisibly), as returned by
 }
 \description{
 Renders the slide status overview site from the \code{slide_status.Rmd}
-template bundled with the package. Requires \code{slide_check_cache.rds}
-(produced by \code{\link[=check_slides_many]{check_slides_many()}}) in the output directory.
+template bundled with the package. Requires the slide check cache
+produced by \code{\link[=check_slides_many]{check_slides_many()}} (see \code{\link[=slide_cache_path]{slide_cache_path()}}).
 }
 \examples{
 \dontrun{

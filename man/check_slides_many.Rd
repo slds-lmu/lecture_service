@@ -31,7 +31,7 @@ Uses \link[future.apply:future_lapply]{future.apply::future_lapply} with \code{f
 }
 \value{
 Invisibly: An expanded \code{lectures_tbl} with check results
-Also saves output at \code{slide_check_cache.rds}.
+Also saves output at \code{\link[=slide_cache_path]{slide_cache_path()}}.
 }
 \description{
 Wrapper for \code{\link[=check_slides_single]{check_slides_single()}}.

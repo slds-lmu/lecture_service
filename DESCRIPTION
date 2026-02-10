@@ -24,6 +24,7 @@ Imports:
     here,
     jsonlite,
     processx,
+    rappdirs,
     rlang,
     stringi,
     stringr,
