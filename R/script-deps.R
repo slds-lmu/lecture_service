@@ -110,17 +110,91 @@ check_script_deps <- function(
         "{.pkg pak} is required to install packages. Install it with {.code install.packages('pak')}"
       )
     }
-    answer <- utils::menu(
-      choices = c("Yes", "No"),
-      title = paste0(
-        "Install ",
-        length(missing),
-        " missing package(s) via pak?"
+    if (interactive()) {
+      answer <- utils::menu(
+        choices = c("Yes", "No"),
+        title = paste0(
+          "Install ",
+          length(missing),
+          " missing package(s) via pak?"
+        )
       )
-    )
-    if (answer == 1L) {
+      if (answer == 1L) {
+        pak::pak(missing)
+      }
+    } else {
       pak::pak(missing)
     }
+  }
+
+  invisible(list(all = deps, missing = missing))
+}
+
+
+#' Check and install missing dependencies for all chapter scripts
+#'
+#' Scans all R scripts in `slides/*/rsrc/` across all chapters, extracts
+#' package dependencies, and reports which are missing. Optionally installs
+#' them via [pak::pak()].
+#'
+#' @param lecture_dir Character. Path to the lecture directory.
+#'   Defaults to `here::here()`.
+#' @param install Logical. If `TRUE`, install missing packages without
+#'   prompting. Default `FALSE`.
+#'
+#' @return Invisibly: A list with `all` (all detected packages) and
+#'   `missing` (packages not currently installed).
+#'
+#' @export
+#' @examplesIf fs::dir_exists(here::here("lecture_i2ml"))
+#' check_lecture_deps(lecture_dir = here::here("lecture_i2ml"))
+check_lecture_deps <- function(lecture_dir = here::here(), install = FALSE) {
+  check_lecture_dir(lecture_dir, lecture_dir_missing = missing(lecture_dir))
+
+  scripts <- fs::dir_ls(
+    fs::path(lecture_dir, "slides"),
+    regexp = "/rsrc/.*\\.R$",
+    recurse = 2,
+    type = "file"
+  )
+
+  if (length(scripts) == 0) {
+    cli::cli_alert_info("No R scripts found in {.path slides/*/rsrc/}")
+    return(invisible(list(all = character(), missing = character())))
+  }
+
+  deps <- extract_script_deps(scripts)
+
+  if (length(deps) == 0) {
+    cli::cli_alert_success(
+      "No package dependencies detected in {length(scripts)} script{?s}."
+    )
+    return(invisible(list(all = character(), missing = character())))
+  }
+
+  installed <- is_pkg_installed(deps)
+  missing <- deps[!installed]
+
+  cli::cli_alert_info(
+    "Found {length(deps)} package dependenc{?y/ies} across {length(scripts)} script{?s}."
+  )
+
+  if (length(missing) == 0) {
+    cli::cli_alert_success("All packages are installed.")
+    return(invisible(list(all = deps, missing = character())))
+  }
+
+  cli::cli_alert_warning(
+    "{length(missing)} package{?s} not installed: {.pkg {missing}}"
+  )
+
+  if (install) {
+    if (!requireNamespace("pak", quietly = TRUE)) {
+      cli::cli_abort(
+        "{.pkg pak} is required to install packages. Install it with {.code install.packages('pak')}"
+      )
+    }
+    pak::pak(missing)
   }
 
   invisible(list(all = deps, missing = missing))

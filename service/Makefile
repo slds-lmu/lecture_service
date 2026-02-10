@@ -1,4 +1,4 @@
-.PHONY: help update-service update-latex-math texclean clean slides audit install-lese init-makefiles
+.PHONY: help update-service update-latex-math texclean clean slides audit install-lese init-makefiles deps install-deps
 
 help:
 	@echo "Available targets:"
@@ -13,6 +13,8 @@ help:
 	@echo "  clean             : Clean LaTeX auxiliary files and PDFs"
 	@echo "  audit             : Render chapter audit report (requires lese R package)"
 	@echo "                      Optional: run=true to execute scripts (default: false)"
+	@echo "  deps              : List R package dependencies of scripts and check what's missing"
+	@echo "  install-deps      : Install missing R package dependencies"
 	@echo "  init-makefiles    : Create Makefiles in chapter and rsrc dirs if missing"
 	@echo "  help              : Show this help message"
 
@@ -37,6 +39,12 @@ slides:
 
 audit:
 	Rscript --quiet -e 'lese::render_chapter_audit(run = $(if $(filter true TRUE 1,$(run)),TRUE,FALSE), method = "$(or $(method),auto)")'
+
+deps:
+	@Rscript --quiet -e 'lese::check_lecture_deps(install = FALSE)'
+
+install-deps:
+	@Rscript --quiet -e 'lese::check_lecture_deps(install = TRUE)'
 
 texclean:
 	@echo "Cleaning LaTeX auxiliary files (keeping PDFs)..."

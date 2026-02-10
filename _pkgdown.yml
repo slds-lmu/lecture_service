@@ -39,6 +39,7 @@ reference:
       - parse_slide_figures
       - extract_script_deps
       - check_script_deps
+      - check_lecture_deps
   - title: "Slide status reporting"
     desc: |
       Render slide status reports and manage the slide check cache.
