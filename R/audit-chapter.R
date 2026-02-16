@@ -159,8 +159,12 @@ build_missing_figures_df <- function(referenced, on_disk, slide_refs) {
 #'     extension) not used by any slide (excludes `attic/` subdirectory)
 #' - `attic_figures`: character vector of filenames in `figure/attic/`
 #' - `attic_figures_man`: character vector of filenames in `figure_man/attic/`
-#' - `orphaned_scripts`: character vector of script filenames whose produced
-#'     figures are not used by any slide (`NULL` if `run = FALSE`)
+#' - `orphaned_scripts`: character vector of script filenames that succeeded
+#'     but produced no figure used by any slide (`NULL` if `run = FALSE`)
+#' - `failed_scripts`: character vector of script filenames that errored
+#'     during execution (`NULL` if `run = FALSE`)
+#' - `no_figure_scripts`: character vector of script filenames that succeeded
+#'     but produced no figures (`NULL` if `run = FALSE`)
 #' - `missing_figures`: data.frame with columns `figure` and `slide` for
 #'     `figure/` files referenced by slides but not on disk
 #' - `missing_figures_man`: data.frame with columns `figure` and `slide` for
@@ -344,18 +348,27 @@ audit_chapter <- function(
     slide_refs_man
   )
 
-  # Orphaned scripts: produced no figure used by any slide
+  # Orphaned scripts: produced no figure used by any slide.
+  # Only consider scripts that succeeded -- failed scripts may have produced
+  # figures if they hadn't errored, so we can't classify them as orphaned.
+  # Scripts that succeed but produce zero figures are tracked separately.
   orphaned_scripts <- NULL
+  failed_scripts <- NULL
+  no_figure_scripts <- NULL
   if (run && nrow(scripts_tbl) > 0) {
     orphaned_scripts <- character()
-    for (i in seq_len(nrow(scripts_tbl))) {
-      produced <- scripts_tbl$figures_produced[[i]]
+    no_figure_scripts <- character()
+    failed_scripts <- scripts_tbl$script_file[!scripts_tbl$success]
+    succeeded <- scripts_tbl[scripts_tbl$success, , drop = FALSE]
+    for (i in seq_len(nrow(succeeded))) {
+      produced <- succeeded$figures_produced[[i]]
+      if (length(produced) == 0) {
+        no_figure_scripts <- c(no_figure_scripts, succeeded$script_file[i])
+        next
+      }
       produced_basenames <- fs::path_ext_remove(produced)
-      if (
-        length(produced_basenames) == 0 ||
-          !any(produced_basenames %in% all_referenced)
-      ) {
-        orphaned_scripts <- c(orphaned_scripts, scripts_tbl$script_file[i])
+      if (!any(produced_basenames %in% all_referenced)) {
+        orphaned_scripts <- c(orphaned_scripts, succeeded$script_file[i])
       }
     }
   }
@@ -413,15 +426,37 @@ audit_chapter <- function(
   }
 
   cli::cli_h3("Orphaned scripts")
+  if (length(failed_scripts) > 0) {
+    cli::cli_alert_danger(
+      "{.val {length(failed_scripts)}} script{?s} failed (cannot determine if orphaned)"
+    )
+    cli::cli_bullets(stats::setNames(
+      failed_scripts,
+      rep("x", length(failed_scripts))
+    ))
+  }
+  if (length(no_figure_scripts) > 0) {
+    cli::cli_alert_warning(
+      "{.val {length(no_figure_scripts)}} script{?s} produced no figures"
+    )
+    cli::cli_bullets(stats::setNames(
+      no_figure_scripts,
+      rep("!", length(no_figure_scripts))
+    ))
+  }
   if (!is.null(orphaned_scripts) && length(orphaned_scripts) > 0) {
     cli::cli_alert_warning(
-      "Found {.val {length(orphaned_scripts)}} orphaned script{?s} (produced no figure used by a slide)"
+      "{.val {length(orphaned_scripts)}} orphaned script{?s} (figures not used by any slide)"
     )
     cli::cli_bullets(stats::setNames(
       orphaned_scripts,
       rep("!", length(orphaned_scripts))
     ))
-  } else if (run) {
+  } else if (
+    run &&
+      length(failed_scripts) == 0 &&
+      length(no_figure_scripts) == 0
+  ) {
     cli::cli_alert_success("No orphaned scripts.")
   }
 
@@ -468,8 +503,87 @@ audit_chapter <- function(
     attic_figures = attic_figures,
     attic_figures_man = attic_figures_man,
     orphaned_scripts = orphaned_scripts,
+    failed_scripts = failed_scripts,
+    no_figure_scripts = no_figure_scripts,
     missing_figures = missing_figures_df,
     missing_figures_man = missing_figures_man_df,
     missing_pkgs = missing_pkgs
   ))
+}
+
+
+#' Remove orphaned figures from a chapter
+#'
+#' Runs [audit_chapter()] to identify orphaned figures in `figure/` and
+#' `figure_man/`, then deletes them. Figures in `attic/` subdirectories
+#' are never deleted.
+#'
+#' Since figures are typically git-tracked, deletions are easily reversible
+#' via `git checkout`.
+#'
+#' @inheritParams audit_chapter
+#' @param dry_run Logical. If `TRUE` (default), only list files that would
+#'   be deleted without actually removing them.
+#'
+#' @return Invisibly: character vector of deleted (or would-be-deleted) file
+#'   paths.
+#' @export
+clean_orphaned_figures <- function(
+  chapter,
+  lecture_dir = here::here(),
+  lecture = basename(lecture_dir),
+  method = c("auto", "regex", "fls"),
+  dry_run = TRUE
+) {
+  method <- match.arg(method)
+
+  res <- audit_chapter(
+    chapter,
+    lecture_dir = lecture_dir,
+    lecture = lecture,
+    run = FALSE,
+    method = method
+  )
+
+  chapter_dir <- fs::path(lecture_dir, "slides", chapter)
+
+  paths <- character()
+  if (length(res$orphaned_figures) > 0) {
+    paths <- c(paths, fs::path(chapter_dir, "figure", res$orphaned_figures))
+  }
+  if (length(res$orphaned_figures_man) > 0) {
+    paths <- c(
+      paths,
+      fs::path(chapter_dir, "figure_man", res$orphaned_figures_man)
+    )
+  }
+
+  if (length(paths) == 0) {
+    cli::cli_alert_success("No orphaned figures to remove.")
+    return(invisible(character()))
+  }
+
+  if (dry_run) {
+    cli::cli_alert_info(
+      "Dry run: would remove {.val {length(paths)}} file{?s}:"
+    )
+    cli::cli_bullets(stats::setNames(
+      as.character(fs::path_rel(paths, lecture_dir)),
+      rep("*", length(paths))
+    ))
+    cli::cli_alert_info(
+      "Run with {.code dry_run = FALSE} or {.code make clean-orphaned-figures} to delete."
+    )
+  } else {
+    fs::file_delete(paths)
+    cli::cli_alert_success(
+      "Removed {.val {length(paths)}} orphaned figure{?s}."
+    )
+    cli::cli_bullets(stats::setNames(
+      as.character(fs::path_rel(paths, lecture_dir)),
+      rep("*", length(paths))
+    ))
+  }
+
+  invisible(as.character(paths))
 }
