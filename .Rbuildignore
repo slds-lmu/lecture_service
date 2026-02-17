@@ -15,7 +15,10 @@
 ^comparison$
 ^logs$
 ^_site$
-\.Rmd$
+^slide_status\.Rmd$
+^slide_status_pr\.Rmd$
+^file_counts\.Rmd$
+^.*\.html$
 \.rds$
 ^include_lectures$
 \./code-workspace$
@@ -34,3 +37,6 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^\.slide_check_stamp$
+.claude
+CLAUDE.md

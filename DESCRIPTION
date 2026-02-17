@@ -10,8 +10,9 @@ License: MIT + file LICENSE
 URL: https://slds-lmu.github.io/lecture_service/
 Depends:
     R (>= 4.1.0)
-Imports: 
+Imports:
     bib2df,
+    callr,
     checkmate,
     cli,
     dplyr,
@@ -23,12 +24,16 @@ Imports:
     here,
     jsonlite,
     processx,
+    rappdirs,
+    rlang,
     stringi,
     stringr,
+    tibble,
     tictoc,
     tinytex
-Suggests: 
+Suggests:
     kableExtra,
+    pak,
     rmarkdown
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
