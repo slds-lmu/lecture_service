@@ -1,6 +1,6 @@
 # Changelog
 
-## lese 0.5.0.9000 (In development)
+## lese 0.6.0
 
 - Rename `topic` to `chapter` for consistency when referring to slide
   paths, i.e. `lecture_i2ml/slides/<chapter>/foo.tex`
