@@ -8,9 +8,12 @@
 #' @return A character vector of unique package names, sorted alphabetically.
 #'
 #' @export
-#' @examplesIf fs::dir_exists(here::here("lecture_i2ml"))
-#' scripts <- get_chapter_scripts(here::here("lecture_i2ml"), "evaluation")
-#' extract_script_deps(scripts$script_path)
+#' @examples
+#' \dontrun{
+#' script_dir <- file.path("lecture_i2ml", "slides", "evaluation", "rsrc")
+#' scripts <- fs::dir_ls(script_dir, glob = "*.R")
+#' extract_script_deps(scripts)
+#' }
 extract_script_deps <- function(script_paths) {
   checkmate::assert_character(script_paths, min.len = 1)
 

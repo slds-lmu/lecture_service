@@ -67,6 +67,7 @@ render_chapter_audit <- function(
     output_dir = output_dir,
     params = list(
       lecture_dir = lecture_dir,
+      lecture = basename(lecture_dir),
       chapters = chapters,
       pattern = pattern,
       timeout = timeout,

@@ -37,5 +37,6 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^\.slide_check_stamp$
 .claude
 CLAUDE.md

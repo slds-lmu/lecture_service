@@ -33,6 +33,7 @@ reference:
       lecture chapters.
     contents:
       - audit_chapter
+      - clean_orphaned_figures
       - render_chapter_audit
       - run_chapter_scripts
       - run_script
