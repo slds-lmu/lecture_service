@@ -51,11 +51,17 @@ Invisibly: A list with components:
 \item \code{slide_refs}: named list mapping slide filenames to their \verb{figure/} references
 \item \code{slide_refs_man}: named list mapping slide filenames to their \verb{figure_man/} references
 \item \code{orphaned_figures}: character vector of \verb{figure/} filenames (with extension)
-not used by any slide
+not used by any slide (excludes \verb{attic/} subdirectory)
 \item \code{orphaned_figures_man}: character vector of \verb{figure_man/} filenames (with
-extension) not used by any slide
-\item \code{orphaned_scripts}: character vector of script filenames whose produced
-figures are not used by any slide (\code{NULL} if \code{run = FALSE})
+extension) not used by any slide (excludes \verb{attic/} subdirectory)
+\item \code{attic_figures}: character vector of filenames in \verb{figure/attic/}
+\item \code{attic_figures_man}: character vector of filenames in \verb{figure_man/attic/}
+\item \code{orphaned_scripts}: character vector of script filenames that succeeded
+but produced no figure used by any slide (\code{NULL} if \code{run = FALSE})
+\item \code{failed_scripts}: character vector of script filenames that errored
+during execution (\code{NULL} if \code{run = FALSE})
+\item \code{no_figure_scripts}: character vector of script filenames that succeeded
+but produced no figures (\code{NULL} if \code{run = FALSE})
 \item \code{missing_figures}: data.frame with columns \code{figure} and \code{slide} for
 \verb{figure/} files referenced by slides but not on disk
 \item \code{missing_figures_man}: data.frame with columns \code{figure} and \code{slide} for
