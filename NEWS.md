@@ -10,35 +10,53 @@
 - New `slide_cache_clean()` deletes the cache file.
 - The Makefile uses a `.slide_check_stamp` stamp file for incremental build tracking, with `make clean` calling `slide_cache_clean()`.
 
-## Slide scripts and figure auditing
+## Figure Auditing
 
-A long-open issue was to enforce these rules for figures in `slides/<chapter>/figure` and `slides/<chapter>/rsrc`:
+New system to audit the figure-slide dependency chain for `slides/<chapter>/figure/` and `slides/<chapter>/figure_man/`:
 
-1. Each script in `rsrc` runs without errors (given required R packages are installed)
-2. Each file in `figure` is created by a script in `rsrc`
-3. Each file in `figure` is used by at least one slide `.tex` file
-4. No script in `rsrc` or figure in `figure` is unused by any `.tex` file
-
-New functions for auditing this dependency chain:
-
-- `audit_chapter()`: Main entry point — audits a single chapter's script, figure, and slide dependencies. Identifies orphaned figures, orphaned scripts, missing figures, and missing packages. Optionally runs scripts to track which figures they produce.
-- `run_chapter_scripts()` / `run_script()`: Execute chapter scripts in isolated `callr` subprocesses with before/after figure directory diffing.
+- `audit_chapter()`: Main entry point — audits a single chapter's figure and slide dependencies. Identifies orphaned figures, missing figures, and missing packages.
+- Two figure detection methods: **regex** (parses `.tex` source) and **fls** (reads `.fls` recorder files from `latexmk`). The `fls` method is more accurate as it reflects what LaTeX actually reads during compilation (respects comments, `\iffalse` conditionals, etc.). Default `method = "auto"` uses `fls` when available, falling back to regex.
+- Both `figure/` and `figure_man/` directories are audited independently.
+- Figures in `attic/` subdirectories are reported separately as informational — they represent intentionally "parked" content, not problems.
+- `clean_orphaned_figures()`: Bulk-delete orphaned figures identified by audit. Defaults to `dry_run = TRUE` for safety. Never deletes `attic/` figures.
 - `parse_slide_figures()`: Parse `.tex` slides for figure references (`\includegraphics`, `\image`, `\imageFixed`, etc.).
-- `extract_script_deps()` / `check_script_deps()`: Detect and install R package dependencies from scripts.
 - `render_chapter_audit()`: Render HTML audit reports from within any lecture directory. Bundled `chapter_audit.Rmd` template is installed with the package.
-- New `audit` target in the lecture Makefile (`make audit`) for running audits.
 - All audit functions accept `lecture_dir` parameter, defaulting to `here::here()`, so they work both from `lecture_service/` and from within individual lecture repos.
+
+## Script Execution and Dependencies
+
+- `run_chapter_scripts()` / `run_script()`: Execute chapter scripts in isolated `callr` subprocesses with before/after figure directory diffing.
+- Scripts that error are tracked separately from orphaned scripts — a failed script cannot be classified as orphaned since it may have produced figures if it had succeeded.
+- Scripts that succeed but produce zero figures get a warning.
+- `extract_script_deps()` / `check_script_deps()`: Detect and install R package dependencies from scripts (static analysis of `library()`, `require()`, `pkg::fn` calls).
+- `check_lecture_deps()`: Lecture-level dependency check across all chapters.
 
 ## Figure audit in CI status report
 
 - The HTML slide status report (`slide_status.Rmd`) now includes a "Figure Audit" section that runs `audit_chapter()` per lecture/chapter after compilation, detecting orphaned and missing figures using `.fls` recorder files.
 - Orphaned figures are now reported with full filenames (including extension) for actionable output. Missing figures remain as basenames (extension unknown from LaTeX references).
 
+## Makefile Targets
 
-## Lecture Makefile (`service/Makefile`)
+### Lecture-level (`service/Makefile`)
 
 - New `install-lese` target: installs the `lese` R package from GitHub via `pak` (bootstraps `pak` if needed). Accepts `ref=<branch/tag>` for specific versions.
 - Split `clean` into `texclean` (auxiliary files only, keeps PDFs) and `clean` (auxiliary files and PDFs), mirroring the chapter-level `tex.mk` targets.
+- New `audit` target: renders HTML audit report for all chapters.
+- New `deps` / `install-deps` targets: check or install R package dependencies across all chapters.
+- New `init-makefiles` target: creates Makefiles in `slides/<chapter>/` and `slides/<chapter>/rsrc/` directories if missing.
+
+### Chapter-level (`service/slides/tex.mk`)
+
+- New `audit` target: run figure audit for a single chapter.
+- New `clean-orphaned-figures` target: delete orphaned figures in `figure/` and `figure_man/` (git-tracked, reversible). Never deletes `attic/` figures.
+- New `check-repro` target: end-to-end reproducibility validation — deletes `figure/` (preserving `attic/`), runs `rsrc/` scripts, then compiles slides.
+
+### Script-level (`service/slides/R.mk`)
+
+- New rsrc-level Makefile included via `include ../../R.mk`.
+- `make` / `make all`: run all `.R` scripts in isolated subprocesses. Accepts `timeout=<seconds>`.
+- `make deps` / `make install-deps`: check or install missing R package dependencies.
 
 ## Bug fixes
 
