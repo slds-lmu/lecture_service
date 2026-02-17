@@ -2,7 +2,150 @@
 
 ## lese 0.5.0.9000 (In development)
 
-- Rename `chapter` to `chapter` for consistency
+- Rename `topic` to `chapter` for consistency when referring to slide
+  paths, i.e. `lecture_i2ml/slides/<chapter>/foo.tex`
+
+### Slide status reporting
+
+- Moved `slide_status.Rmd` and `slide_status_pr.Rmd` into `inst/` so
+  they are bundled with the package and retrieved via
+  [`system.file()`](https://rdrr.io/r/base/system.file.html).
+- New wrapper functions
+  [`render_slide_status()`](https://slds-lmu.github.io/lecture_service/reference/render_slide_status.md)
+  and
+  [`render_slide_status_pr()`](https://slds-lmu.github.io/lecture_service/reference/render_slide_status_pr.md)
+  to render the reports from the installed templates. These replace
+  direct
+  [`rmarkdown::render()`](https://pkgs.rstudio.com/rmarkdown/reference/render.html)
+  calls in the Makefile.
+- New
+  [`slide_cache_path()`](https://slds-lmu.github.io/lecture_service/reference/slide_cache_path.md)
+  returns the path to the slide check cache, now stored in the user data
+  directory (`rappdirs::user_data_dir("lese")`) rather than the working
+  directory.
+- New
+  [`slide_cache_clean()`](https://slds-lmu.github.io/lecture_service/reference/slide_cache_clean.md)
+  deletes the cache file.
+- The Makefile uses a `.slide_check_stamp` stamp file for incremental
+  build tracking, with `make clean` calling
+  [`slide_cache_clean()`](https://slds-lmu.github.io/lecture_service/reference/slide_cache_clean.md).
+
+### Figure Auditing
+
+New system to audit the figure-slide dependency chain for
+`slides/<chapter>/figure/` and `slides/<chapter>/figure_man/`:
+
+- [`audit_chapter()`](https://slds-lmu.github.io/lecture_service/reference/audit_chapter.md):
+  Main entry point — audits a single chapter’s figure and slide
+  dependencies. Identifies orphaned figures, missing figures, and
+  missing packages.
+- Two figure detection methods: **regex** (parses `.tex` source) and
+  **fls** (reads `.fls` recorder files from `latexmk`). The `fls` method
+  is more accurate as it reflects what LaTeX actually reads during
+  compilation (respects comments, `\iffalse` conditionals, etc.).
+  Default `method = "auto"` uses `fls` when available, falling back to
+  regex.
+- Both `figure/` and `figure_man/` directories are audited
+  independently.
+- Figures in `attic/` subdirectories are reported separately as
+  informational — they represent intentionally “parked” content, not
+  problems.
+- [`clean_orphaned_figures()`](https://slds-lmu.github.io/lecture_service/reference/clean_orphaned_figures.md):
+  Bulk-delete orphaned figures identified by audit. Defaults to
+  `dry_run = TRUE` for safety. Never deletes `attic/` figures.
+- [`parse_slide_figures()`](https://slds-lmu.github.io/lecture_service/reference/parse_slide_figures.md):
+  Parse `.tex` slides for figure references (`\includegraphics`,
+  `\image`, `\imageFixed`, etc.).
+- [`render_chapter_audit()`](https://slds-lmu.github.io/lecture_service/reference/render_chapter_audit.md):
+  Render HTML audit reports from within any lecture directory. Bundled
+  `chapter_audit.Rmd` template is installed with the package.
+- All audit functions accept `lecture_dir` parameter, defaulting to
+  [`here::here()`](https://here.r-lib.org/reference/here.html), so they
+  work both from `lecture_service/` and from within individual lecture
+  repos.
+
+### Script Execution and Dependencies
+
+- [`run_chapter_scripts()`](https://slds-lmu.github.io/lecture_service/reference/run_chapter_scripts.md)
+  /
+  [`run_script()`](https://slds-lmu.github.io/lecture_service/reference/run_script.md):
+  Execute chapter scripts in isolated `callr` subprocesses with
+  before/after figure directory diffing.
+- Scripts that error are tracked separately from orphaned scripts — a
+  failed script cannot be classified as orphaned since it may have
+  produced figures if it had succeeded.
+- Scripts that succeed but produce zero figures get a warning.
+- [`extract_script_deps()`](https://slds-lmu.github.io/lecture_service/reference/extract_script_deps.md)
+  /
+  [`check_script_deps()`](https://slds-lmu.github.io/lecture_service/reference/check_script_deps.md):
+  Detect and install R package dependencies from scripts (static
+  analysis of [`library()`](https://rdrr.io/r/base/library.html),
+  [`require()`](https://rdrr.io/r/base/library.html), `pkg::fn` calls).
+- [`check_lecture_deps()`](https://slds-lmu.github.io/lecture_service/reference/check_lecture_deps.md):
+  Lecture-level dependency check across all chapters.
+
+### Figure audit in CI status report
+
+- The HTML slide status report (`slide_status.Rmd`) now includes a
+  “Figure Audit” section that runs
+  [`audit_chapter()`](https://slds-lmu.github.io/lecture_service/reference/audit_chapter.md)
+  per lecture/chapter after compilation, detecting orphaned and missing
+  figures using `.fls` recorder files.
+- Orphaned figures are now reported with full filenames (including
+  extension) for actionable output. Missing figures remain as basenames
+  (extension unknown from LaTeX references).
+
+### Makefile Targets
+
+#### Lecture-level (`service/Makefile`)
+
+- New `install-lese` target: installs the `lese` R package from GitHub
+  via `pak` (bootstraps `pak` if needed). Accepts `ref=<branch/tag>` for
+  specific versions.
+- Split `clean` into `texclean` (auxiliary files only, keeps PDFs) and
+  `clean` (auxiliary files and PDFs), mirroring the chapter-level
+  `tex.mk` targets.
+- New `audit` target: renders HTML audit report for all chapters.
+- New `deps` / `install-deps` targets: check or install R package
+  dependencies across all chapters.
+- New `init-makefiles` target: creates Makefiles in `slides/<chapter>/`
+  and `slides/<chapter>/rsrc/` directories if missing.
+
+#### Chapter-level (`service/slides/tex.mk`)
+
+- New `audit` target: run figure audit for a single chapter.
+- New `clean-orphaned-figures` target: delete orphaned figures in
+  `figure/` and `figure_man/` (git-tracked, reversible). Never deletes
+  `attic/` figures.
+- New `check-repro` target: end-to-end reproducibility validation —
+  deletes `figure/` (preserving `attic/`), runs `rsrc/` scripts, then
+  compiles slides.
+
+#### Script-level (`service/slides/R.mk`)
+
+- New rsrc-level Makefile included via `include ../../R.mk`.
+- `make` / `make all`: run all `.R` scripts in isolated subprocesses.
+  Accepts `timeout=<seconds>`.
+- `make deps` / `make install-deps`: check or install missing R package
+  dependencies.
+
+### Bug fixes
+
+- Fix `MultisessionFuture` warnings about open FIFO connections when
+  running
+  [`check_slides_many()`](https://slds-lmu.github.io/lecture_service/reference/check_slides_many.md)
+  in parallel. The `processx` supervision was unnecessarily creating
+  connections inside future workers.
+- Package installation checks in
+  [`audit_chapter()`](https://slds-lmu.github.io/lecture_service/reference/audit_chapter.md)
+  and
+  [`check_script_deps()`](https://slds-lmu.github.io/lecture_service/reference/check_script_deps.md)
+  no longer load package namespaces, avoiding spurious conflict warnings
+  (e.g. mlr3 vs mlr, paradox vs ParamHelpers).
+- [`collect_lectures()`](https://slds-lmu.github.io/lecture_service/reference/collect_lectures.md)
+  now discovers symlinked lecture directories
+  (e.g. `lecture_sl -> ../lecture_sl`). Previously
+  `fs::dir_ls(..., type = "directory")` skipped symlinks.
 
 ## lese 0.5.0
 

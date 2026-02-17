@@ -33,8 +33,81 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.0.9000" id="lese-0509000-in-development">lese 0.5.0.9000 (In development)<a class="anchor" aria-label="anchor" href="#lese-0509000-in-development"></a></h2>
-<ul><li>Rename <code>chapter</code> to <code>chapter</code> for consistency</li>
+<ul><li>Rename <code>topic</code> to <code>chapter</code> for consistency when referring to slide paths, i.e. <code>lecture_i2ml/slides/&lt;chapter&gt;/foo.tex</code>
+</li>
+</ul><div class="section level3">
+<h3 id="slide-status-reporting-0-5-0-9000">Slide status reporting<a class="anchor" aria-label="anchor" href="#slide-status-reporting-0-5-0-9000"></a></h3>
+<ul><li>Moved <code>slide_status.Rmd</code> and <code>slide_status_pr.Rmd</code> into <code>inst/</code> so they are bundled with the package and retrieved via <code><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file()</a></code>.</li>
+<li>New wrapper functions <code><a href="../reference/render_slide_status.html">render_slide_status()</a></code> and <code><a href="../reference/render_slide_status_pr.html">render_slide_status_pr()</a></code> to render the reports from the installed templates. These replace direct <code><a href="https://pkgs.rstudio.com/rmarkdown/reference/render.html" class="external-link">rmarkdown::render()</a></code> calls in the Makefile.</li>
+<li>New <code><a href="../reference/slide_cache_path.html">slide_cache_path()</a></code> returns the path to the slide check cache, now stored in the user data directory (<code>rappdirs::user_data_dir("lese")</code>) rather than the working directory.</li>
+<li>New <code><a href="../reference/slide_cache_clean.html">slide_cache_clean()</a></code> deletes the cache file.</li>
+<li>The Makefile uses a <code>.slide_check_stamp</code> stamp file for incremental build tracking, with <code>make clean</code> calling <code><a href="../reference/slide_cache_clean.html">slide_cache_clean()</a></code>.</li>
 </ul></div>
+<div class="section level3">
+<h3 id="figure-auditing-0-5-0-9000">Figure Auditing<a class="anchor" aria-label="anchor" href="#figure-auditing-0-5-0-9000"></a></h3>
+<p>New system to audit the figure-slide dependency chain for <code>slides/&lt;chapter&gt;/figure/</code> and <code>slides/&lt;chapter&gt;/figure_man/</code>:</p>
+<ul><li>
+<code><a href="../reference/audit_chapter.html">audit_chapter()</a></code>: Main entry point — audits a single chapter’s figure and slide dependencies. Identifies orphaned figures, missing figures, and missing packages.</li>
+<li>Two figure detection methods: <strong>regex</strong> (parses <code>.tex</code> source) and <strong>fls</strong> (reads <code>.fls</code> recorder files from <code>latexmk</code>). The <code>fls</code> method is more accurate as it reflects what LaTeX actually reads during compilation (respects comments, <code>\iffalse</code> conditionals, etc.). Default <code>method = "auto"</code> uses <code>fls</code> when available, falling back to regex.</li>
+<li>Both <code>figure/</code> and <code>figure_man/</code> directories are audited independently.</li>
+<li>Figures in <code>attic/</code> subdirectories are reported separately as informational — they represent intentionally “parked” content, not problems.</li>
+<li>
+<code><a href="../reference/clean_orphaned_figures.html">clean_orphaned_figures()</a></code>: Bulk-delete orphaned figures identified by audit. Defaults to <code>dry_run = TRUE</code> for safety. Never deletes <code>attic/</code> figures.</li>
+<li>
+<code><a href="../reference/parse_slide_figures.html">parse_slide_figures()</a></code>: Parse <code>.tex</code> slides for figure references (<code>\includegraphics</code>, <code>\image</code>, <code>\imageFixed</code>, etc.).</li>
+<li>
+<code><a href="../reference/render_chapter_audit.html">render_chapter_audit()</a></code>: Render HTML audit reports from within any lecture directory. Bundled <code>chapter_audit.Rmd</code> template is installed with the package.</li>
+<li>All audit functions accept <code>lecture_dir</code> parameter, defaulting to <code><a href="https://here.r-lib.org/reference/here.html" class="external-link">here::here()</a></code>, so they work both from <code>lecture_service/</code> and from within individual lecture repos.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="script-execution-and-dependencies-0-5-0-9000">Script Execution and Dependencies<a class="anchor" aria-label="anchor" href="#script-execution-and-dependencies-0-5-0-9000"></a></h3>
+<ul><li>
+<code><a href="../reference/run_chapter_scripts.html">run_chapter_scripts()</a></code> / <code><a href="../reference/run_script.html">run_script()</a></code>: Execute chapter scripts in isolated <code>callr</code> subprocesses with before/after figure directory diffing.</li>
+<li>Scripts that error are tracked separately from orphaned scripts — a failed script cannot be classified as orphaned since it may have produced figures if it had succeeded.</li>
+<li>Scripts that succeed but produce zero figures get a warning.</li>
+<li>
+<code><a href="../reference/extract_script_deps.html">extract_script_deps()</a></code> / <code><a href="../reference/check_script_deps.html">check_script_deps()</a></code>: Detect and install R package dependencies from scripts (static analysis of <code><a href="https://rdrr.io/r/base/library.html" class="external-link">library()</a></code>, <code><a href="https://rdrr.io/r/base/library.html" class="external-link">require()</a></code>, <code>pkg::fn</code> calls).</li>
+<li>
+<code><a href="../reference/check_lecture_deps.html">check_lecture_deps()</a></code>: Lecture-level dependency check across all chapters.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="figure-audit-in-ci-status-report-0-5-0-9000">Figure audit in CI status report<a class="anchor" aria-label="anchor" href="#figure-audit-in-ci-status-report-0-5-0-9000"></a></h3>
+<ul><li>The HTML slide status report (<code>slide_status.Rmd</code>) now includes a “Figure Audit” section that runs <code><a href="../reference/audit_chapter.html">audit_chapter()</a></code> per lecture/chapter after compilation, detecting orphaned and missing figures using <code>.fls</code> recorder files.</li>
+<li>Orphaned figures are now reported with full filenames (including extension) for actionable output. Missing figures remain as basenames (extension unknown from LaTeX references).</li>
+</ul></div>
+<div class="section level3">
+<h3 id="makefile-targets-0-5-0-9000">Makefile Targets<a class="anchor" aria-label="anchor" href="#makefile-targets-0-5-0-9000"></a></h3>
+<div class="section level4">
+<h4 id="lecture-level-servicemakefile-0-5-0-9000">Lecture-level (<code>service/Makefile</code>)<a class="anchor" aria-label="anchor" href="#lecture-level-servicemakefile-0-5-0-9000"></a></h4>
+<ul><li>New <code>install-lese</code> target: installs the <code>lese</code> R package from GitHub via <code>pak</code> (bootstraps <code>pak</code> if needed). Accepts <code>ref=&lt;branch/tag&gt;</code> for specific versions.</li>
+<li>Split <code>clean</code> into <code>texclean</code> (auxiliary files only, keeps PDFs) and <code>clean</code> (auxiliary files and PDFs), mirroring the chapter-level <code>tex.mk</code> targets.</li>
+<li>New <code>audit</code> target: renders HTML audit report for all chapters.</li>
+<li>New <code>deps</code> / <code>install-deps</code> targets: check or install R package dependencies across all chapters.</li>
+<li>New <code>init-makefiles</code> target: creates Makefiles in <code>slides/&lt;chapter&gt;/</code> and <code>slides/&lt;chapter&gt;/rsrc/</code> directories if missing.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="chapter-level-serviceslidestexmk-0-5-0-9000">Chapter-level (<code>service/slides/tex.mk</code>)<a class="anchor" aria-label="anchor" href="#chapter-level-serviceslidestexmk-0-5-0-9000"></a></h4>
+<ul><li>New <code>audit</code> target: run figure audit for a single chapter.</li>
+<li>New <code>clean-orphaned-figures</code> target: delete orphaned figures in <code>figure/</code> and <code>figure_man/</code> (git-tracked, reversible). Never deletes <code>attic/</code> figures.</li>
+<li>New <code>check-repro</code> target: end-to-end reproducibility validation — deletes <code>figure/</code> (preserving <code>attic/</code>), runs <code>rsrc/</code> scripts, then compiles slides.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="script-level-serviceslidesrmk-0-5-0-9000">Script-level (<code>service/slides/R.mk</code>)<a class="anchor" aria-label="anchor" href="#script-level-serviceslidesrmk-0-5-0-9000"></a></h4>
+<ul><li>New rsrc-level Makefile included via <code>include ../../R.mk</code>.</li>
+<li>
+<code>make</code> / <code>make all</code>: run all <code>.R</code> scripts in isolated subprocesses. Accepts <code>timeout=&lt;seconds&gt;</code>.</li>
+<li>
+<code>make deps</code> / <code>make install-deps</code>: check or install missing R package dependencies.</li>
+</ul></div>
+</div>
+<div class="section level3">
+<h3 id="bug-fixes-0-5-0-9000">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-5-0-9000"></a></h3>
+<ul><li>Fix <code>MultisessionFuture</code> warnings about open FIFO connections when running <code><a href="../reference/check_slides_many.html">check_slides_many()</a></code> in parallel. The <code>processx</code> supervision was unnecessarily creating connections inside future workers.</li>
+<li>Package installation checks in <code><a href="../reference/audit_chapter.html">audit_chapter()</a></code> and <code><a href="../reference/check_script_deps.html">check_script_deps()</a></code> no longer load package namespaces, avoiding spurious conflict warnings (e.g. mlr3 vs mlr, paradox vs ParamHelpers).</li>
+<li>
+<code><a href="../reference/collect_lectures.html">collect_lectures()</a></code> now discovers symlinked lecture directories (e.g. <code>lecture_sl -&gt; ../lecture_sl</code>). Previously <code>fs::dir_ls(..., type = "directory")</code> skipped symlinks.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.0" id="lese-050">lese 0.5.0<a class="anchor" aria-label="anchor" href="#lese-050"></a></h2>
 <ul><li>New service file: The root <code>Makefile</code> in each lecture was a placeholder, but now it actually does something:

@@ -2,9 +2,9 @@
 
 - Removes \\ used for escaping
 
-- Substitutes *foobar* with *foobar*
+- Substitutes `\emph{foobar}` with `*foobar*`
 
-- Replaces foo with foo
+- Replaces `{foo}` with foo
 
 ## Usage
 

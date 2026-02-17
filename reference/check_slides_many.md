@@ -53,4 +53,5 @@ check_slides_many(
 ## Value
 
 Invisibly: An expanded `lectures_tbl` with check results Also saves
-output at `slide_check_cache.rds`.
+output at
+[`slide_cache_path()`](https://slds-lmu.github.io/lecture_service/reference/slide_cache_path.md).

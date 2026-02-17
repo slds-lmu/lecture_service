@@ -38,6 +38,42 @@ the reference files in slides-pdf.
 - [`latexmk_tinytex()`](https://slds-lmu.github.io/lecture_service/reference/latexmk_tinytex.md)
   : Run TinyTex's latexmk
 
+## Figure script auditing
+
+Audit the script-figure-slide dependency chain within lecture chapters.
+
+- [`audit_chapter()`](https://slds-lmu.github.io/lecture_service/reference/audit_chapter.md)
+  : Audit the script-figure-slide dependency chain for a chapter
+- [`clean_orphaned_figures()`](https://slds-lmu.github.io/lecture_service/reference/clean_orphaned_figures.md)
+  : Remove orphaned figures from a chapter
+- [`render_chapter_audit()`](https://slds-lmu.github.io/lecture_service/reference/render_chapter_audit.md)
+  : Render a chapter audit report
+- [`run_chapter_scripts()`](https://slds-lmu.github.io/lecture_service/reference/run_chapter_scripts.md)
+  : Run all scripts in a chapter and track produced figures
+- [`run_script()`](https://slds-lmu.github.io/lecture_service/reference/run_script.md)
+  : Run an R script in an isolated subprocess
+- [`parse_slide_figures()`](https://slds-lmu.github.io/lecture_service/reference/parse_slide_figures.md)
+  : Parse figure references from a LaTeX slide file
+- [`extract_script_deps()`](https://slds-lmu.github.io/lecture_service/reference/extract_script_deps.md)
+  : Extract package dependencies from R scripts
+- [`check_script_deps()`](https://slds-lmu.github.io/lecture_service/reference/check_script_deps.md)
+  : Check and install missing dependencies for chapter scripts
+- [`check_lecture_deps()`](https://slds-lmu.github.io/lecture_service/reference/check_lecture_deps.md)
+  : Check and install missing dependencies for all chapter scripts
+
+## Slide status reporting
+
+Render slide status reports and manage the slide check cache.
+
+- [`render_slide_status()`](https://slds-lmu.github.io/lecture_service/reference/render_slide_status.md)
+  : Render the slide status HTML report
+- [`render_slide_status_pr()`](https://slds-lmu.github.io/lecture_service/reference/render_slide_status_pr.md)
+  : Render the slide status PR markdown table
+- [`slide_cache_path()`](https://slds-lmu.github.io/lecture_service/reference/slide_cache_path.md)
+  : Get the path to the slide check cache file
+- [`slide_cache_clean()`](https://slds-lmu.github.io/lecture_service/reference/slide_cache_clean.md)
+  : Delete the slide check cache
+
 ## Utilities
 
 Various helper functions
