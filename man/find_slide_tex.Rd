@@ -27,7 +27,7 @@ str(find_slide_tex(slide_file = "lecture_i2ml/slides/cart/slides-cart-prediction
 # Lazy way: No extension, just a name
 str(find_slide_tex(slide_file = "slides-cart-predictions"))
 
-# Can also ge tthe .tex file for a .pdf
+# Can also get the .tex file for a .pdf
 str(find_slide_tex(slide_file = "slides-cart-predictions.pdf"))
 \dontshow{\}) # examplesIf}
 }

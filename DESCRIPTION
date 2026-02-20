@@ -1,6 +1,6 @@
 Package: lese
 Title: SLDS Lecture Service Companion
-Version: 0.5.0
+Version: 0.6.0
 Authors@R: 
     person("Lukas", "Burk", , "github@quantenbrot.de", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-7528-3795"))
@@ -10,8 +10,9 @@ License: MIT + file LICENSE
 URL: https://slds-lmu.github.io/lecture_service/
 Depends:
     R (>= 4.1.0)
-Imports: 
+Imports:
     bib2df,
+    callr,
     checkmate,
     cli,
     dplyr,
@@ -23,12 +24,16 @@ Imports:
     here,
     jsonlite,
     processx,
+    rappdirs,
+    rlang,
     stringi,
     stringr,
+    tibble,
     tictoc,
     tinytex
-Suggests: 
+Suggests:
     kableExtra,
+    pak,
     rmarkdown
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

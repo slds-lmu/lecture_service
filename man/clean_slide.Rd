@@ -12,7 +12,7 @@ Can also be a direct file path to enable use of this function outside rigid fold
 
 \item{keep_pdf}{\verb{[FALSE]}: Keep the PDF file.}
 
-\item{verbose}{\verb{[TRUE]}: Print additional output to the console.}
+\item{verbose}{\verb{[FALSE]}: Print additional output to the console.}
 
 \item{check_status}{\verb{[TRUE]}: Wait for \code{latexmk} to finish and return the exit status. Not supported for \code{method = "tinytex"}.}
 }

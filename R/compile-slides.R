@@ -41,7 +41,9 @@ compile_slide <- function(
   tmp <- find_slide_tex(slide_file = slide_file)
   method <- match.arg(method)
 
-  if (pre_clean) clean_slide(slide_file, check_status = check_status)
+  if (pre_clean) {
+    clean_slide(slide_file, check_status = check_status)
+  }
 
   log_stderr <- NULL
   log_stdout <- NULL
@@ -49,13 +51,15 @@ compile_slide <- function(
   if (log) {
     # Unfortunately stderr does not contain useful information, as the *actual* reasons why latexmk
     # fails are often buried in the extremely verbose stdout output in my experience.
-    if (!fs::dir_exists(here::here("logs"))) fs::dir_create(here::here("logs"))
-    # log_stderr <- here::here("logs", paste0(tmp$lecture, "-", tmp$topic, "-", tmp$slide_name, "-stderr.log"))
+    if (!fs::dir_exists(here::here("logs"))) {
+      fs::dir_create(here::here("logs"))
+    }
+    # log_stderr <- here::here("logs", paste0(tmp$lecture, "-", tmp$chapter, "-", tmp$slide_name, "-stderr.log"))
     # Combine both log streams, keeping them separate is not informative in latexmk's case anyway
     log_stderr <- "2>&1"
     log_stdout <- here::here(
       "logs",
-      paste0(tmp$lecture, "-", tmp$topic, "-", tmp$slide_name, "-stdout.log")
+      paste0(tmp$lecture, "-", tmp$chapter, "-", tmp$slide_name, "-stdout.log")
     )
   }
 
@@ -63,6 +67,10 @@ compile_slide <- function(
 
   # Picking the latexmk to use, system or docker
   # When I made this a switch statement I assumed less redundancy than I actually built.
+  # supervise = !check_status: When we wait for the process (check_status = TRUE),
+  # supervision is unnecessary and its FIFO connections cause warnings in parallel
+  # mode (future package). When fire-and-forget (!check_status), supervision ensures
+  # the child is cleaned up if the parent dies.
   p <- switch(
     method,
     system = latexmk_system(
@@ -70,7 +78,7 @@ compile_slide <- function(
       verbose = verbose,
       log_stdout = log_stdout,
       log_stderr = log_stderr,
-      supervise = check_status,
+      supervise = !check_status,
       ...
     ),
     docker = latexmk_docker(
@@ -78,7 +86,7 @@ compile_slide <- function(
       verbose = verbose,
       log_stdout = log_stdout,
       log_stderr = log_stderr,
-      supervise = check_status,
+      supervise = !check_status,
       ...
     ),
     tinytex = latexmk_tinytex(slide_file = slide_file, ...)
@@ -107,8 +115,9 @@ compile_slide <- function(
     }
   }
 
-  if (post_clean)
+  if (post_clean) {
     clean_slide(slide_file, keep_pdf = TRUE, check_status = check_status)
+  }
 
   invisible(result)
 }

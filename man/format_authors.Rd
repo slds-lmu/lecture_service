@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils-bib.R
 \name{format_authors}
 \alias{format_authors}
-\title{Condense list of authors from bilatex entry}
+\title{Condense list of authors from biblatex entry}
 \usage{
 format_authors(author_list)
 }

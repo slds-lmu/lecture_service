@@ -1,7 +1,7 @@
 #' Convert bib file to formatted list for Markdown output
 #'
 #' @param bib `[character(1)]` Path to bibtex `.bib` file.
-#' @param arrange_by `[character()]` ALl lowercase biblatex field names to sort by. Passed to `dplyr::arrange()`.
+#' @param arrange_by `[character()]` All lowercase biblatex field names to sort by. Passed to `dplyr::arrange()`.
 #' @return `character` vector with one element per entry in `bib`.
 #'
 #' @export
@@ -15,23 +15,23 @@ bib_to_list <- function(bib, arrange_by = "category") {
     rename_with(tolower) |>
     arrange(arrange_by) |>
     mutate(
-      title = clean_tex_markup(title),
-      note = clean_tex_markup(note),
+      title = clean_tex_markup(.data$title),
+      note = clean_tex_markup(.data$note),
       # year = coalesce(.data[["year"]], .data[["date"]]),
       formatted = glue::glue(
         "- {format_authors(author)} ({year}): [*{title}*]({url}).\n"
       ),
       # Append note if field is provided
       formatted = ifelse(
-        !is.na(annotation),
+        !is.na(.data$annotation),
         glue::glue("{formatted} **Note**: {annotation}\n"),
-        formatted
+        .data$formatted
       )
     ) |>
-    pull(formatted)
+    pull("formatted")
 }
 
-#' Condense list of authors from bilatex entry
+#' Condense list of authors from biblatex entry
 #'
 #' - NAs are replaced by ---
 #' - Two authors are separated by &
@@ -39,12 +39,13 @@ bib_to_list <- function(bib, arrange_by = "category") {
 #' @keywords internal
 #' @param author_list `list()` of character vectors with one author per element.
 #' @return `character` vector of same length as list elements
+#' @importFrom stats na.omit
 format_authors <- function(author_list) {
   vapply(
     author_list,
     \(x) {
       # cli::cli_alert_info("{x}:")
-      x <- na.omit(x)
+      x <- stats::na.omit(x)
 
       if (length(x) == 0) {
         ret <- "---"
@@ -68,13 +69,10 @@ format_authors <- function(author_list) {
 #' Clean up tex markup from biblatex entries
 #'
 #' - Removes \\ used for escaping
-#' - Substitutes \emph{foobar} with *foobar*
-#' - Replaces {foo} with foo
+#' - Substitutes `\emph{foobar}` with `*foobar*`
+#' - Replaces `{foo}` with foo
 #' @keywords internal
 clean_tex_markup <- function(x) {
-  # if (anyNA(x)) {
-  #   x[is.na(x)] <- ""
-  # }
   x |>
     stringr::str_remove_all("\\\\") |>
     stringr::str_replace_all("emph\\{(.*)\\}", "*\\1*") |>

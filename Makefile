@@ -10,20 +10,16 @@ TPDFS=$(shell find lecture_*/slides/* -maxdepth 1 -iname "*.pdf" 2>/dev/null || 
 # This unfortunately means that e.g. lecture_i2ml/ slides will recompile if preamble changes in lecture_sl/
 PREAMBLES=$(shell find lecture_*/style -maxdepth 1 -type f \( -name "common.tex" -o -name "preamble.tex" -o -name "lmu-lecture.sty" \) 2>/dev/null || true)
 
-# data.frame of all slides and compile/comparison status checks created by check_slides_many()
-CACHETBL=slide_check_cache.rds
+# Stamp file tracking when check_slides_many() last ran.
+# The actual cache is stored in the user data dir (see lese::slide_cache_path()).
+CACHESTAMP=.slide_check_stamp
 
-# Rmd file that reads CACHETBL and outputs a neato table in HTML and stuff
-STATUSRMD=slide_status.Rmd
-
-# The corresponding HTML file and the *_files directory with HTML assets
-STATUSHTML=${STATUSRMD:%.Rmd=%.html}
-STATUSASSETS=${STATUSRMD:%.Rmd=%_files}
+# Output names from lese::render_slide_status() / render_slide_status_pr()
+# (Rmd templates are bundled with the package in inst/)
+STATUSHTML=slide_status.html
+STATUSASSETS=slide_status_files
+STATUSMD=slide_status_pr.md
 SITEDIR=_site
-
-# Similar idea with the smaller Rmd file to render to markdown for pull requests
-STATUSRMD_PR=slide_status_pr.Rmd
-STATUSMD=${STATUSRMD_PR:%.Rmd=%.md}
 
 # File count Rmd and HTML files
 FILECOUNTRMD=file_counts.Rmd
@@ -50,8 +46,9 @@ ifndef HAS_RSCRIPT
 endif
 
 # This runs latexmk internally, but it's fast if there's nothing new to do for most slides (unless you clean up)
-${CACHETBL}: check-r $(TSLIDES) $(PREAMBLES)
+${CACHESTAMP}: check-r $(TSLIDES) $(PREAMBLES)
 	Rscript --quiet -e 'lese::check_slides_many()'
+	@touch ${CACHESTAMP}
 
 
 .PHONY: help
@@ -67,7 +64,7 @@ help:
 	@echo "install              : Install everything (R packages, LaTeX, service)."
 	@echo "install-r            : Install R package dependencies only."
 	@echo "install-tex          : Install LaTeX dependencies using TinyTeX."
-	@echo "install-service      : Install this R package."
+	@echo "install-lese      : Install this R package."
 	@echo "install-tools-ubuntu : Optional for slide validation: Install diff-pdf and diff-pdf-visually (Ubuntu only)."
 	@echo ""
 	@echo "╔═══════════════════════════════════════════════════════════════════════════════════╗"
@@ -80,22 +77,20 @@ help:
 	@echo "║       Utilities                                                                    ║"
 	@echo "╚═══════════════════════════════════════════════════════════════════════════════════╝"
 	@echo "file-count           : Render ${FILECOUNTRMD} to ${FILECOUNTHTML}."
-	@echo "clean                : Remove ${CACHETBL}, ${STATUSHTML}, ${STATUSASSETS}, and ${SITEDIR}."
+	@echo "clean                : Remove slide cache, ${STATUSHTML}, ${STATUSASSETS}, and ${SITEDIR}."
 	@echo "clean-site           : Remove ${STATUSHTML}, ${STATUSASSETS}, and ${SITEDIR} only."
 	@echo ""
 
 .PHONY: check_results
-check_results: ${CACHETBL}
+check_results: ${CACHESTAMP}
 
 .PHONY: table
-table: ${CACHETBL} ${STATUSRMD_PR}
-	Rscript --quiet -e 'rmarkdown::render("${STATUSRMD_PR}", quiet = TRUE, output_format = "github_document", output_file = "${STATUSMD}")'
-	@# Don't know why the HTML version is always created but it's not needed
-	rm ${STATUSRMD_PR:%.Rmd=%.html}
+table: ${CACHESTAMP}
+	Rscript --quiet -e 'lese::render_slide_status_pr()'
 
 .PHONY: site
-site: ${CACHETBL} ${STATUSRMD}
-	Rscript --quiet -e 'rmarkdown::render("${STATUSRMD}", quiet = TRUE)'
+site: ${CACHESTAMP}
+	Rscript --quiet -e 'lese::render_slide_status()'
 	@# Create a self-contained folder with the HTML and assets for easier / more efficient deployment on GitHub actions
 	@# or anywhere else.
 	@# Also ensure that comparison dir exists, which might not be the case if there are no slides in
@@ -116,7 +111,8 @@ site: ${CACHETBL} ${STATUSRMD}
 # Multi-line command needs ; to terminate bash commands and \ to recognize linebreaks
 .PHONY: clean
 clean: clean-site
-	if [ -f "${CACHETBL}" ]     ; then rm ${CACHETBL}       ; fi ;\
+	Rscript --quiet -e 'lese::slide_cache_clean()'
+	rm -f ${CACHESTAMP}
 	find comparison -name "*pdf" -delete 2>/dev/null || true
 
 .PHONY: clean-site
@@ -125,7 +121,7 @@ clean-site:
 	if [ -d "${STATUSASSETS}" ] ; then rm -r ${STATUSASSETS}; fi ;\
 	if [ -d "${SITEDIR}" ]      ; then rm -r ${SITEDIR}     ; fi
 
-.PHONY: install-r install-tex install-tools-ubuntu install-service install
+.PHONY: install-r install-tex install-tools-ubuntu install-lese install
 install-r: check-r
 	scripts/install_r_deps.R
 
@@ -135,7 +131,7 @@ install-tex: check-r
 install-tools-ubuntu:
 	scripts/install_tools_ubuntu.sh
 
-install-service: check-r
+install-lese: check-r
 	@# R CMD INSTALL --preclean --no-multiarch --with-keep.source .
 	# Install local dev dependencies (DESCRIPTION Imports and Suggests)
 	Rscript -e 'pak::local_install_dev_deps()'
@@ -143,7 +139,7 @@ install-service: check-r
 	Rscript -e 'pak::local_install()'
 	@echo "Use lese::install_lecheck() to install the lese command line tool"
 
-install: install-r install-tex install-service
+install: install-r install-tex install-lese
 
 .PHONY: clone clone-shallow download
 clone:

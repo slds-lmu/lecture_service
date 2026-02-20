@@ -9,8 +9,8 @@ clean_tex_markup(x)
 \description{
 \itemize{
 \item Removes \\ used for escaping
-\item Substitutes \emph{foobar} with \emph{foobar}
-\item Replaces {foo} with foo
+\item Substitutes \verb{\\emph\{foobar\}} with \verb{*foobar*}
+\item Replaces \code{{foo}} with foo
 }
 }
 \keyword{internal}

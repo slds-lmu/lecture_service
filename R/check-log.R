@@ -4,7 +4,7 @@
 #'
 #' - `"^! Undefined control sequence"`: Typo, missing package or preamble (including `latex-math`), or command not defined.
 #' - `"not found"`: Implying a missing figure or other included file, maybe due to misspecified filename via Overleafs
-#'    autocompletion (`slides/<topic>/figure/` path instead of `figure/`) or file not committed to git.
+#'    autocompletion (`slides/<chapter>/figure/` path instead of `figure/`) or file not committed to git.
 #' - `"^! Missing $ inserted"`: Missing `$` delimiter for math
 #' - `"! LaTeX Error:"`: A generic error
 #' - `Runaway argument`: Often caused by missing closing parantheses.
@@ -44,7 +44,7 @@ check_log <- function(slide_file, before = 0, after = 1) {
   error_anchors <- c(
     # Happens when a \command is used but not defined, e.g. missing preamble or package
     "^! Undefined control sequence",
-    # Misspecified filename, file not committed to git, or `slides/<topic>/figure/` path instead of `figure/`
+    # Misspecified filename, file not committed to git, or `slides/<chapter>/figure/` path instead of `figure/`
     # The latter happens via overleaf autocompletion, should be checked in .tex files via regex explicitly.
     "^LaTeX Warning: File `.*' not found",
     # Missing $ delimiter for math
@@ -53,6 +53,7 @@ check_log <- function(slide_file, before = 0, after = 1) {
     "^! Extra \\}, or forgotten \\$",
     "! TeX capacity exceeded",
     "! Incomplete",
+    "Package keyval Error",
     # Generic error
     "^! LaTeX Error:"
   )
@@ -72,7 +73,9 @@ check_log <- function(slide_file, before = 0, after = 1) {
 extract_log_match <- function(text, pattern, before = 0, after = 1) {
   matchnum <- which(stringr::str_detect(text, pattern))
 
-  if (length(matchnum) == 0) return("")
+  if (length(matchnum) == 0) {
+    return("")
+  }
 
   vapply(
     matchnum,

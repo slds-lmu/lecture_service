@@ -24,7 +24,7 @@ Defaults to \code{\link[=lectures]{lectures()}} to respect \code{include_lecture
 \item{exclude_slide_names}{Exclude slides matching these names exactly, e.g. \code{"chapter-order"} (default).}
 }
 \value{
-A \verb{data.frame`` with one row per slide }.tex` file.
+A \code{data.frame} with one row per slide \code{.tex} file.
 }
 \description{
 Assemble table of lecture slides
