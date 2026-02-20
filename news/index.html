@@ -120,11 +120,12 @@
 <li>Convert <code>file_count.qmd</code> to RMarkdown for backwards compatibility and consistency with other docs.</li>
 </ul><div class="section level3">
 <h3 id="r-package-0-5-0">R package<a class="anchor" aria-label="anchor" href="#r-package-0-5-0"></a></h3>
-<ul><li>Add Biblatex utility functions for <code>references.bib</code> processing to render per-chapter/lecture lierature lists</li>
+<ul><li>Add Biblatex utility functions for <code>references.bib</code> processing to render per-chapter/lecture literature lists</li>
 <li>Normalize file paths in <code><a href="../reference/collect_lectures.html">collect_lectures()</a></code> (should help path-agnostic usage)</li>
 <li>Change default <code>compile_slide(..., post_clean = FALSE)</code> to avoid “file not found” error when <code>.log</code> file was unexpectedly missing for checks.</li>
-<li>Fix: Use <code><a href="https://fs.r-lib.org/reference/path_math.html" class="external-link">fs::path_norm()</a></code> instead of <code><a href="https://fs.r-lib.org/reference/path_math.html" class="external-link">fs::path_real()</a></code> for path normalization in <code><a href="../reference/collect_lectures.html">collect_lectures()</a></code> because the former expected log files to exists which may not exist.</li>
-<li>Add flexibility for <code><a href="../reference/find_slide_tex.html">find_slide_tex()</a></code> to allow <code><a href="../reference/compile_slide.html">compile_slide()</a></code> etc. to work with a direct path to a slide file for interactive use in arbitrary directories = BUmp TeXLive version used by <code><a href="../reference/latexmk_docker.html">latexmk_docker()</a></code> to 2025.</li>
+<li>Fix: Use <code><a href="https://fs.r-lib.org/reference/path_math.html" class="external-link">fs::path_norm()</a></code> instead of <code><a href="https://fs.r-lib.org/reference/path_math.html" class="external-link">fs::path_real()</a></code> for path normalization in <code><a href="../reference/collect_lectures.html">collect_lectures()</a></code> because the former expected log files to exist which may not exist.</li>
+<li>Add flexibility for <code><a href="../reference/find_slide_tex.html">find_slide_tex()</a></code> to allow <code><a href="../reference/compile_slide.html">compile_slide()</a></code> etc. to work with a direct path to a slide file for interactive use in arbitrary directories</li>
+<li>Bump TeXLive version used by <code><a href="../reference/latexmk_docker.html">latexmk_docker()</a></code> to 2025.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="latex-servicestyle-etc-0-5-0">LaTeX (<code>service/style</code> etc.)<a class="anchor" aria-label="anchor" href="#latex-servicestyle-etc-0-5-0"></a></h3>
@@ -150,7 +151,7 @@
 </ul></div>
 <div class="section level3">
 <h3 id="github-action-workflows-servicegithubworkflows-0-5-0">GitHub Action workflows (<code>service/.github/workflows</code>)<a class="anchor" aria-label="anchor" href="#github-action-workflows-servicegithubworkflows-0-5-0"></a></h3>
-<ul><li>In both worklows using tinytex, we experimentally pin the used version to 2024.12 for safety. This is likely to change in the future but currently this is the only version generally compatible with everything as far as we know. Ideally, we keep bumping this to a recent version, also on Overleaf.</li>
+<ul><li>In both workflows using tinytex, we experimentally pin the used version to 2024.12 for safety. This is likely to change in the future but currently this is the only version generally compatible with everything as far as we know. Ideally, we keep bumping this to a recent version, also on Overleaf.</li>
 <li>The Makefile in ./slides/ use a docker image defaulting to 2024 as well</li>
 </ul></div>
 </div>
@@ -160,13 +161,13 @@
 <h3 id="r-package-0-4-0">R package<a class="anchor" aria-label="anchor" href="#r-package-0-4-0"></a></h3>
 <ul><li>Add experimental <code><a href="../reference/latexmk_docker.html">latexmk_docker()</a></code> to run <code>latexmk</code> wrapped in a docker image with a fixed TeXLive version</li>
 <li>
-<code><a href="../reference/compile_slide.html">compile_slide()</a></code> gains <code>method</code> argument, defaulting to <code>"system"</code> to use local <code>ltexmk</code>. Can be <code>"docker"</code> to use the new <code><a href="../reference/latexmk_docker.html">latexmk_docker()</a></code> instead.</li>
+<code><a href="../reference/compile_slide.html">compile_slide()</a></code> gains <code>method</code> argument, defaulting to <code>"system"</code> to use local <code>latexmk</code>. Can be <code>"docker"</code> to use the new <code><a href="../reference/latexmk_docker.html">latexmk_docker()</a></code> instead.</li>
 <li>Remove <code>compile_slide_tinytex()</code> and convert it to the somewhat simpler <code><a href="../reference/latexmk_tinytex.html">latexmk_tinytex()</a></code> for use with <code><a href="../reference/compile_slide.html">compile_slide()</a></code>
 </li>
 <li>
 <code><a href="../reference/clean_slide.html">clean_slide()</a></code> gains <code>keep_pdf</code> option, defaulting to <code>FALSE</code> for previous behavior.</li>
 <li>
-<code><a href="../reference/clean_slide.html">clean_slide()</a></code> gens <code>check_status</code> option, analogous to that in <code><a href="../reference/compile_slide.html">compile_slide()</a></code>. The same argument in <code><a href="../reference/compile_slide.html">compile_slide()</a></code> is passed to <code><a href="../reference/clean_slide.html">clean_slide()</a></code>.</li>
+<code><a href="../reference/clean_slide.html">clean_slide()</a></code> gains <code>check_status</code> option, analogous to that in <code><a href="../reference/compile_slide.html">compile_slide()</a></code>. The same argument in <code><a href="../reference/compile_slide.html">compile_slide()</a></code> is passed to <code><a href="../reference/clean_slide.html">clean_slide()</a></code>.</li>
 <li>
 <code><a href="../reference/compare_slide.html">compare_slide()</a></code> gains additional option <code>eps_signif</code> (<code>[0.5]</code>) to manually filter output from <code>diff-pdf-visually</code> to decrease number of false-positives.</li>
 <li>Add <code><a href="../reference/check_docker.html">check_docker()</a></code> to check whether <code>docker</code> is available and running.</li>
@@ -182,8 +183,8 @@
 </ul></div>
 <div class="section level3">
 <h3 id="latex-servicestyle-0-4-0">LaTeX (<code>service/style</code>)<a class="anchor" aria-label="anchor" href="#latex-servicestyle-0-4-0"></a></h3>
-<ul><li>Discourageing the use of automatic and explicit <code>\framebreak</code>s, which cause rendering issues after some TeXLive version post 2023 cutoff:
-<ul><li>The <code>vbframe</code> environment is considered <strong>deprecated</strong> and should be replace with “regular” beamer <code>frame</code>s.</li>
+<ul><li>Discouraging the use of automatic and explicit <code>\framebreak</code>s, which cause rendering issues after some TeXLive version post 2023 cutoff:
+<ul><li>The <code>vbframe</code> environment is considered <strong>deprecated</strong> and should be replaced with “regular” beamer <code>frame</code>s.</li>
 <li>Removed framenumber continuation counter from <code>lmu-lecture.sty</code> for simplification</li>
 </ul></li>
 <li>Related: The <code>vframe</code> environment (rarely used) is now removed.</li>
@@ -210,7 +211,7 @@
 <li>
 <code>slide_status_pr.Rmd</code> and <code>slide_status.Rmd</code>: Only show slide comparison column in output if comparison has been conducted (no longer the case by default)</li>
 <li>Remove <code>make_slides()</code> as it was effectively superseded by either
-<ul><li>Running <code><a href="../reference/compile_slide.html">compile_slide()</a></code> on a file of itnerest directly, or</li>
+<ul><li>Running <code><a href="../reference/compile_slide.html">compile_slide()</a></code> on a file of interest directly, or</li>
 <li>Using the <code>lecheck</code> cli for more control and better error messages, or</li>
 <li>Running <code>make</code> in selected chapter directories in a shell as needed</li>
 </ul></li>

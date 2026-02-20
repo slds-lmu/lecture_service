@@ -41,7 +41,7 @@ collect_lectures(
 
 ## Value
 
-A ``` data.frame`` with one row per slide  ```.tex\` file.
+A `data.frame` with one row per slide `.tex` file.
 
 ## Examples
 

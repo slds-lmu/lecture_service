@@ -16,7 +16,7 @@ bib_to_list(bib, arrange_by = "category")
 
 - arrange_by:
 
-  `[character()]` ALl lowercase biblatex field names to sort by. Passed
+  `[character()]` All lowercase biblatex field names to sort by. Passed
   to
   [`dplyr::arrange()`](https://dplyr.tidyverse.org/reference/arrange.html).
 

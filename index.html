@@ -48,10 +48,10 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="slds-lecture-service-lese">SLDS Lecture Service (lese)<a class="anchor" aria-label="anchor" href="#slds-lecture-service-lese"></a>
 </h1></div>
-<!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
 
 <p>[<a href="https://github.com/slds-lmu/lecture_service/wiki" class="external-link">Teaching DevOps Wiki</a>] [<a href="https://github.com/orgs/slds-lmu/projects/5/views/1" class="external-link">Issue Tracker</a>]</p>
+<p><strong>Note:</strong> Guides and tutorials for working with lectures live in the <a href="https://github.com/slds-lmu/lecture_service/wiki" class="external-link">Teaching DevOps Wiki</a>. This README covers setup and the R package; for topics like slide authoring, compilation workflows, and CI troubleshooting, see the wiki.</p>
 <p>This project has two goals:</p>
 <ol style="list-style-type: decimal">
 <li>Provide common assets needed for all lectures, once, to keep them in sync.</li>
@@ -62,23 +62,37 @@
 <div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">rsync</span> <span class="at">-r</span> lecture_service/service/ lecture_i2ml/</span></code></pre></div>
 <p>This is wrapped with the script in each lecture’s <code>./scripts/update-service.sh</code> so within e.g. <code>lecture_i2ml</code> you can run</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">bash</span> scripts/update-service.sh</span></code></pre></div>
-<p>Any changes proposed to service files covered by <code>./service</code> (particularly the <code>style</code> folder) will first need to be made in this repo and then dependant lecture repos can be updated accordingly.</p>
+<p>Any changes proposed to service files covered by <code>./service</code> (particularly the <code>style</code> folder) will first need to be made in this repo and then dependent lecture repos can be updated accordingly.</p>
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>The assumed directory structure once lecture repositories where cloned (or downloaded) looks like this:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>lecture_service</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>├── lecture_advml</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>├── lecture_i2ml</span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>├── lecture_sl</span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>├── [...]</span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>├── Makefile</span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>├── R</span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>├── scripts</span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>├── service</span>
-<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>└── [...]</span></code></pre></div>
+<p>The assumed directory structure once lecture repositories were cloned (or downloaded) looks like this:</p>
+<pre><code>lecture_service
+├── lecture_advml
+├── lecture_i2ml
+├── lecture_sl
+├── [...]
+├── Makefile
+├── R
+├── scripts
+├── service
+└── [...]</code></pre>
 <p>You can either manually <code>git clone</code> lecture repos or use <code>make clone</code></p>
-<p>Note that the text file <code>include_lectures</code> is used to globally keep track of the relevant lecture repos, so if you only intend to work on <code>lecture_advml</code> you could set it to only contain <code>lecture_advml</code> and subsequent <code>make</code> commands and other functions will be limited on scope to this lecture. By default it contains all lectures currently hosted at <code>slds-lmu/</code>.</p>
+<p>Note that the text file <code>include_lectures</code> is used to globally keep track of the relevant lecture repos, so if you only intend to work on <code>lecture_advml</code> you could set it to only contain <code>lecture_advml</code> and subsequent <code>make</code> commands and other functions will be limited in scope to this lecture. By default it contains all lectures currently hosted at <code>slds-lmu/</code>.</p>
+</div>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>The <code>lese</code> R package provides functions for compiling, checking, and auditing lecture slides.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Install with pak (recommended)</span></span>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"slds-lmu/lecture_service"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Or with remotes</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"slds-lmu/lecture_service"</span><span class="op">)</span></span></code></pre></div>
+<p>Alternatively, from within the <code>lecture_service</code> directory:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">make</span> install</span></code></pre></div>
+<p>The package also includes a <code>lecheck</code> CLI tool; see the <a href="https://github.com/slds-lmu/lecture_service/wiki/lecheck-cli" class="external-link">lecheck-cli</a> wiki page for usage.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="license">

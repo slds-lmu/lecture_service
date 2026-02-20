@@ -25,7 +25,7 @@ clean_slide(slide_file, keep_pdf = FALSE, verbose = FALSE, check_status = TRUE)
 
 - verbose:
 
-  `[TRUE]`: Print additional output to the console.
+  `[FALSE]`: Print additional output to the console.
 
 - check_status:
 

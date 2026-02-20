@@ -164,7 +164,7 @@ New system to audit the figure-slide dependency chain for
 ### R package
 
 - Add Biblatex utility functions for `references.bib` processing to
-  render per-chapter/lecture lierature lists
+  render per-chapter/lecture literature lists
 - Normalize file paths in
   [`collect_lectures()`](https://slds-lmu.github.io/lecture_service/reference/collect_lectures.md)
   (should help path-agnostic usage)
@@ -176,13 +176,14 @@ New system to audit the figure-slide dependency chain for
   [`fs::path_real()`](https://fs.r-lib.org/reference/path_math.html) for
   path normalization in
   [`collect_lectures()`](https://slds-lmu.github.io/lecture_service/reference/collect_lectures.md)
-  because the former expected log files to exists which may not exist.
+  because the former expected log files to exist which may not exist.
 - Add flexibility for
   [`find_slide_tex()`](https://slds-lmu.github.io/lecture_service/reference/find_slide_tex.md)
   to allow
   [`compile_slide()`](https://slds-lmu.github.io/lecture_service/reference/compile_slide.md)
   etc. to work with a direct path to a slide file for interactive use in
-  arbitrary directories = BUmp TeXLive version used by
+  arbitrary directories
+- Bump TeXLive version used by
   [`latexmk_docker()`](https://slds-lmu.github.io/lecture_service/reference/latexmk_docker.md)
   to 2025.
 
@@ -214,9 +215,9 @@ New system to audit the figure-slide dependency chain for
 
 ### GitHub Action workflows (`service/.github/workflows`)
 
-- In both worklows using tinytex, we experimentally pin the used version
-  to 2024.12 for safety. This is likely to change in the future but
-  currently this is the only version generally compatible with
+- In both workflows using tinytex, we experimentally pin the used
+  version to 2024.12 for safety. This is likely to change in the future
+  but currently this is the only version generally compatible with
   everything as far as we know. Ideally, we keep bumping this to a
   recent version, also on Overleaf.
 - The Makefile in ./slides/ use a docker image defaulting to 2024 as
@@ -232,7 +233,7 @@ New system to audit the figure-slide dependency chain for
   version
 - [`compile_slide()`](https://slds-lmu.github.io/lecture_service/reference/compile_slide.md)
   gains `method` argument, defaulting to `"system"` to use local
-  `ltexmk`. Can be `"docker"` to use the new
+  `latexmk`. Can be `"docker"` to use the new
   [`latexmk_docker()`](https://slds-lmu.github.io/lecture_service/reference/latexmk_docker.md)
   instead.
 - Remove `compile_slide_tinytex()` and convert it to the somewhat
@@ -243,7 +244,7 @@ New system to audit the figure-slide dependency chain for
 - [`clean_slide()`](https://slds-lmu.github.io/lecture_service/reference/clean_slide.md)
   gains `keep_pdf` option, defaulting to `FALSE` for previous behavior.
 - [`clean_slide()`](https://slds-lmu.github.io/lecture_service/reference/clean_slide.md)
-  gens `check_status` option, analogous to that in
+  gains `check_status` option, analogous to that in
   [`compile_slide()`](https://slds-lmu.github.io/lecture_service/reference/compile_slide.md).
   The same argument in
   [`compile_slide()`](https://slds-lmu.github.io/lecture_service/reference/compile_slide.md)
@@ -270,10 +271,10 @@ New system to audit the figure-slide dependency chain for
 
 ### LaTeX (`service/style`)
 
-- Discourageing the use of automatic and explicit `\framebreak`s, which
+- Discouraging the use of automatic and explicit `\framebreak`s, which
   cause rendering issues after some TeXLive version post 2023 cutoff:
   - The `vbframe` environment is considered **deprecated** and should be
-    replace with “regular” beamer `frame`s.
+    replaced with “regular” beamer `frame`s.
   - Removed framenumber continuation counter from `lmu-lecture.sty` for
     simplification
 - Related: The `vframe` environment (rarely used) is now removed.
@@ -313,7 +314,7 @@ for usage instructions)
 - Remove `make_slides()` as it was effectively superseded by either
   - Running
     [`compile_slide()`](https://slds-lmu.github.io/lecture_service/reference/compile_slide.md)
-    on a file of itnerest directly, or
+    on a file of interest directly, or
   - Using the `lecheck` cli for more control and better error messages,
     or
   - Running `make` in selected chapter directories in a shell as needed
