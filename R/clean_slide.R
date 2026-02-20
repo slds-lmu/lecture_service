@@ -5,7 +5,7 @@
 #'
 #' @inheritParams find_slide_tex
 #' @param keep_pdf `[FALSE]`: Keep the PDF file.
-#' @param verbose `[TRUE]`: Print additional output to the console.
+#' @param verbose `[FALSE]`: Print additional output to the console.
 #' @inheritParams compile_slide
 #'
 #' @return Invisibly:

@@ -40,7 +40,7 @@ lectures <- function() {
 #' @param exclude_slide_subdirs Exclude slides/ subfolders, e.g. `c("attic", "rsrc", "all")`.
 #' @param exclude_slide_names Exclude slides matching these names exactly, e.g. `"chapter-order"` (default).
 #'
-#' @return A `data.frame`` with one row per slide `.tex` file.
+#' @return A `data.frame` with one row per slide `.tex` file.
 #' @export
 #'
 #' @examples
@@ -193,7 +193,7 @@ collect_lectures <- function(
 #' # Lazy way: No extension, just a name
 #' str(find_slide_tex(slide_file = "slides-cart-predictions"))
 #'
-#' # Can also ge tthe .tex file for a .pdf
+#' # Can also get the .tex file for a .pdf
 #' str(find_slide_tex(slide_file = "slides-cart-predictions.pdf"))
 find_slide_tex <- function(slide_file, lectures_tbl = NULL) {
   checkmate::assert_string(slide_file, na.ok = FALSE, min.chars = 1)

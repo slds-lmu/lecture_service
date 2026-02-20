@@ -76,14 +76,14 @@ New system to audit the figure-slide dependency chain for `slides/<chapter>/figu
 
 ## R package
 
-- Add Biblatex utility functions for `references.bib` processing to render per-chapter/lecture lierature lists
+- Add Biblatex utility functions for `references.bib` processing to render per-chapter/lecture literature lists
 - Normalize file paths in `collect_lectures()` (should help path-agnostic usage)
 - Change default `compile_slide(..., post_clean = FALSE)` to avoid "file not found" error when `.log` file was unexpectedly missing for checks.
-- Fix: Use `fs::path_norm()` instead of `fs::path_real()` for path normalization in `collect_lectures()` because the former expected log files to exists which may not exist.
+- Fix: Use `fs::path_norm()` instead of `fs::path_real()` for path normalization in `collect_lectures()` because the former expected log files to exist which may not exist.
 - Add flexibility for `find_slide_tex()` to allow `compile_slide()` etc. to work with a direct path to a slide file for interactive use in arbitrary directories
-= BUmp TeXLive version used by `latexmk_docker()` to 2025.
+- Bump TeXLive version used by `latexmk_docker()` to 2025.
 
-## LaTeX  (`service/style` etc.)
+## LaTeX (`service/style` etc.)
 
 * Makefile in `slides/` gets big refactors:
   * Remove `all` target, new `release` target that does all the important things and copies to `slides-pdf`
@@ -101,7 +101,7 @@ New system to audit the figure-slide dependency chain for `slides/<chapter>/figu
 
 ## GitHub Action workflows (`service/.github/workflows`)
 
-- In both worklows using tinytex, we experimentally pin the used version to 2024.12 for safety. 
+- In both workflows using tinytex, we experimentally pin the used version to 2024.12 for safety. 
   This is likely to change in the future but currently this is the only version generally compatible with everything as far as we know.
   Ideally, we keep bumping this to a recent version, also on Overleaf.
 - The Makefile in ./slides/ use a docker image defaulting to 2024 as well
@@ -111,10 +111,10 @@ New system to audit the figure-slide dependency chain for `slides/<chapter>/figu
 ## R package
 
 * Add experimental `latexmk_docker()` to run `latexmk` wrapped in a docker image with a fixed TeXLive version
-* `compile_slide()` gains `method` argument, defaulting to `"system"` to use local `ltexmk`. Can be `"docker"` to use the new `latexmk_docker()` instead.
+* `compile_slide()` gains `method` argument, defaulting to `"system"` to use local `latexmk`. Can be `"docker"` to use the new `latexmk_docker()` instead.
 * Remove `compile_slide_tinytex()` and convert it to the somewhat simpler `latexmk_tinytex()` for use with `compile_slide()`
 * `clean_slide()` gains `keep_pdf` option, defaulting to `FALSE` for previous behavior.
-* `clean_slide()` gens `check_status` option, analogous to that in `compile_slide()`. The same argument in `compile_slide()` is passed to `clean_slide()`.
+* `clean_slide()` gains `check_status` option, analogous to that in `compile_slide()`. The same argument in `compile_slide()` is passed to `clean_slide()`.
 * `compare_slide()` gains additional option `eps_signif` (`[0.5]`) to manually filter output from `diff-pdf-visually` to decrease number of false-positives.
 * Add `check_docker()` to check whether `docker` is available and running.
 
@@ -127,8 +127,8 @@ New system to audit the figure-slide dependency chain for `slides/<chapter>/figu
 
 ## LaTeX  (`service/style`)
 
-* Discourageing the use of automatic and explicit `\framebreak`s, which cause rendering issues after some TeXLive version post 2023 cutoff:
-  * The `vbframe` environment is considered **deprecated** and should be replace with "regular" beamer `frame`s.
+* Discouraging the use of automatic and explicit `\framebreak`s, which cause rendering issues after some TeXLive version post 2023 cutoff:
+  * The `vbframe` environment is considered **deprecated** and should be replaced with "regular" beamer `frame`s.
   * Removed framenumber continuation counter from `lmu-lecture.sty` for simplification
 * Related: The `vframe` environment (rarely used) is now removed.
 * Add cheatsheet preamble content from I2ML. Might need further refactor and adaptation if other lectures also use these.
@@ -151,7 +151,7 @@ New system to audit the figure-slide dependency chain for `slides/<chapter>/figu
 * Make documentation more consistent, e.g. by inheriting the `slide_file` parameter doc from `find_slide_tex()`.
 * `slide_status_pr.Rmd` and `slide_status.Rmd`: Only show slide comparison column in output if comparison has been conducted (no longer the case by default)
 * Remove `make_slides()` as it was effectively superseded by either
-    * Running `compile_slide()` on a file of itnerest directly, or
+    * Running `compile_slide()` on a file of interest directly, or
     * Using the `lecheck` cli for more control and better error messages, or
     * Running `make` in selected chapter directories in a shell as needed
 * Add battery of new layout macros:

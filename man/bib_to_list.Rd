@@ -9,7 +9,7 @@ bib_to_list(bib, arrange_by = "category")
 \arguments{
 \item{bib}{\verb{[character(1)]} Path to bibtex \code{.bib} file.}
 
-\item{arrange_by}{\verb{[character()]} ALl lowercase biblatex field names to sort by. Passed to \code{dplyr::arrange()}.}
+\item{arrange_by}{\verb{[character()]} All lowercase biblatex field names to sort by. Passed to \code{dplyr::arrange()}.}
 }
 \value{
 \code{character} vector with one element per entry in \code{bib}.

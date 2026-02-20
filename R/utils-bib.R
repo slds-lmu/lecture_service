@@ -1,7 +1,7 @@
 #' Convert bib file to formatted list for Markdown output
 #'
 #' @param bib `[character(1)]` Path to bibtex `.bib` file.
-#' @param arrange_by `[character()]` ALl lowercase biblatex field names to sort by. Passed to `dplyr::arrange()`.
+#' @param arrange_by `[character()]` All lowercase biblatex field names to sort by. Passed to `dplyr::arrange()`.
 #' @return `character` vector with one element per entry in `bib`.
 #'
 #' @export
