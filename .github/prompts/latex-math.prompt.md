@@ -13,7 +13,7 @@ Requirements:
 * Always check [basic-math](../../latex-math/basic-math.tex) and [basic-ml](../../latex-math/basic-ml.tex).
 *  Do not use `{ }` around single-character elements unless required:
    -  To display $e^x$, use `e^x` rather than `e^{x}`
-*  Use `$$ ... $$` to denote display math [others disagree, but we accept that](https://tex.stackexchange.com/questions/503/why-is-preferable-to)
+*  Use `$$ ... $$` to denote display math.
 *  The `equation` environment is equivalent to `\[ ... \]`, which we do not use in favor of the simple `$$ ... $$`.
 *  Do not use `eqnarray` and remove it where you see it. It has been deprecated for years and `align` or `$$ ... $$` is usually preferred.
 *  Only use `align` environments if you truly need alignment, use `$$ ... $$` instead
