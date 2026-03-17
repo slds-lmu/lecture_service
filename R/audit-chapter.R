@@ -1,7 +1,8 @@
 #' Parse figure references from a LaTeX slide file
 #'
 #' Extracts figure paths referenced via `\\includegraphics`, `\\image`,
-#' `\\imageC`, `\\imageL`, `\\imageR`, and `\\imageFixed` commands.
+#' `\\imageC`, `\\imageL`, `\\imageR`, `\\imageFixed`, and `\\titlemeta`
+#' commands.
 #'
 #' By default, returns references to `figure/` paths (skipping cross-chapter
 #' `../` references, `../../slides-pdf/`, etc.). Set `prefix` to extract
@@ -39,10 +40,14 @@ parse_slide_figures <- function(slide_tex_path, prefix = "figure") {
   # Pattern for \imageFixed{x}{y}[...][...]{PATH}
   pat_imagefixed <- "\\\\imageFixed\\s*\\{[^}]*\\}\\s*\\{[^}]*\\}\\s*(?:\\[[^]]*\\])?\\s*(?:\\[[^]]*\\])?\\s*\\{([^}]+)\\}"
 
+  # Pattern for \titlemeta{TITLE}{SUBTITLE}{PATH}{GOALS}
+  pat_titlemeta <- "\\\\titlemeta\\s*\\{[^}]*\\}\\s*\\{[^}]*\\}\\s*\\{([^}]+)\\}"
+
   paths <- c(
     stringr::str_match_all(text, pat_includegraphics)[[1]][, 2],
     stringr::str_match_all(text, pat_image)[[1]][, 2],
-    stringr::str_match_all(text, pat_imagefixed)[[1]][, 2]
+    stringr::str_match_all(text, pat_imagefixed)[[1]][, 2],
+    stringr::str_match_all(text, pat_titlemeta)[[1]][, 2]
   )
 
   if (length(paths) == 0) {
