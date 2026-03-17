@@ -39,7 +39,7 @@ library(lese)
 library(dplyr)
 
 lecture_dir <- normalizePath(params$lecture_dir, mustWork = TRUE)
-lecture <- params$lecture %||% basename(lecture_dir)
+lecture <- if (is.null(params$lecture)) basename(lecture_dir) else params$lecture
 
 # Discover chapters: directories under slides/ that contain figure content
 exclude_dirs <- c("attic", "all", "figure", "figure_man", "rsrc", "backup")
