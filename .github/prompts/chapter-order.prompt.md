@@ -1,0 +1,1 @@
+Please update the chapter-order file to match our new course structure. For this, see the source in the folder and under `slides-pdf` (those match).
