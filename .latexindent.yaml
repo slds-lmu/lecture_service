@@ -1,0 +1,138 @@
+# See https://latexindentpl.readthedocs.io for full reference.
+
+# One level of indentation is two spaces. Every environment body that receives
+# additional indent (see noAdditionalIndent below) is pushed in by this string.
+defaultIndent: "  "
+
+# ---------------------------------------------------------------------------
+# modifyLineBreaks
+# ---------------------------------------------------------------------------
+# Whether latexindent is allowed to rewrap, split, or join lines.
+# Two gates must BOTH be open before any leaf knob below takes effect:
+#   1. latexindent is invoked with -m on the command line (our settings.json
+#      sets this), AND
+#   2. the specific leaf key below is set to a non-zero value.
+modifyLineBreaks:
+
+  # Condense runs of blank lines down to N blank lines.
+  # 0 = leave blank lines alone; 1 = at most one blank line between paragraphs.
+  condenseMultipleBlankLinesInto: 1
+
+  # Preserve (1) or collapse (0) single blank lines between tokens.
+  preserveBlankLines: 1
+
+  # -------------------------------------------------------------------------
+  # Hard line wrap for body text.
+  # -------------------------------------------------------------------------
+  textWrapOptions:
+    columns: 120               # target column width; 0 = NEVER wrap.
+                               # Set to e.g. 100 to hard-wrap prose at 100 chars.
+    multipleSpacesToSingle: 1  # collapse runs of internal spaces to one
+                               # (only within the wrapped regions).
+
+  # -------------------------------------------------------------------------
+  # One sentence per line -- produces clean per-sentence git diffs.
+  # -------------------------------------------------------------------------
+  oneSentencePerLine:
+    manipulateSentences: 1    # master switch for this feature: 0 = off, 1 = on.
+    removeSentenceLineBreaks: 1  # 1 = first join sentences onto one line
+                                 # before re-splitting (idempotent reformat).
+    multipleSpacesToSingle: 1
+
+    # What counts as the START of a new sentence?
+    sentencesBeginWith:
+      A-Z: 1                  # any capital letter begins a sentence
+      a-z: 0
+      other: ''               # extra regex of chars that begin a sentence
+
+    # What counts as the END of a sentence?
+    sentencesEndWith:
+      basicFullStop:   1      # `.`
+      exclamationMark: 1      # `!`
+      questionMark:    1      # `?`
+      betterFullStop:  0      # stricter: `.`, `!`, `?` followed by space/newline,
+                              # ignoring e.g. `e.g.`, `i.e.`, decimal numbers.
+      other: ''               # extra regex of sentence-ending chars
+
+  # -------------------------------------------------------------------------
+  # Environments: where \begin{env}, its body, and \end{env} go on new lines.
+  # Global defaults -- override per environment by adding a key under the
+  # environment's own name (e.g. a `figure:` block with its own settings).
+  # -------------------------------------------------------------------------
+  environments:
+    BeginStartsOnOwnLine:     0   # 1 = \begin{env} always starts a new line
+    BodyStartsOnOwnLine:      0   # 1 = the body of the env starts a new line
+                                  #     (text right after \begin{env} is moved down)
+    EndStartsOnOwnLine:       0   # 1 = \end{env} starts a new line
+    EndFinishesWithLineBreak: 0   # 1 = a newline is inserted AFTER \end{env}
+
+  # -------------------------------------------------------------------------
+  # \item handling inside itemize / enumerate / description.
+  # -------------------------------------------------------------------------
+  items:
+    ItemStartsOnOwnLine:      0   # 1 = every \item starts a new line
+    ItemFinishesWithLineBreak: 0  # 1 = a newline is inserted AFTER the \item
+
+  # -------------------------------------------------------------------------
+  # Commands: where \foo, its {mandatory} and [optional] arguments, and any
+  # trailing content go on new lines. Defaults; override per command by name.
+  # Example per-command override:
+  #   \section:
+  #     CommandStartsOnOwnLine: 1
+  # -------------------------------------------------------------------------
+  commands:
+    CommandStartsOnOwnLine:              0  # 1 = `\foo` starts on its own line
+    CommandNameFinishesWithLineBreak:    0  # 1 = break after `\foo` and before `{`
+    ParametersStartsOnOwnLine:           0  # 1 = `{` goes on a new line
+    ParametersFinishesWithLineBreak:     0  # 1 = break after `}`
+    RoundParenthesesStartsOnOwnLine:     0  # same for `(` (used by TikZ etc.)
+    RoundParenthesesFinishesWithLineBreak: 0
+
+  # -------------------------------------------------------------------------
+  # Split long key=value option lists (tikz, listings, pgfplots, ...).
+  # Example:  \begin{tikzpicture}[scale=1, thick, draw=red, ...]
+  # -------------------------------------------------------------------------
+  keyEqualsValuesBracesBrackets:
+    KeyStartsOnOwnLine:         0   # 1 = each key goes on its own line
+    EqualsStartsOnOwnLine:      0   # 1 = `=` starts a new line
+    EqualsFinishesWithLineBreak: 0  # 1 = newline after `=`
+    CommaStartsOnOwnLine:       0   # 1 = `,` starts a new line
+    CommaFinishesWithLineBreak: 0   # 1 = newline after `,`
+
+# 0 = the preamble not indented
+indentPreamble: 0
+
+# Strip trailing spaces / tabs at end of lines. Doing it both before AND after
+# the main indentation pass catches whitespace that authors typed and also any
+# that latexindent itself might leave while rewriting.
+removeTrailingWhitespace:
+  beforeProcessing: 1   # run a trailing-whitespace pass before indentation
+  afterProcessing:  1   # run it again after indentation
+
+# Backup-file policy. Each run latexindent writes `<file>.bak0`, `.bak1`, ...
+# so the previous version can be recovered.
+onlyOneBackUp:      1   # 1 = keep only a single rolling backup (overwrite .bak0)
+maxNumberOfBackUps: 1   # hard cap on number of .bakN files retained.
+                        # Together with onlyOneBackUp: 1, exactly one .bak file
+                        # exists per source file at any time.
+
+# ---------------------------------------------------------------------------
+# noAdditionalIndent
+# ---------------------------------------------------------------------------
+# Per-environment flag controlling whether latexindent adds an extra level of
+# indentation INSIDE the environment's body.
+#
+#   value 1 -> do NOT add extra indent inside this env
+#             (contents stay at the same column as \begin{...}).
+#   value 0 -> DO add extra indent inside this env (the usual behaviour:
+#             contents get indented by one `defaultIndent` level relative
+#             to the \begin{...}).
+#
+# dont indent stuff - we have flat structure
+noAdditionalIndent:
+  document:  1
+  frame:     1
+  itemize:   1
+  enumerate: 1
+  columns:   1
+  center:    1
