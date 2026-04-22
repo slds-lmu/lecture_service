@@ -171,3 +171,6 @@ $RECYCLE.BIN/
 # AI
 .claude/settings.local.json
 CLAUDE.md
+
+# project specific
+include_lectures
