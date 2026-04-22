@@ -1,7 +1,4 @@
 {
-  "enabledPlugins": {
-    "teaching-skills@wintermute": true
-  },
   "permissions": {
     "allow": [
       "Bash(Rscript *)",
