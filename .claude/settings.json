@@ -1,7 +1,4 @@
 {
-  "enabledPlugins": {
-    "teaching-skills@wintermute": true
-  },
   "permissions": {
     "allow": [
       "Bash(Rscript *)",
@@ -46,6 +43,10 @@
       "Bash(apt-get *)",
       "Bash(pip install *)"
     ]
+  },
+  "enabledPlugins": {
+    "teaching-skills@wintermute": true,
+    "slds-lecture-skills@wintermute": true
   },
   "sandbox": {
     "enabled": true,
