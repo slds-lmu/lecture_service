@@ -1,2 +1,4 @@
+# Per-path git attributes.
+# Normalize all text files to LF line endings on commit and checkout,
+# so the repo stays consistent across Linux/macOS/Windows checkouts.
 * text=auto eol=lf
-

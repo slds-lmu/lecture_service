@@ -1,0 +1,45 @@
+{
+    "version": "0.2",
+    "language": "en-US",
+    // define which file types are checked
+    "enabledFileTypes": {
+        // Disable checking for all file types by default. NB this does not seem to robustly work. if not disable some file types manually below
+        "*": false,
+        // Enable spell-checking for LaTeX source files. This is what we mainly need
+        "latex": true,
+        // Enable for R and Python (comments only — see languageSettings below)
+        "r": true,
+        "python": true
+    },
+    // Per-language rules
+    "languageSettings": [
+        {
+            // R: check only # comment lines
+            "languageId": "r",
+            "includeRegExpList": ["#[^\\r\\n]*"]
+        },
+        {
+            // Python: check only # comment lines and docstrings
+            "languageId": "python",
+            "includeRegExpList": ["#[^\\r\\n]*", "\"\"\"[\\s\\S]*?\"\"\"", "'''[\\s\\S]*?'''"]
+        }
+    ],
+    // Honor .gitignore entries so ignored files are not scanned
+    "useGitignore": true,
+    // Custom dictionaries to consult in addition to the built-ins
+    "dictionaries": [
+        // Project-specific whitelist defined below
+        "project-words"
+    ],
+    // Declarations backing the dictionaries referenced above
+    "dictionaryDefinitions": [
+        {
+            // Identifier referenced from the "dictionaries" array
+            "name": "project-words",
+            // Location of the word list, relative to this config file
+            "path": "./.cspell/project-words.txt",
+            // Allow "Add to dictionary" actions to append to this file
+            "addWords": true
+        }
+    ]
+}

@@ -1,0 +1,67 @@
+{
+
+
+// ********** settings latex **********
+
+  // hide latex temo files from vscode explorer
+  "files.exclude": {
+    "**/*.aux": true,
+    "**/*.bbl": true,
+    "**/*.bcf": true,
+    "**/*.blg": true,
+    "**/*.fdb_latexmk": true,
+    "**/*.fls": true,
+    "**/*.lof": true,
+    "**/*.lot": true,
+    "**/*.nav": true,
+    "**/*.out": true,
+    "**/*.run.xml": true,
+    "**/*.snm": true,
+    "**/*.synctex.gz": true,
+    "**/*.toc": true,
+    "**/*.vrb": true,
+    "**/*.log": true
+  },
+
+  // LaTeX Workshop: build + format
+  // use the latexmk recipe with pdflatex as the default build tool (Build LaTeX project command)
+  "latex-workshop.latex.recipe.default": "latexmk",
+  // use latexindent as the formatter for .tex files
+  "latex-workshop.formatting.latex": "latexindent",
+  // args passed to latexindent:
+  //   -c %DIR%/ : write latexindent's temp/backup/log files (indent.log, *.bak) into the
+  //               directory of the file being formatted instead of the current working dir,
+  //               keeping the project root clean.
+  //   -l <path> : load this YAML file as a *user* settings file that is merged on top of
+  //               latexindent's built-in defaultSettings.yaml. It does NOT replace the defaults;
+  //               keys present here override the corresponding default keys, everything else
+  //               is inherited. Without -l, latexindent would only pick up a localSettings.yaml
+  //               sitting next to the .tex file.
+  //   -m        : modifyLineBreaks mode -- the ONLY mode in which latexindent is allowed to
+  //               add or remove line breaks (without -m it adjusts leading whitespace /
+  //               indentation only). The flag itself does nothing on its own; it unlocks the
+  //               `modifyLineBreaks` section of the YAML config
+  "latex-workshop.formatting.latexindent.args": [
+    "-c", "%DIR%/",
+    "-l", "%WORKSPACE_FOLDER%/.latexindent.yaml",
+    "-m"
+  ],
+  // per-language overrides for .tex files: auto-format on save using LaTeX Workshop's formatter
+  "[latex]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "James-Yu.latex-workshop"
+  },
+
+  // ********** settings git / gitlens **********
+
+  // disable "blame hover", to remove visual noise
+ "gitlens.currentLine.enabled": false,
+
+ // ********** settings for cspell *************
+  // show spelling errors as hints (not in problems panel)
+  "cSpell.diagnosticLevel": "Hint",
+  // file type whitelist, useGitignore, and languageSettings live in cspell.json
+
+
+  }
+
