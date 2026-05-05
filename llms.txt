@@ -70,6 +70,7 @@ The `lese` R package provides functions for compiling, checking, and
 auditing lecture slides.
 
 ``` r
+
 # Install with pak (recommended)
 pak::pak("slds-lmu/lecture_service")
 
