@@ -7,7 +7,7 @@ linters: linters_with_defaults(
     commented_code_linter = NULL, # allow code in comments
     line_length_linter = line_length_linter(120L), # same as .editorconfig
     # use indent=2 as in .editorconfig; also use block-aligned continuation with 2 space,
-    # not “align under first argument” style.
+    # not "align under first argument" style.
     indentation_linter = indentation_linter(indent = 2L, hanging_indent_style = "never")
     )
 
