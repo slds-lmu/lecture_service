@@ -174,3 +174,7 @@ CLAUDE.md
 
 # project specific
 include_lectures
+
+# temporary files
+/temp/*
+/tmp/*
