@@ -62,6 +62,28 @@
   "cSpell.diagnosticLevel": "Hint",
   // file type whitelist, useGitignore, and languageSettings live in cspell.json
 
-
+  "todo-tree.general.tags": [
+    "TODO", "FIX", "FIXME", "SUGGESTION", "QUESTION", "NOTE", "BUG"
+  ],
+  "todo-tree.regex.regex": "(//|#|<!--|;|/\\*|^|^\\s*(-|\\d+.))\\s*($TAGS)|\\\\comment\\[($TAGS)\\]\\{[^}]*\\}\\{[^}]*\\}",
+  "todo-tree.regex.subTagRegex": "^\\]\\{([^}]*)\\}\\{",
+  "todo-tree.regex.regexCaseSensitive": true,
+  "todo-tree.tree.labelFormat": "${tag} - ${subTag}: ${after}",
+  "todo-tree.highlights.defaultHighlight": {
+    "type": "text",
+    "foreground": "#ffffff",
+    "background": "#666666",
+    "opacity": 80,
+    "gutterIcon": true
+  },
+  "todo-tree.highlights.customHighlight": {
+    "TODO":       { "type": "text", "icon": "checklist",  "foreground": "#ffffff", "background": "#ff9900", "iconColour": "#ff9900" },
+    "FIX":        { "type": "text", "icon": "tools",      "foreground": "#ffffff", "background": "#cc0000", "iconColour": "#cc0000" },
+    "FIXME":      { "type": "text", "icon": "tools",      "foreground": "#ffffff", "background": "#cc0000", "iconColour": "#cc0000" },
+    "SUGGESTION": { "type": "text", "icon": "light-bulb", "foreground": "#000000", "background": "#ffdd00", "iconColour": "#ffdd00" },
+    "QUESTION":   { "type": "text", "icon": "question",   "foreground": "#ffffff", "background": "#0099cc", "iconColour": "#0099cc" },
+    "NOTE":       { "type": "text", "icon": "note",       "foreground": "#ffffff", "background": "#666666", "iconColour": "#666666" },
+    "BUG":        { "type": "text", "icon": "bug",        "foreground": "#ffffff", "background": "#990000", "iconColour": "#990000" }
   }
+}
 
