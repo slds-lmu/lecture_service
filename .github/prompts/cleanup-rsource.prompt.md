@@ -47,11 +47,10 @@
 
 ## Plots
 
-- For plots directly supported by vistool, use [vistool](https://github.com/slds-lmu/vistool)
-  If you can produce the main parts of a plot with vistool, then simply have to add a few extra ggplot layers, do that.
+- For plotting loss functions, model predictions and objective functions (with or without optimization traces), use [vistool](https://github.com/slds-lmu/vistool);
+  if you can produce the main parts of a plot with vistool, do that, simply add a few extra (ggplot) layers if necessary
 - Use `ggplot2` as a default, nearly always
 - For some plots, it might be ok to use "plots from packages" or "base R plots", but only do that if necessary
-- Plots are saved at the end of a file, to `../figure/` (see rule for filenames above)
 - Try to make plot and axis labels somewhat consistent and large enough.
   Look in other parts of the chunk, or even the chapter.
   Very often, we have things like "MSE" or so on the axis, use one form for this.
@@ -61,6 +60,8 @@
   does NOT accept expressions (e.g. base R `persp()`) fall back to literal
   Unicode characters (`"λ₁"`, `"λ₂"`) directly in the source -- do NOT use
   `\uXXXX` escape sequences, they are unreadable in the code.
+- Plots are saved at the end of a file, to `../figure/` (see rule for filenames above)
+- Always check the saved plots manually for legibility and correctness!
 
 ## ML Examples, Simulation Studies, Mini Benchmarks
 
