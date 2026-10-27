@@ -1,3 +1,21 @@
+# lese 0.6.0.9000 (In development)
+
+## Exercise template (`exercises-template/`)
+
+- New template for Quarto exercise sheets, generalized from the exercise setup of `lecture_i2ml` (`EXERCISE_SPEC.md`, branch `optimize_html`, commit `48c2fe43`). One `.qmd` per sheet gives a self-contained HTML with collapsible solutions and linked R/Python tabs, an exercise PDF and a PDF with solutions; all code is embedded from one notebook per language (`sol_<sheet>_R.ipynb`, `sol_<sheet>_py.ipynb`). The binding rules for authors and agents are in `exercises-template/README.md`, with step-by-step guides for writing a new sheet and for converting an existing one (whose legacy sources the conversion deletes).
+- Lectures opt in by creating `exercises/_lecture.yml` (course subtitle); the update script then copies the template into their `exercises/` folder. The template lives outside `service/`, so `update-service.sh` doesn't copy it into lectures that don't use it.
+- Changes compared to the i2ml setup: tabset group `language` instead of `i2ml-language`; math macros from the lecture's `latex-math/combined.qmd`, included directly by `header.qmd` (with `\bm` and `\mathds` mapped), instead of a hand-made copy; `i2ml_theme.scss` renamed to `theme.scss`; the course subtitle moved to `_lecture.yml`; no `ex_` notebooks for students (they were needed for KI-Campus); the standard Python kernel `python3` instead of `python-i2ml`; no group profiles `a`/`b` (i2ml's build never uses them); the Lua filters merged into `filters.lua`, `styles.css` into `theme.scss` and the toolbar into `header.qmd`; `plotly.R` is not part of the template (helpers like it go into a lecture's `exercises/_lecture/`).
+- New targets in a lecture's `exercises/`: `make update` (update the template files from lecture_service), `make new-sheet` (a sheet and its two notebooks from the template), `make deps` (R packages the sheets need), `make check` (render check), `make all`; per chapter, `make notebooks` (run the solution notebooks).
+- I2ML still uses its own copy of the setup; switching it to the template is a separate step.
+
+## GitHub Action workflows (`service/.github/workflows`)
+
+- New `pr-exercise-check.yaml`: renders the exercise sheets a pull request touches (all of them if shared files or `latex-math/` changed) and fails if a render fails, an exercise PDF contains a solution, or a folder with sheets has no chapter Makefile. Does nothing in lectures without `exercises/_lecture.yml`. Added to `scripts/update_lecture_workflow.sh`.
+
+## Other
+
+- `.editorconfig` and `service/.editorconfig`: tabs for `*.mk` files too, not only for `Makefile`.
+
 # lese 0.6.0
 
 - Rename `topic` to `chapter` for consistency when referring to slide paths, i.e. `lecture_i2ml/slides/<chapter>/foo.tex`

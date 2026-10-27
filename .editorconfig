@@ -16,3 +16,7 @@ indent_size = 2
 max_line_length = 120
 # Remove trailing whitespace
 trim_trailing_whitespace = true
+
+# make requires tabs in recipes (Makefile, service/**/*.mk, exercises-template/*.mk)
+[{Makefile,*.mk}]
+indent_style = tab

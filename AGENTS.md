@@ -4,6 +4,7 @@
 
 - For LaTeX slides: Respect the rules in `.agents/rules-slides.md`
 - For R code: Respect the rules in `.agents/rules-rcode.md`
+- For exercise sheets (Quarto): Respect the rules in `.agents/rules-exercises.md`
 
 ## Maths and formulas
 - Have a clean "notation.tex" that contains abbreviations for important symbols, which are used often.
