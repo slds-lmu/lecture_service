@@ -15,7 +15,7 @@ JUPYTER ?= jupyter
 NO_CONFIG_GOALS := clean copy-all notebooks
 ifeq ($(wildcard ../_lecture.yml),)
 ifneq ($(filter-out $(NO_CONFIG_GOALS),$(or $(MAKECMDGOALS),all)),)
-$(error exercises/_lecture.yml is missing; see "Adopting the template" in exercises/README.md)
+$(error exercises/_lecture.yml is missing; see exercises/README.md#adopting-the-template)
 endif
 endif
 
@@ -57,7 +57,7 @@ copy-all:
 	cp $(SHEETS:.qmd=_ex.pdf) $(SHEETS:.qmd=_all.pdf) ../../exercises-pdf/
 
 # run the solution notebooks top to bottom and save them with their outputs, as
-# 256-color PNGs (README.md, §7); needs Jupyter with the kernels they declare
+# 256-color PNGs (README.md#notebooks); needs Jupyter with the kernels they declare
 notebooks:
 	for nb in $(NOTEBOOKS); do \
 		$(JUPYTER) nbconvert --to notebook --execute --inplace --config ../_quarto/compact_png.py $$nb || exit 1; \

@@ -26,7 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
-      # Quarto version the sheets are rendered with (exercises/README.md, section 9)
+      # Quarto version the sheets are rendered with (exercises/README.md#outputs-and-build)
       QUARTO_VERSION: "1.10.19"
     steps:
       - name: Checkout repo

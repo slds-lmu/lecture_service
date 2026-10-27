@@ -4,7 +4,7 @@ Run from the exercises folder (`make new-sheet` does that):
 
     python3 _quarto/new_sheet.py --chapter CHAPTER --sheet SHEET [--no-code]
 
-Creates in <chapter>/ (README.md, sections 4, 5 and 7):
+Creates in <chapter>/ (README.md#writing-a-new-sheet):
 - <sheet>.qmd: the sheet template, with notebook links (GitHub repo and default
   branch of this lecture) and embeds filled in
 - sol_<sheet>_R.ipynb, sol_<sheet>_py.ipynb: the notebooks with the code of the
@@ -29,7 +29,7 @@ TEMPLATE = Path(__file__).resolve().parent / "new-sheet.qmd"
 PLACEHOLDER = re.compile(r"\{\{(\w+)\}\}")
 SECTION = re.compile(r"^\{\{([#^])(\w+)\}\}\n(.*?)^\{\{/\2\}\}\n", re.M | re.S)
 
-# kernels of the notebooks (README.md, section 7); Jupyter adds language_info when they run
+# kernels of the notebooks (README.md#notebooks); Jupyter adds language_info when they run
 KERNELSPECS = {
     "R": {"display_name": "R", "language": "R", "name": "ir"},
     "py": {"display_name": "Python 3 (ipykernel)", "language": "python", "name": "python3"},

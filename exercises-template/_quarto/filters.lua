@@ -2,7 +2,7 @@
 --
 -- Lua filters of the exercise sheets, in two passes (the list at the end):
 --
--- 1. The block types of the exercise sheets (README.md, §6):
+-- 1. The block types of the exercise sheets (README.md#layout):
 --
 --   ::: {.sol}     Solution of the preceding subtask. Kept only with the
 --                  "solution" profile; collapsible in HTML (<details> with a

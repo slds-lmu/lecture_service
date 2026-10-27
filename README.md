@@ -33,7 +33,7 @@ Any changes proposed to service files covered by `./service` (particularly the `
 ### Exercise template
 
 `./exercises-template/` holds the shared setup of the Quarto exercise sheets (formats, Lua filters, CSS, LaTeX preamble, build targets, template for new sheets), generalized from `lecture_i2ml`. Its `README.md` is the binding spec for writing sheets.
-Unlike `./service/`, it is only copied into lectures that opt in: a lecture creates `exercises/_lecture.yml` (course subtitle) and runs the template's update script once (see "Adopting the template" in `exercises-template/README.md`).
+Unlike `./service/`, it is only copied into lectures that opt in: a lecture creates `exercises/_lecture.yml` (course subtitle) and runs the template's update script once (see [Adopting the template](exercises-template/README.md#adopting-the-template)).
 Later updates: `make update` in the lecture's `exercises/` folder. Updates never touch `_lecture.yml`, nor any chapter folder.
 Changes to the template are made here, never in a lecture's copy.
 

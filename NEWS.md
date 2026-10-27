@@ -7,6 +7,7 @@
 - Changes compared to the i2ml setup: tabset group `language` instead of `i2ml-language`; math macros from the lecture's `latex-math/combined.qmd`, included directly by `header.qmd` (with `\bm` and `\mathds` mapped), instead of a hand-made copy; `i2ml_theme.scss` renamed to `theme.scss`; the course subtitle moved to `_lecture.yml`; no `ex_` notebooks for students (they were needed for KI-Campus); the standard Python kernel `python3` instead of `python-i2ml`; no group profiles `a`/`b` (i2ml's build never uses them); the Lua filters merged into `filters.lua`, `styles.css` into `theme.scss` and the toolbar into `header.qmd`; `plotly.R` is not part of the template (helpers like it go into a lecture's `exercises/_lecture/`).
 - New targets in a lecture's `exercises/`: `make update` (update the template files from lecture_service), `make new-sheet` (a sheet and its two notebooks from the template), `make deps` (R packages the sheets need), `make check` (render check), `make all`; per chapter, `make notebooks` (run the solution notebooks).
 - I2ML still uses its own copy of the setup; switching it to the template is a separate step.
+- Sections of the template's README are referred to by anchor (`README.md#notebooks`), not by number, so sections can be added or moved. `scripts/check_readme_refs.sh`, run by the new lecture_service workflow `.github/workflows/check-readme-refs.yaml`, fails on references to a missing heading and on references by number.
 
 ## GitHub Action workflows (`service/.github/workflows`)
 

@@ -9,9 +9,9 @@
 #       update from a local copy of the template instead of GitHub
 #
 # <dir> defaults to exercises/ (or the current folder, if that is exercises/).
-# A lecture opts in by creating <dir>/_lecture.yml (README.md, section 11);
+# A lecture opts in by creating <dir>/_lecture.yml (README.md#adopting-the-template);
 # without it, nothing is updated.
-# What an update changes (README.md, section 4):
+# What an update changes (README.md#files-and-ownership):
 # - _quarto.yml, quarto.mk, Makefile, .gitignore, README.md are replaced
 # - _quarto/ is replaced as a whole: files that are not in the template are deleted
 # - nothing else is touched (_lecture.yml, chapters, data, ...)
@@ -53,7 +53,7 @@ fi
 [[ -d "$target" ]] || die "folder '$target' not found: run this from the lecture root or its exercises/ folder, or use --target"
 target="$(cd "$target" && pwd)"
 
-[[ -f "$target/_lecture.yml" ]] || die "$target/_lecture.yml not found: this lecture doesn't use the exercise template yet; create it first (README.md, section 11)."
+[[ -f "$target/_lecture.yml" ]] || die "$target/_lecture.yml not found: this lecture doesn't use the exercise template yet; create it first (README.md#adopting-the-template)."
 
 if [[ -z "$source_dir" ]]; then
   # Download the template, then let the downloaded (newest) version of this

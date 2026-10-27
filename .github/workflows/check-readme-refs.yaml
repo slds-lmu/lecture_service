@@ -1,0 +1,38 @@
+# Checks that references to sections of exercises-template/README.md (in the template,
+# the agent rules, the workflows synced into lectures, README.md, NEWS.md) match its
+# headings and don't use section numbers. The logic is in scripts/check_readme_refs.sh,
+# which also runs locally.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+    paths:
+      - "exercises-template/**"
+      - ".agents/**"
+      - "service/.github/workflows/**"
+      - "README.md"
+      - "NEWS.md"
+      - "scripts/check_readme_refs.sh"
+      - ".github/workflows/check-readme-refs.yaml"
+  pull_request:
+    paths:
+      - "exercises-template/**"
+      - ".agents/**"
+      - "service/.github/workflows/**"
+      - "README.md"
+      - "NEWS.md"
+      - "scripts/check_readme_refs.sh"
+      - ".github/workflows/check-readme-refs.yaml"
+
+name: check-readme-refs.yaml
+
+permissions: read-all
+
+jobs:
+  check-readme-refs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Check README section references
+        run: bash scripts/check_readme_refs.sh

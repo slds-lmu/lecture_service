@@ -8,7 +8,8 @@
 
 ## Rules
 
-- The binding spec is `exercises-template/README.md` in this repo; lecture repos have it as `exercises/README.md`. Read it before working on a sheet and follow it, in particular the template (section 5), the markup rules (section 6), the notebook rules (section 7) and the checklist (section 10).
-- Create new sheets with `make new-sheet` in `exercises/` (section 9), not by copying another sheet.
+- The binding spec is `exercises-template/README.md` in this repo; lecture repos have it as `exercises/README.md`. Read it before working on a sheet and follow it, in particular [Writing a new sheet](../exercises-template/README.md#writing-a-new-sheet), the [Markup rules](../exercises-template/README.md#markup-rules), the [Notebooks](../exercises-template/README.md#notebooks) rules and the [checklist](../exercises-template/README.md#checklist-before-committing).
+- Create new sheets with `make new-sheet` in `exercises/` ([Writing a new sheet](../exercises-template/README.md#writing-a-new-sheet)), not by copying another sheet.
+- Refer to sections of the README by anchor (`README.md#notebooks`), never by number; `scripts/check_readme_refs.sh` checks this.
 - Never change the template files in a lecture (`exercises/_quarto.yml`, `quarto.mk`, `Makefile`, `.gitignore`, `README.md`, `_quarto/`): they are overwritten by updates. Changes to the template go into `exercises-template/` in lecture_service; lecture-specific settings go into `exercises/_lecture.yml`.
 - Since I2ML is not part of lecture_service anymore, it has its own copy of the setup and its own `EXERCISE_SPEC.md`, which stays authoritative for I2ML until it switches to the template.
