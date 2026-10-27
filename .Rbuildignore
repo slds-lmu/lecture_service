@@ -1,6 +1,7 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^service$
+^exercises-template$
 ^lecture_.*$
 ^lecture_sl
 ^lecture_i2ml

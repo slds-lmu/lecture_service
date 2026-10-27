@@ -178,3 +178,5 @@ include_lectures
 # temporary files
 /temp/*
 /tmp/*
+
+/.luarc.json
